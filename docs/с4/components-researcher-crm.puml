@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Researcher CRM Service Components
+
+Container(researcher_crm, "Researcher CRM", "PHP/Symfony")
+
+Boundary(researcher_boundary, "Researcher CRM") {
+    Component(presentation, "Presentation Layer", "Controllers", "REST API")
+    Component(application, "Application Layer", "Commands/Queries", "Registration, replies, meetings")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Researcher, Job, Reply, Meet, Message")
+    Component(infrastructure, "Infrastructure Layer", "Doctrine, Event bus", "PostgreSQL, Redis, RabbitMQ")
+    Component(audit, "Audit Logger", "Listens to events", "Append-only store")
+
+    Rel(presentation, application, "Calls")
+    Rel(application, domain, "Uses")
+    Rel(application, infrastructure, "Saves / publishes")
+    Rel(domain, audit, "Publishes audit events")
+}
+
+ContainerDb(postgres, "PostgreSQL", "Researcher DB")
+Container(rabbitmq, "RabbitMQ", "Events")
+Container(redis, "Redis", "Cache, sessions")
+
+Rel(researcher_crm, postgres, "Reads / writes")
+Rel(researcher_crm, rabbitmq, "Publishes")
+Rel(researcher_crm, redis, "Caches")
+
+@enduml

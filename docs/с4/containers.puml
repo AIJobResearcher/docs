@@ -1,0 +1,54 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title AIJobResearcher Container Diagram
+
+Person(seeker, "Job seeker")
+
+System_Boundary(platform, "AIJobResearcher") {
+    Container(frontend, "Frontend", "React, Next.js", "User interface")
+    Container(vacancies, "Vacancies", "PHP/Laravel", "Manage vacancies, employers, interviewers")
+    Container(researcher_crm, "Researcher CRM", "PHP/Symfony", "Job seeker profile, replies, meetings, messages")
+    Container(parsing_ai, "Parsing & AI Connector", "Python/FastAPI", "Portal parsing, AI recommendations, RAG")
+    Container(knowledge, "Knowledge Center", "Go/Gin", "Learning plans, tracks, progress")
+
+    ContainerDb(postgres_v, "PostgreSQL", "Vacancies DB")
+    ContainerDb(postgres_r, "PostgreSQL", "Researcher DB")
+    ContainerDb(postgres_k, "PostgreSQL", "Knowledge DB")
+    ContainerDb(redis, "Redis", "Cache, sessions, rate limiting")
+    Container(rabbitmq, "RabbitMQ", "Message broker")
+    Container(opensearch, "OpenSearch", "Search engine")
+    Container(qdrant, "Qdrant", "Vector DB for RAG")
+}
+
+System_Ext(portal, "External portals (LinkedIn, Djinni)")
+System_Ext(ai_provider, "AI providers (OpenAI, Ollama)")
+System_Ext(calendar, "Google Calendar")
+
+Rel(seeker, frontend, "Uses", "REST")
+Rel(frontend, vacancies, "Requests", "REST")
+Rel(frontend, researcher_crm, "Requests", "REST")
+Rel(frontend, parsing_ai, "Requests", "REST")
+Rel(frontend, knowledge, "Requests", "REST")
+
+Rel(vacancies, postgres_v, "Reads/writes", "SQL")
+Rel(researcher_crm, postgres_r, "Reads/writes", "SQL")
+Rel(knowledge, postgres_k, "Reads/writes", "SQL")
+
+Rel(vacancies, redis, "Caches")
+Rel(researcher_crm, redis, "Caches, sessions")
+Rel(parsing_ai, redis, "Caches AI responses")
+
+Rel(vacancies, rabbitmq, "Publishes events")
+Rel(researcher_crm, rabbitmq, "Publishes events")
+Rel(parsing_ai, rabbitmq, "Publishes events, receives commands")
+Rel(knowledge, rabbitmq, "Publishes events")
+
+Rel(vacancies, opensearch, "Indexes")
+Rel(parsing_ai, qdrant, "Indexes and searches")
+
+Rel(parsing_ai, portal, "Parses", "HTTPS")
+Rel(parsing_ai, ai_provider, "Calls", "HTTPS/HTTP")
+Rel(researcher_crm, calendar, "Creates events", "HTTPS")
+
+@enduml

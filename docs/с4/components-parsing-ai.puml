@@ -1,0 +1,31 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Parsing & AI Connector Service Components
+
+Container(parsing_ai, "Parsing & AI Connector", "Python/FastAPI + Celery")
+
+Boundary(parsing_ai_boundary, "Parsing & AI") {
+    Component(api, "API Layer", "FastAPI routes", "Accept commands and requests")
+    Component(acl_parsing, "Parsing ACL", "Adapter for portals", "Parse HTML/JSON")
+    Component(acl_ai, "AI Provider Interface", "Abstraction", "Ollama / OpenAI")
+    Component(rag, "RAG Pipeline", "Chunking, Embeddings, Retrieval", "Uses Qdrant")
+    Component(celery_worker, "Celery Worker", "Async tasks", "Parsing, AI generation")
+
+    Rel(api, acl_parsing, "Calls")
+    Rel(api, acl_ai, "Calls")
+    Rel(api, rag, "Calls")
+    Rel(acl_ai, rag, "Gets context")
+    Rel(celery_worker, acl_parsing, "Triggers")
+    Rel(celery_worker, acl_ai, "Triggers")
+}
+
+ContainerDb(qdrant, "Qdrant", "Vector DB")
+Container(rabbitmq, "RabbitMQ", "Task queues")
+Container(redis, "Redis", "AI response cache")
+
+Rel(parsing_ai, qdrant, "Indexes and searches")
+Rel(parsing_ai, rabbitmq, "Publishes and consumes")
+Rel(parsing_ai, redis, "Caches")
+
+@enduml

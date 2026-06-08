@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title AIJobResearcher System Context Diagram
+
+Person(seeker, "Job seeker", "User looking for a job")
+Person(admin, "Administrator", "Manages parsing and AI models")
+
+System(ai_job_researcher, "AIJobResearcher", "Job search, AI recommendations and learning platform")
+
+System_Ext(linkedin, "LinkedIn", "External job portal")
+System_Ext(djinni, "Djinni", "External job portal")
+System_Ext(openai, "OpenAI API", "Commercial AI provider")
+System_Ext(ollama, "Ollama", "Local AI model")
+System_Ext(google_calendar, "Google Calendar", "Calendar for invitations")
+
+Rel(seeker, ai_job_researcher, "Views vacancies, applies, schedules meetings, gets recommendations", "REST")
+Rel(admin, ai_job_researcher, "Manages parsing and settings", "REST")
+Rel(ai_job_researcher, linkedin, "Imports vacancies (parsing)", "HTTPS")
+Rel(ai_job_researcher, djinni, "Imports vacancies (parsing)", "HTTPS")
+Rel(ai_job_researcher, openai, "Generates recommendations (optional)", "HTTPS")
+Rel(ai_job_researcher, ollama, "Generates recommendations (local)", "HTTP")
+Rel(ai_job_researcher, google_calendar, "Creates invitation events", "HTTPS")
+
+@enduml

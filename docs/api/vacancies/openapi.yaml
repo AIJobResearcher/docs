@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: Vacancies Service API
+  description: Manage vacancies, employers, interviewers.
+  version: 1.0.0
+servers:
+  - url: https://api.aijobresearcher.com/v1
+    description: Production server
+paths:
+  /vacancies:
+    get:
+      summary: Search vacancies
+      description: Full‑text search with filtering and pagination. Uses OpenSearch/Elasticsearch.
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search string (title, description, requirements)
+        - name: employer_id
+          in: query
+          schema:
+            type: string
+          description: Filter by employer
+        - name: country
+          in: query
+          schema:
+            type: string
+          description: Filter by country
+        - name: city
+          in: query
+          schema:
+            type: string
+          description: Filter by city
+        - name: salary_min
+          in: query
+          schema:
+            type: integer
+          description: Minimum salary
+        - name: salary_max
+          in: query
+          schema:
+            type: integer
+          description: Maximum salary
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, closed]
+          description: Vacancy status
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            maximum: 100
+            default: 20
+          description: Number of records per page
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Offset for pagination
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [relevance, date, salary_asc, salary_desc]
+          description: Sort field
+      responses:
+        '200':
+          description: Successful response
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+              description: Total number of vacancies matching the query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VacancyPreview'
+                  total:
+                    type: integer
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorised
+        '429':
+          description: Rate limit exceeded
+  /vacancies/{id}:
+    get:
+      summary: Get vacancy details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detailed vacancy information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vacancy'
+        '404':
+          description: Vacancy not found
+  /employers/{id}:
+    get:
+      summary: Get employer information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Employer data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employer'
+  /parsing/import:
+    post:
+      summary: Manually trigger vacancy import (administrator)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: portal
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [linkedin, djinni]
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [full, incremental]
+      responses:
+        '202':
+          description: Import started asynchronously
+        '401':
+          description: Unauthorised
+        '403':
+          description: Access only for administrator
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    VacancyPreview:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        employer_name:
+          type: string
+        salary_min:
+          type: integer
+        salary_max:
+          type: integer
+        currency:
+          type: string
+        location:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+    Vacancy:
+      allOf:
+        - $ref: '#/components/schemas/VacancyPreview'
+        - type: object
+          properties:
+            description:
+              type: string
+            requirements:
+              type: array
+              items:
+                type: string
+            employer:
+              $ref: '#/components/schemas/Employer'
+            status:
+              type: string
+              enum: [open, closed]
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+            version:
+              type: integer
+    Employer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        website:
+          type: string
+        contacts:
+          type: object
+          properties:
+            email:
+              type: string
+            phone:
+              type: string

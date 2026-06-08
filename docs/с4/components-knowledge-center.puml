@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Компоненты сервиса Knowledge Center
+
+Container(knowledge, "Knowledge Center", "Go/Gin")
+
+Boundary(knowledge_boundary, "Knowledge Center") {
+    Component(presentation, "Presentation Layer", "Gin handlers", "REST API")
+    Component(application, "Application Layer", "Use cases", "Создание треков, прогресс")
+    Component(domain, "Domain Layer", "Entities", "LearningTrack, TrackItem, Progress, Skill")
+    Component(infrastructure, "Infrastructure Layer", "Repositories, Event publisher", "PostgreSQL, RabbitMQ")
+
+    Rel(presentation, application, "Вызывает")
+    Rel(application, domain, "Использует")
+    Rel(application, infrastructure, "Сохраняет/публикует")
+}
+
+ContainerDb(postgres, "PostgreSQL", "Knowledge DB")
+Container(rabbitmq, "RabbitMQ", "События")
+
+Rel(knowledge, postgres, "Читает/пишет")
+Rel(knowledge, rabbitmq, "Публикует")
+
+@enduml
