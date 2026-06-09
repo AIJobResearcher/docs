@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # AIJobResearcher - Deploy & Docs Repository
 
 This repository contains everything needed to deploy and document the
@@ -30,41 +28,18 @@ Local documentation deployment uses Docker Compose and requires:
 
 Documentation checks additionally use:
 
-- `npx`
+- `npx` (bundled with Node.js/npm)
 - `yamllint`
+- Docker (for Lychee link checker)
 - Unix-compatible shell utilities: `find` and `xargs`
-
-`npx` is bundled with Node.js/npm. On Windows, install Node.js LTS and
-reopen the terminal if `npx` is not recognized.
 
 Recommended setup by operating system:
 
 | System | Notes |
 | --- | --- |
-| Windows 11 | Install Docker Desktop, Node.js LTS, Git for Windows, and GNU Make. Run `make` commands from Git Bash or WSL so `find` and `xargs` resolve to Unix-compatible tools. |
-| Ubuntu latest stable | Install `make`, Docker, the Docker Compose plugin, Node.js/npm, `yamllint`, and `findutils` from the system package manager. |
-| macOS latest stable | Install Docker Desktop, Node.js LTS, `yamllint`, and GNU Make. If Homebrew installs GNU Make as `gmake`, either run the documented `make` targets with `gmake` or add GNU Make to `PATH` as `make`. |
-
-On Windows, Git for Windows does not install GNU Make. If `make --version`
-prints `bash: make: command not found`, install GNU Make separately, then
-reopen the terminal. If Chocolatey is available:
-
-    choco install make
-
-If Scoop is available:
-
-    scoop install make
-
-If only `winget` is available, do not install `GnuWin32.Make` because it is
-GNU Make 3.81 and does not support this repository's Makefiles. Install MSYS2
-instead, then use an MSYS2 shell:
-
-    winget install --id MSYS2.MSYS2 -e
-    pacman -S --needed make
-
-After reopening the terminal, verify:
-
-    make --version
+| Windows 11 | Install Docker Desktop, Node.js LTS, Git for Windows, and GNU Make. Run `make` commands from Git Bash or WSL. |
+| Ubuntu latest stable | Install `make`, Docker, Docker Compose plugin, Node.js/npm, `yamllint`. |
+| macOS latest stable | Install Docker Desktop, Node.js LTS, `yamllint`, and GNU Make. |
 
 ## Quick start
 
@@ -72,7 +47,7 @@ Show all available root commands:
 
     make help
 
-Build the local documentation image:
+Build the local documentation image and install all dependencies:
 
     make build
 
@@ -80,55 +55,148 @@ Start documentation locally with Docker Compose:
 
     make up
 
-By default, docs are served at <http://127.0.0.1:8000>.
-
-For more details, see the [documentation](./docs/README.md).
-
-## Deployment
-
-The current deployment helper is for serving the documentation site locally
-through Docker Compose.
-
-Run it from the repository root:
-
-    make build
-    make up
-
-This delegates to `deploy/docs/local/Makefile`, builds the documentation image,
-and serves the `docs` directory from a container.
+By default, docs are served at http://127.0.0.1:8000.
 
 Stop and remove the local documentation container:
 
     make down
 
-You can override host and port:
+Override host and port:
 
     make up HOST=0.0.0.0 PORT=8080
 
-The same command can be run directly from the local deployment directory:
+## Available Commands
 
-    make -C deploy/docs/local build
-    make -C deploy/docs/local up
-    make -C deploy/docs/local down
+### Setup
 
-## Commands
+| Command | Description |
+| --- | --- |
+| `make build` | Install all npm dependencies, markdownlint, cucumber-js, pull Lychee Docker image, install yamllint, and build documentation Docker image |
 
-- `make help` - print available root `make` targets.
-- `make lint` - run all documentation checks.
-- `make lint-md` - lint Markdown files with `markdownlint-cli2`.
-- `make lint-links` - check links in Markdown files with
-  `markdown-link-check`.
-- `make lint-yaml` - validate YAML files with `yamllint`.
-- `make bdd` - dry-run Gherkin feature files with Cucumber.
-- `make build` - build the local documentation Docker image.
-- `make up` - start docs locally at `http://HOST:PORT` with Docker Compose.
-- `make down` - stop and remove the local container.
+### Local docs deployment
 
-### Local docs deployment commands
+| Command | Description |
+| --- | --- |
+| `make up` | Start documentation locally at `http://HOST:PORT` (default: localhost:8000) |
+| `make down` | Stop and remove the local container |
+| `make logs` | View container logs |
 
-- `make -C deploy/docs/local help` - print available local docs deployment
-  targets.
-- `make -C deploy/docs/local build` - build the local documentation Docker image.
-- `make -C deploy/docs/local up` - start the local documentation container.
-- `make -C deploy/docs/local down` - stop and remove the local documentation
-  container.
+### Validation
+
+| Command | Description |
+| --- | --- |
+| `make test-md` | Lint Markdown files with markdownlint-cli2 |
+| `make test-yaml` | Validate YAML files with yamllint |
+| `make test-bdd` | Check Gherkin syntax with cucumber-js |
+| `make test-links` | Check links in Markdown with Lychee (Docker) |
+| `make test` | Run all validations (md + yaml + bdd + links) |
+
+### Direct deployment commands
+
+    make -C deploy/docs/local build   # Build documentation image
+    make -C deploy/docs/local up      # Start container
+    make -C deploy/docs/local down    # Stop container
+    make -C deploy/docs/local logs    # View logs
+
+## CI/CD Pipeline
+
+This repository uses GitHub Actions for continuous integration and deployment.
+
+### Continuous Integration (CI) - .github/workflows/ci.yml
+
+Runs on every push to `main` and pull requests:
+
+1. **Lint Markdown** - Check Markdown files with markdownlint-cli2
+2. **Check Links** - Validate links with Lychee Docker image
+3. **Validate YAML** - Check all YAML files with yamllint
+4. **BDD Tests** - Validate Gherkin feature files syntax with cucumber-js
+5. **Generate OpenAPI** (only on push to main) - Create placeholder OpenAPI specs and publish to GitHub Pages
+
+### Continuous Deployment (CD) - .github/workflows/cd.yml
+
+Runs only on push to `main`:
+
+1. **Deploy Infrastructure** - Apply Kubernetes manifests to cluster
+2. **Update Documentation** - Deploy `./docs` to GitHub Pages
+3. **Notify Status** - Report deployment success or failure
+
+## Local Validation
+
+Before pushing changes, run:
+
+    make test
+
+This runs all the same checks as the CI pipeline:
+
+- Markdown linting
+- YAML validation
+- BDD syntax checking
+- Link checking with Lychee
+
+## Project Structure
+
+    .
+    ├── .github/workflows/       # CI/CD pipelines
+    │   ├── ci.yml              # Continuous Integration
+    │   └── cd.yml              # Continuous Deployment
+    ├── deploy/                 # Deployment configurations
+    │   ├── k8s/               # Kubernetes manifests
+    │   └── docs/              # Documentation deployment helpers
+    ├── docs/                  # Documentation source
+    ├── scripts/               # Helper scripts
+    ├── loadtests/             # k6 load testing scenarios
+    ├── Makefile               # Main make commands
+    ├── lychee.toml           # Lychee link checker config
+    ├── .markdownlint.json    # Markdown linting config
+    ├── .yamllint.yaml        # YAML linting config
+    └── cucumber.js           # Cucumber BDD config
+
+## Troubleshooting
+
+### Permission denied errors on Linux/macOS
+
+If you encounter `EACCES` errors during `make build`:
+
+    # Fix npm permissions (recommended)
+    mkdir ~/.npm-global
+    npm config set prefix '~/.npm-global'
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+    source ~/.bashrc
+
+    # Or use sudo (not recommended for production)
+    sudo npm install -g markdownlint-cli2
+
+### Docker not running
+
+Ensure Docker daemon is running:
+
+    docker ps
+
+### Lychee link checker fails
+
+Some external links may be temporarily unavailable. Run with retries:
+
+    docker run --rm -v $(pwd):/input lycheeverse/lychee:latest \
+      --config /input/lychee.toml --retry-wait 2 --max-retries 3 \
+      /input/docs /input/*.md
+
+### Still having issues?
+
+Run the validation step-by-step to identify the problem:
+
+    make test-md      # Check only Markdown
+    make test-yaml    # Check only YAML files
+    make test-bdd     # Check only BDD features
+    make test-links   # Check only links
+
+Or run all checks with verbose output:
+
+    make test
+
+## Contributing
+
+1. Run `make test` locally before committing
+2. Ensure all checks pass
+3. Push to `main` branch or create a pull request
+4. CI pipeline will run automatically on pull requests
+5. CD will deploy to production after merge to `main`

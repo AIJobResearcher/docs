@@ -1,10 +1,8 @@
-<!-- markdownlint-disable MD013 -->
-
 # Technical Requirements for AIJobResearcher
 
-**Version:** 1.0
-**Target load:** 50,000 concurrent active users
-**Application version:** v1.0
+- **Version:** 1.0
+- **Target load:** 50,000 concurrent active users
+- **Application version:** v1.0
 
 ---
 

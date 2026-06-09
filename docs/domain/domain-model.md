@@ -1,10 +1,8 @@
-<!-- markdownlint-disable MD013 -->
-
 # Domain Model for AIJobResearcher
 
 **Version:** 1.0
 
-> **Related documentation:** [Glossary](./glossary.md) |
+> **Related documentation:** [Glossary](../glossary.md) |
 > [Architecture Overview](../architecture-overview.md) |
 > [Technical Requirements](../technical-requirements.md) |
 > [Bounded Contexts](./bounded-contexts/) | [README](../README.md)

@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install markdownlint-cli2 locally
+        run: npm install markdownlint-cli2 --save-dev
+
+      - name: Lint Markdown files
+        run: npx markdownlint-cli2 "docs/**/*.md" --config .markdownlint.json
+
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull Lychee Docker image
+        run: docker pull lycheeverse/lychee:latest
+
+      - name: Check links in documentation
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/input lycheeverse/lychee:latest \
+            --config /input/lychee.toml \
+            /input/docs /input/*.md
+
+  validate-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: sudo apt-get update && sudo apt-get install -y yamllint
+
+      - name: Validate YAML files
+        run: yamllint -c .yamllint.yaml .
+
+  bdd-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install cucumber-js locally
+        run: npm install @cucumber/cucumber --save-dev
+
+      - name: Check Gherkin feature files syntax
+        run: npx cucumber-js --config cucumber.js --format json
+
+  generate-openapi:
+    runs-on: ubuntu-latest
+    needs: [lint-markdown, check-links, validate-yaml, bdd-tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate OpenAPI specifications
+        run: |
+          mkdir -p docs/api/vacancies
+          mkdir -p docs/api/researcher-crm
+          mkdir -p docs/api/parsing-ai-connector
+          mkdir -p docs/api/knowledge-center
+          echo "# OpenAPI specification for Vacancies service" > docs/api/vacancies/openapi.yaml
+          echo "# OpenAPI specification for Researcher CRM service" > docs/api/researcher-crm/openapi.yaml
+          echo "# OpenAPI specification for Parsing AI Connector service" > docs/api/parsing-ai-connector/openapi.yaml
+          echo "# OpenAPI specification for Knowledge Center service" > docs/api/knowledge-center/openapi.yaml
+
+      - name: Publish OpenAPI specifications to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/api
+          destination_dir: api
+          keep_files: true

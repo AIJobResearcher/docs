@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # Domain Vision: AIJobResearcher
 
 ## 1. Business Goals

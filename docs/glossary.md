@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # Glossary (Ubiquitous Language)
 
 Main terms of the AIJobResearcher project. Used in code, events, API and

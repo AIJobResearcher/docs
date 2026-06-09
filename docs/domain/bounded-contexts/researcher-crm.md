@@ -1,8 +1,8 @@
 # Bounded Context: Job Search & CRM (ResearcherCrm Service)
 
-> **Related documentation:** [Glossary](../glossary.md) |
-> [Architecture Overview](../architecture-overview.md) |
-> [Domain Model](../domain-model.md) | [README](../README.md)
+> **Related documentation:** [Glossary](../../glossary.md) |
+> [Architecture Overview](../../architecture-overview.md) |
+> [Domain Model](../domain-model.md) | [README](../../README.md)
 
 ## Responsibility
 

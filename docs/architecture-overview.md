@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 MD033 -->
-
 # Architecture Overview for AIJobResearcher
 
 **Version:** 1.0

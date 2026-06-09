@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # Event Storming: AI & Parsing
 
 ## Commands (triggers)

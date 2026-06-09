@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # Context Map
 
 The project defines four main bounded contexts. Their relationships
@@ -7,12 +5,12 @@ The project defines four main bounded contexts. Their relationships
 
 ## 1. Bounded Contexts
 
-| Context | Service | Main responsibility |
-| --- | --- | --- |
-| Vacancy Management | Vacancies (PHP/Laravel) | Import, store, manage vacancies, employers, interviewers |
-| Job Search & CRM | ResearcherCrm (PHP/Symfony) | Job seeker profiles, desired jobs, replies, meetings, messages |
-| AI & Parsing | Parsing&AIConnector (Python) | Portal parsing, AI recommendations, RAG |
-| Learning Management | KnowledgeCenter (Go) | Long‑term learning plans, tracks, progress |
+| Context             | Service                      | Main responsibility                                            |
+|---------------------|------------------------------|----------------------------------------------------------------|
+| Vacancy Management  | Vacancies (PHP/Laravel)      | Import, store, manage vacancies, employers, interviewers       |
+| Job Search & CRM    | ResearcherCrm (PHP/Symfony)  | Job seeker profiles, desired jobs, replies, meetings, messages |
+| AI & Parsing        | Parsing&AIConnector (Python) | Portal parsing, AI recommendations, RAG                        |
+| Learning Management | KnowledgeCenter (Go)         | Long‑term learning plans, tracks, progress                     |
 
 ## 2. Interactions between contexts
 
@@ -40,7 +38,7 @@ The project defines four main bounded contexts. Their relationships
 - **Protocol:** RabbitMQ (events)
 - **Events:** `ReplyCreated`, `MeetCompleted`, `MeetCancelled`,
   `JobPreferencesUpdated`
-- **Purpose:** Pass information about job seeker behaviour (replies, meetings,
+- **Purpose:** Pass information about jobseeker behavior (replies, meetings,
   preferences) to form learning recommendations.
 
 ### 2.4 Learning Management → Job Search & CRM
@@ -49,7 +47,7 @@ The project defines four main bounded contexts. Their relationships
 - **Protocol:** RabbitMQ (events) + REST (learning plan requests)
 - **Events:** `DevelopmentRecommendationGenerated`, `LearningTrackCreated`
 - **Purpose:** Provide development recommendations and learning plans back to
-  CRM for display to the job seeker.
+  CRM for display to the jobseeker.
 
 ### 2.5 Job Search & CRM → AI & Parsing
 
@@ -75,12 +73,12 @@ The project defines four main bounded contexts. Their relationships
 
 ## 3. Relationship types
 
-| Relationship | Description |
-| --- | --- |
-| **Customer‑Supplier** | Upstream context provides data/functionality, downstream consumes. Upstream changes require coordination. |
-| **Publisher‑Subscriber** | Upstream publishes events, downstream subscribes. Loose coupling, eventual consistency. |
-| **Conformist** | Downstream context fully relies on the upstream model, often due to technical limitations (e.g., portal import). |
-| **Anti‑Corruption Layer (ACL)** | Protects downstream from upstream changes (used for integration with external portals and AI providers). |
+| Relationship                    | Description                                                                                                      |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------|
+| **Customer‑Supplier**           | Upstream context provides data/functionality, downstream consumes. Upstream changes require coordination.        |
+| **Publisher‑Subscriber**        | Upstream publishes events, downstream subscribes. Loose coupling, eventual consistency.                          |
+| **Conformist**                  | Downstream context fully relies on the upstream model, often due to technical limitations (e.g., portal import). |
+| **Anti‑Corruption Layer (ACL)** | Protects downstream from upstream changes (used for integration with external portals and AI providers).         |
 
 ## 4. ACL (Anti‑Corruption Layer)
 
@@ -127,6 +125,6 @@ graph TD
 
 - [Architecture Overview](architecture-overview.md)
 - [Domain Model](domain/domain-model.md)
-- [Bounded Contexts](domain/bounded-contexts/)
+- [Bounded Contexts](./domain/bounded-contexts)
 - [Glossary](glossary.md)
-- [C4 diagrams](./c4/)
+- [C4 diagrams](./c4)

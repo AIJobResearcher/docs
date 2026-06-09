@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD013 -->
-
 # Event Storming: Knowledge & Learning
 
 ## Commands (triggers)
