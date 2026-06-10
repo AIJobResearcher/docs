@@ -1,5 +1,9 @@
 # AIJobResearcher - Deploy & Docs Repository
 
+[![CI](https://github.com/AIJobResearcher/docs/actions/workflows/ci.yml/badge.svg)](https://github.com/AIJobResearcher/docs/actions/workflows/ci.yml)
+[![GitHub Pages](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://AIJobResearcher.github.io/docs/)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 This repository contains everything needed to deploy and document the
 AIJobResearcher platform.
 
