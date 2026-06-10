@@ -1,0 +1,764 @@
+asyncapi: 2.6.0
+info:
+  title: AIJobResearcher Domain Events
+  version: 1.0.0
+  description: Asynchronous events published by AIJobResearcher microservices.
+
+channels:
+  vacancies/events:
+    description: Vacancies service events
+    publish:
+      summary: Vacancy management events
+      message:
+        oneOf:
+          - $ref: '#/components/messages/VacancyImported'
+          - $ref: '#/components/messages/VacancyUpdated'
+          - $ref: '#/components/messages/VacancyClosed'
+          - $ref: '#/components/messages/InterviewerAssigned'
+          - $ref: '#/components/messages/ExternalPortalUnreachable'
+
+  researcher/events:
+    description: ResearcherCrm service events
+    publish:
+      summary: Job seeker CRM events
+      message:
+        oneOf:
+          - $ref: '#/components/messages/ResearcherRegistered'
+          - $ref: '#/components/messages/JobPreferencesUpdated'
+          - $ref: '#/components/messages/ReplyCreated'
+          - $ref: '#/components/messages/ReplyWithdrawn'
+          - $ref: '#/components/messages/MeetScheduled'
+          - $ref: '#/components/messages/MeetCompleted'
+          - $ref: '#/components/messages/MeetCancelled'
+          - $ref: '#/components/messages/MessageSent'
+          - $ref: '#/components/messages/AccountDeleted'
+          - $ref: '#/components/messages/DataExported'
+
+  parsing-ai/events:
+    description: Parsing&AIConnector service events
+    publish:
+      summary: AI and parsing events
+      message:
+        oneOf:
+          - $ref: '#/components/messages/EmployerImported'
+          - $ref: '#/components/messages/RecommendationGenerated'
+          - $ref: '#/components/messages/ParsingFailed'
+          - $ref: '#/components/messages/AITokenBudgetExceeded'
+          - $ref: '#/components/messages/ParsingSuspended'
+
+  knowledge/events:
+    description: KnowledgeCenter service events
+    publish:
+      summary: Learning events
+      message:
+        oneOf:
+          - $ref: '#/components/messages/LearningTrackCreated'
+          - $ref: '#/components/messages/LearningTrackCompleted'
+          - $ref: '#/components/messages/ProgressUpdated'
+          - $ref: '#/components/messages/DevelopmentRecommendationGenerated'
+          - $ref: '#/components/messages/AIConspectGenerated'
+
+components:
+  messages:
+    VacancyImported:
+      summary: New vacancy imported from a portal
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: VacancyImported
+          event_version:
+            type: integer
+            minimum: 1
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              vacancy_id:
+                type: string
+              employer_id:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              requirements:
+                type: array
+                items:
+                  type: string
+              salary:
+                type: object
+                properties:
+                  min:
+                    type: number
+                  max:
+                    type: number
+                  currency:
+                    type: string
+              portal_id:
+                type: string
+    EmployerImported:
+      summary: New employer imported from a portal
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: EmployerImported
+          event_version:
+            type: integer
+            minimum: 1
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              employer_id:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              website:
+                type: string
+              portal_id:
+                type: string
+    VacancyUpdated:
+      summary: Vacancy updated (text, salary, date changed)
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: VacancyUpdated
+          event_version:
+            type: integer
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              vacancy_id:
+                type: string
+              old_version:
+                type: integer
+              new_version:
+                type: integer
+              changes:
+                type: object
+    VacancyClosed:
+      summary: Vacancy closed on the portal
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: VacancyClosed
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              vacancy_id:
+                type: string
+              closed_at:
+                type: string
+                format: date-time
+    InterviewerAssigned:
+      summary: Interviewer linked to a vacancy
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: InterviewerAssigned
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              interviewer_id:
+                type: string
+              vacancy_id:
+                type: string
+    ExternalPortalUnreachable:
+      summary: External portal is unreachable
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ExternalPortalUnreachable
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              portal_id:
+                type: string
+              error_message:
+                type: string
+    ResearcherRegistered:
+      summary: New job seeker registered
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ResearcherRegistered
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              researcher_id:
+                type: string
+              email:
+                type: string
+    JobPreferencesUpdated:
+      summary: Job seeker's desired jobs updated
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: JobPreferencesUpdated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              researcher_id:
+                type: string
+              desired_job_ids:
+                type: array
+                items:
+                  type: string
+    ReplyCreated:
+      summary: Application to a vacancy created
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ReplyCreated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              reply_id:
+                type: string
+              researcher_id:
+                type: string
+              vacancy_id:
+                type: string
+    ReplyWithdrawn:
+      summary: Application withdrawn by the job seeker
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ReplyWithdrawn
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              reply_id:
+                type: string
+              researcher_id:
+                type: string
+              vacancy_id:
+                type: string
+    MeetScheduled:
+      summary: Meeting (interview) scheduled
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: MeetScheduled
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              meet_id:
+                type: string
+              researcher_id:
+                type: string
+              interviewer_id:
+                type: string
+              vacancy_id:
+                type: string
+              planned_datetime:
+                type: string
+                format: date-time
+    MeetCompleted:
+      summary: Meeting completed
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: MeetCompleted
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              meet_id:
+                type: string
+              feedback:
+                type: string
+    MeetCancelled:
+      summary: Meeting cancelled
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: MeetCancelled
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              meet_id:
+                type: string
+              reason:
+                type: string
+    MessageSent:
+      summary: Message sent
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: MessageSent
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              message_id:
+                type: string
+              meet_id:
+                type: string
+              sender_type:
+                type: string
+                enum: [researcher, interviewer]
+              content:
+                type: string
+    AccountDeleted:
+      summary: Job seeker account deleted (GDPR)
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: AccountDeleted
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              researcher_id:
+                type: string
+              deleted_at:
+                type: string
+                format: date-time
+    DataExported:
+      summary: Job seeker data exported (GDPR)
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: DataExported
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              researcher_id:
+                type: string
+              exported_at:
+                type: string
+                format: date-time
+    RecommendationGenerated:
+      summary: AI recommendation generated
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: RecommendationGenerated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              recommendation_id:
+                type: string
+              researcher_id:
+                type: string
+              target_type:
+                type: string
+                enum: [vacancy, job, resume, preparation]
+              target_id:
+                type: string
+              text:
+                type: string
+    ParsingFailed:
+      summary: Error during portal parsing
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ParsingFailed
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              portal_id:
+                type: string
+              error_message:
+                type: string
+    AITokenBudgetExceeded:
+      summary: AI token budget exceeded (OpenAI)
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: AITokenBudgetExceeded
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              provider:
+                type: string
+                default: openai
+              budget_limit:
+                type: number
+              used:
+                type: number
+    ParsingSuspended:
+      summary: Parsing automatically suspended (low success rate)
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ParsingSuspended
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              portal_id:
+                type: string
+              suspension_minutes:
+                type: integer
+              reason:
+                type: string
+    LearningTrackCreated:
+      summary: Long‑term learning plan (track) created
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: LearningTrackCreated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              track_id:
+                type: string
+              researcher_id:
+                type: string
+              goal_job_id:
+                type: string
+    LearningTrackCompleted:
+      summary: Learning track completed
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: LearningTrackCompleted
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              track_id:
+                type: string
+              researcher_id:
+                type: string
+              completed_at:
+                type: string
+                format: date-time
+    ProgressUpdated:
+      summary: Learning progress updated
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: ProgressUpdated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              track_item_id:
+                type: string
+              new_status:
+                type: string
+                enum: [not_started, in_progress, done]
+              score:
+                type: integer
+    DevelopmentRecommendationGenerated:
+      summary: Skill development recommendation generated
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: DevelopmentRecommendationGenerated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              recommendation_id:
+                type: string
+              researcher_id:
+                type: string
+              description:
+                type: string
+              priority:
+                type: string
+                enum: [low, medium, high]
+    AIConspectGenerated:
+      summary: AI summary generated on request
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: AIConspectGenerated
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              request_id:
+                type: string
+              topic:
+                type: string
+              conspect_text:
+                type: string

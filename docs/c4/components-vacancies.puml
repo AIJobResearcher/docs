@@ -1,0 +1,27 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Vacancies Service Components
+
+Container(vacancies, "Vacancies Service", "PHP/Laravel")
+
+Boundary(vacancies_boundary, "Vacancies") {
+    Component(presentation, "Presentation Layer", "Controllers", "Handles HTTP requests")
+    Component(application, "Application Layer", "Commands/Queries", "Orchestrates use cases")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Employer, Vacancy, Interviewer")
+    Component(infrastructure, "Infrastructure Layer", "Repositories, Event publishers", "PostgreSQL, Redis, RabbitMQ")
+
+    Rel(presentation, application, "Calls")
+    Rel(application, domain, "Uses")
+    Rel(application, infrastructure, "Saves / publishes")
+}
+
+ContainerDb(postgres, "PostgreSQL", "Vacancies DB")
+Container(rabbitmq, "RabbitMQ", "Events")
+Container(redis, "Redis", "Cache")
+
+Rel(vacancies, postgres, "Reads / writes")
+Rel(vacancies, rabbitmq, "Publishes")
+Rel(vacancies, redis, "Caches")
+
+@enduml

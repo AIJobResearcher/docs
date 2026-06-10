@@ -1,0 +1,89 @@
+openapi: 3.0.3
+info:
+  title: Parsing & AI Connector API
+  description: Portal parsing, AI recommendation generation, task management.
+  version: 1.0.0
+servers:
+  - url: https://api.aijobresearcher.com/v1
+    description: Production server
+paths:
+  /ai/recommendations:
+    post:
+      summary: Request an AI recommendation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                type:
+                  type: string
+                  enum: [vacancy, resume, strategy, preparation]
+                context:
+                  type: string
+                target_id:
+                  type: string
+                  description: ID of vacancy or resume (optional)
+      responses:
+        '202':
+          description: Request accepted, result available via polling or WebSocket
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Task URL (/tasks/{id})
+        '400':
+          description: Invalid request
+  /tasks/{id}:
+    get:
+      summary: Get status and result of an AI task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed]
+                  result:
+                    type: object
+        '202':
+          description: Task is still running
+  /parsing/run:
+    post:
+      summary: Trigger portal parsing (administrator)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: portal
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [linkedin, djinni]
+        - name: mode
+          in: query
+          schema:
+            type: string
+            enum: [full, incremental]
+            default: incremental
+      responses:
+        '202':
+          description: Parsing started asynchronously
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

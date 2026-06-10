@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: KnowledgeCenter API
+  description: Manage learning tracks, progress, development recommendations.
+  version: 1.0.0
+servers:
+  - url: https://api.aijobresearcher.com/v1
+    description: Production server
+paths:
+  /knowledge/plan:
+    get:
+      summary: Get learning plan (track) for a job seeker
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Job seeker ID (must match authenticated user)
+      responses:
+        '200':
+          description: Learning plan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningTrack'
+        '403':
+          description: Access to another user's plan is forbidden
+  /knowledge/tracks/{track_id}/items/{item_id}/complete:
+    post:
+      summary: Mark a track item as completed
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: track_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Marked as completed
+        '400':
+          description: Cannot mark (previous item not completed)
+  /knowledge/recommendations/development:
+    get:
+      summary: Get development recommendations
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DevelopmentRecommendation'
+  /knowledge/conspect:
+    get:
+      summary: Request an AI summary on a topic
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: topic
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Topic (e.g., SOLID principles)
+        - name: async
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: If true, returns 202 and a task
+      responses:
+        '200':
+          description: Synchronous response (short summary)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conspect:
+                    type: string
+        '202':
+          description: Asynchronous mode
+          headers:
+            Location:
+              schema:
+                type: string
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LearningTrack:
+      type: object
+      properties:
+        id:
+          type: string
+        researcher_id:
+          type: string
+        goal_job_id:
+          type: string
+        status:
+          type: string
+          enum: [active, completed]
+        progress_percent:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrackItem'
+    TrackItem:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: string
+          enum: [course, article, practice]
+        resource_link:
+          type: string
+        order_number:
+          type: integer
+        is_optional:
+          type: boolean
+        status:
+          type: string
+          enum: [not_started, in_progress, done]
+    DevelopmentRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]

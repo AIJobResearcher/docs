@@ -1,0 +1,24 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Frontend Components
+
+Container(frontend, "Frontend", "React/Next.js")
+
+Boundary(frontend_boundary, "Frontend") {
+    Component(pages, "Pages & Routes", "Next.js pages", "Handle URL routing")
+    Component(components, "UI Components", "React", "Buttons, forms, cards")
+    Component(store, "State Management", "Redux/Context", "Application state")
+    Component(api_client, "API Client", "Fetch/Axios", "Backend calls")
+
+    Rel(pages, components, "Uses")
+    Rel(pages, store, "Uses")
+    Rel(pages, api_client, "Calls")
+    Rel(components, store, "Subscribes to")
+}
+
+System_Ext(backend, "Backend Services", "Vacancies, CRM, AI, Knowledge")
+
+Rel(frontend, backend, "HTTP", "REST API")
+
+@enduml

@@ -1,0 +1,114 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+early_access: false
+
+reviews:
+  # Review mode: 'chill' (lighter feedback) or 'assertive' (more detailed)
+  profile: "assertive"
+
+  # Auto-approve PR after all comments are resolved
+  request_changes_workflow: true
+
+  # Generate PR summary
+  high_level_summary: true
+  # Place summary in walkthrough comment instead of description
+  high_level_summary_in_walkthrough: true
+  # Placeholder replaced with summary
+  high_level_summary_placeholder: "@coderabbitai summary"
+
+  # INSTRUCTION FOR SUMMARY FORMAT
+  high_level_summary_instructions: |
+    Create a technical PR summary with the following sections:
+
+    1. **📝 What changed** - Brief overview (2-3 sentences) explaining what was changed and why.
+    2. **🎯 Domain events affected** - List any new/modified domain events with their version changes (old vs new). Mention if the change is breaking.
+    3. **🔌 API changes** - Note any OpenAPI endpoint changes (`method /path`), marking added (➕), modified (✏️), or deprecated (❌).
+    4. **📦 Services affected** - List which services (Vacancies, ResearcherCrm, Parsing&AIConnector, KnowledgeCenter) need redeployment and the order.
+    5. **⚠️ Breaking changes** - Explicitly call out any breaking changes with a migration path.
+    6. **🧪 Testing** - Mention BDD scenarios (Gherkin features) that were added or updated.
+    7. **📊 Contributor Summary** - A table showing contributions (lines of code added, removed, files changed).
+
+    Format as Markdown. Keep technical but concise. Use bullet points for readability.
+
+  # Include sequence diagrams for flow visualization
+  sequence_diagrams: true
+  # Estimate review effort
+  estimate_review_effort: true
+  # Assess how changes address linked issues
+  assess_linked_issues: true
+  # Suggest labels for PR
+  suggested_labels: true
+  # Auto-apply suggested labels
+  auto_apply_labels: true
+  # Suggest reviewers
+  suggested_reviewers: true
+  # Auto-assign suggested reviewers
+  auto_assign_reviewers: false
+  # Include review status
+  review_status: true
+  # Include review details (ignored files, extra context, etc.)
+  review_details: true
+
+  # Set commit status during review
+  commit_status: true
+  # Fail commit status if review cannot be completed
+  fail_commit_status: true
+  # Collapse walkthrough comment for cleanliness
+  collapse_walkthrough: true
+  # Include changed files summary
+  changed_files_summary: true
+
+  # --- PATH FILTERS (IMPORTANT!) ---
+  # Exclude documentation and test files from deep analysis
+  path_filters:
+    - "!docs/**"
+    - "!**/*.feature"
+    - "!**/*.md"
+    - "!**/openapi.yaml"
+    - "!**/events.yaml"
+    - "!**/*.test.js"
+    - "!**/*.spec.ts"
+
+  # --- PATH-SPECIFIC INSTRUCTIONS FOR YOUR PROJECT ---
+  path_instructions:
+    - path: "**/ResearcherCrm/**"
+      instructions: |
+        This is a PHP Symfony service for the Job Search & CRM bounded context.
+        - Check for Symfony best practices, Doctrine ORM optimization, and proper event publishing.
+        - Ensure `researcher_id` is used for multi-tenancy isolation as per ADR-016.
+        - Verify outbox pattern for event publishing.
+    - path: "**/Vacancies/**"
+      instructions: |
+        This is a PHP Laravel service for the Vacancy Management bounded context.
+        - Verify Laravel patterns, PostgreSQL indexing for search performance.
+        - Ensure events (`VacancyImported`, `VacancyUpdated`) are published with correct `event_version`.
+        - Check OpenSearch/Elasticsearch sync logic.
+    - path: "**/Parsing&AIConnector/**"
+      instructions: |
+        This is a Python service for AI and Parsing.
+        - Validate Celery async patterns, RAG pipeline implementation, and Qdrant vector DB queries.
+        - Check for proper implementation of the Anti-Corruption Layer (ACL) for external portals.
+        - Verify caching strategy (Redis) for AI responses.
+    - path: "**/KnowledgeCenter/**"
+      instructions: |
+        This is a Go service for Learning Management.
+        - Check Go concurrency patterns (goroutines), PostgreSQL transactions.
+        - Ensure learning tracks and progress logic is correct.
+        - Verify RabbitMQ consumer implementation.
+    - path: "deploy/k8s/**"
+      instructions: |
+        These are Kubernetes deployment manifests.
+        - Verify HPA (Horizontal Pod Autoscaler) settings, resource limits (requests/limits).
+        - Check RabbitMQ, PostgreSQL, Redis configurations.
+        - Ensure proper secrets management.
+
+  # Auto-review settings
+  auto_review:
+    enabled: true
+    ignore_title_keywords: ["WIP", "Draft", "WIP:"]
+    drafts: false
+    base_branches: ["main", "develop", "master"]
+
+# Chat settings
+chat:
+  auto_reply: true

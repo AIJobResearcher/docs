@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  docs:
+    build:
+      context: ../../..
+      dockerfile: deploy/docs/local/Dockerfile
+    container_name: aijobresearcher-docs
+    ports:
+      - "${HOST:-127.0.0.1}:${PORT:-8000}:8000"
+    volumes:
+      - ../../..:/docs
+    restart: unless-stopped

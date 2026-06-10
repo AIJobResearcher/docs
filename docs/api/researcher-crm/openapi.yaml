@@ -1,0 +1,289 @@
+openapi: 3.0.3
+info:
+  title: Researcher CRM API
+  description: Manage job seeker profile, applications, meetings, messages.
+  version: 1.0.0
+servers:
+  - url: https://api.aijobresearcher.com/v1
+    description: Production server
+paths:
+  /researchers:
+    post:
+      summary: Register a job seeker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearcherInput'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Researcher'
+  /researchers/{id}:
+    get:
+      summary: Get job seeker profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Researcher'
+        '403':
+          description: Access forbidden (other user's profile)
+    delete:
+      summary: Delete account (GDPR)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Account deleted
+        '403':
+          description: Cannot delete another user's account
+  /researchers/{id}/export:
+    get:
+      summary: Export data (GDPR)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: JSON with all job seeker data
+  /jobs:
+    post:
+      summary: Add a desired job
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /replies:
+    post:
+      summary: Apply to a vacancy
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                vacancy_id:
+                  type: string
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+        '400':
+          description: Invalid data or already applied
+  /replies/{reply_id}:
+    delete:
+      summary: Withdraw an application
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: reply_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Withdrawn
+  /interviews/schedule:
+    post:
+      summary: Schedule a meeting
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                vacancy_id:
+                  type: string
+                interviewer_id:
+                  type: string
+                planned_datetime:
+                  type: string
+                  format: date-time
+      responses:
+        '202':
+          description: Meeting scheduled asynchronously
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL to track status
+        '400':
+          description: Error (application not approved or interviewer unavailable)
+  /meets/{meet_id}:
+    delete:
+      summary: Cancel a meeting
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: meet_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Cancelled
+  /messages:
+    post:
+      summary: Send a message
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                meet_id:
+                  type: string
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Message sent
+  /analytics/replies:
+    get:
+      summary: Reply analytics for the job seeker
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, year]
+          default: month
+      responses:
+        '200':
+          description: Statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_replies:
+                    type: integer
+                  approved:
+                    type: integer
+                  rejected:
+                    type: integer
+                  conversion_rate:
+                    type: number
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ResearcherInput:
+      type: object
+      required: [full_name, email]
+      properties:
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        resume_link:
+          type: string
+          format: uri
+    Researcher:
+      allOf:
+        - $ref: '#/components/schemas/ResearcherInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+    JobInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 5
+        criteria:
+          type: object
+    Job:
+      allOf:
+        - $ref: '#/components/schemas/JobInput'
+        - type: object
+          properties:
+            id:
+              type: string
+            status:
+              type: string
+              enum: [active, filled, archived]
+    Reply:
+      type: object
+      properties:
+        id:
+          type: string
+        researcher_id:
+          type: string
+        vacancy_id:
+          type: string
+        applied_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [pending, approved, rejected, withdrawn]
+        interview_stage:
+          type: string
