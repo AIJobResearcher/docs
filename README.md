@@ -9,8 +9,6 @@ AIJobResearcher platform.
   diagrams, scenarios.
 - [Deployment](./deploy/) – local documentation deployment helpers.
 - [CI/CD](./.github/workflows/) – GitHub Actions pipelines.
-- [Scripts](./scripts/) – helper utilities.
-- [Load tests](./loadtests/) – k6 scenarios.
 
 ## Requirements
 
@@ -143,8 +141,6 @@ This runs all the same checks as the CI pipeline:
     │   ├── k8s/               # Kubernetes manifests
     │   └── docs/              # Documentation deployment helpers
     ├── docs/                  # Documentation source
-    ├── scripts/               # Helper scripts
-    ├── loadtests/             # k6 load testing scenarios
     ├── Makefile               # Main make commands
     ├── lychee.toml           # Lychee link checker config
     ├── .markdownlint.json    # Markdown linting config

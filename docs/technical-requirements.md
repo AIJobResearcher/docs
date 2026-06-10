@@ -193,7 +193,6 @@ multi‑region.
 
 ## 6. Performance Testing Plan
 
-- **Tool:** k6 (scripts in `/loadtests`).
 - **Scenarios:**
   - Read‑heavy: search vacancies (90% traffic)
   - Write‑heavy: create replies and meetings
