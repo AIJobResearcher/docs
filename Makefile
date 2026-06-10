@@ -69,7 +69,7 @@ help:
 	@echo "  down         - Stop documentation container"
 	@echo "  logs         - View container logs"
 	@echo ""
-	@echo "Validation:"
+	@echo "Validations:"
 	@echo "  test-md      - Lint Markdown files"
 	@echo "  test-yaml    - Validate YAML files"
 	@echo "  test-bdd     - Check Gherkin syntax"
