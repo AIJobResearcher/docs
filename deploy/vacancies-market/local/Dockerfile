@@ -9,7 +9,8 @@ RUN apk add --no-cache \
     libzip-dev \
     git \
     unzip \
-    oniguruma-dev
+    oniguruma-dev \
+    bash
 
 RUN docker-php-ext-install \
     pdo_pgsql \
@@ -24,7 +25,13 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && mkdir -p storage/logs \
+    && mkdir -p storage/app/public \
+    && mkdir -p bootstrap/cache \
+    && mkdir -p public
+
+RUN composer install --no-interaction --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage \
