@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    container_name: vacancies-market-app
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8001
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=vacancies_market
+      - DB_USERNAME=vacancies_user
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_VHOST=/
+      - RABBITMQ_LOGIN=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    networks:
+      - vacancies-market-network
+    volumes:
+      - .:/var/www
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: vacancies-market-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=vacancies_market
+      - POSTGRES_USER=vacancies_user
+      - POSTGRES_PASSWORD=secret
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vacancies-market-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vacancies_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vacancies-market-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - vacancies-market-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: vacancies-market-rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - vacancies-market-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  vacancies-market-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

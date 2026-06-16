@@ -110,6 +110,117 @@ paths:
                 $ref: '#/components/schemas/Vacancy'
         '404':
           description: Vacancy not found
+  /portals:
+    get:
+      summary: Get portals collections
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search string (title, description, requirements)
+        - name: employer_id
+          in: query
+          schema:
+            type: string
+          description: Filter by employer
+        - name: country
+          in: query
+          schema:
+            type: string
+          description: Filter by country
+      responses:
+        '200':
+          description: Portals list collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Portal'
+                  total:
+                    type: integer
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorised
+  /jobs:
+    get:
+      summary: Get jobs collections
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search string (title, description, requirements)
+        - name: employer_id
+          in: query
+          schema:
+            type: string
+          description: Filter by employer
+        - name: country
+          in: query
+          schema:
+            type: string
+          description: Filter by country
+      responses:
+        '200':
+          description: Jobs list collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  total:
+                    type: integer
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorised
+  /countries:
+    get:
+      summary: Get countries collections
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search string (title, description, requirements)
+        - name: employer_id
+          in: query
+          schema:
+            type: string
+          description: Filter by employer
+        - name: country
+          in: query
+          schema:
+            type: string
+          description: Filter by country
+      responses:
+        '200':
+          description: Countries list collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Country'
+                  total:
+                    type: integer
+        '400':
+          description: Invalid request parameters
+        '401':
+          description: Unauthorised
   /employers/{id}:
     get:
       summary: Get employer information
@@ -126,6 +237,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employer'
+        '404':
+          description: Employer not found
   /parsing/import:
     post:
       summary: Manually trigger vacancy import (administrator)
@@ -220,3 +333,47 @@ components:
               type: string
             phone:
               type: string
+    Portal:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        website:
+          type: string
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        employer_id:
+          type: string
+        location:
+          type: string
+        salary_min:
+          type: integer
+        salary_max:
+          type: integer
+        currency:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Country:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+        region:
+          type: string
