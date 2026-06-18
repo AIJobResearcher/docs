@@ -137,4 +137,4 @@ Manage job seeker profile, desired jobs, replies, meetings, messages, analytics.
 ## Implementation
 
 - Service: `ResearcherCrm`
-- Technologies: PHP 8.3, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis
+- Technologies: PHP 8.5, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis

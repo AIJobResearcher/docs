@@ -30,8 +30,8 @@ Full description: `/docs/domain/domain-vision.md`
 | # | Service | Stack | Notes |
 | --- | --- | --- | --- |
 | 1 | Deploy & Docs | DevOps | Docker Compose, K8s, GitHub Actions, ADR |
-| 2 | Vacancies | PHP 8.3, Laravel 11,<br>PostgreSQL 16, Redis | employers, vacancies,<br>interviewers, import |
-| 3 | ResearcherCrm | PHP 8.3, Symfony 7.1,<br>Doctrine ORM, PostgreSQL 16,<br>Redis | job seekers, desired jobs,<br>replies, meetings, messages,<br>analytics |
+| 2 | Vacancies | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | employers, vacancies,<br>interviewers, import |
+| 3 | ResearcherCrm | PHP 8.5, Symfony 7.1,<br>Doctrine ORM, PostgreSQL 16,<br>Redis | job seekers, desired jobs,<br>replies, meetings, messages,<br>analytics |
 | 4 | Parsing&AIConnector | Python 3.12, FastAPI,<br>Celery, RabbitMQ | portal parsing, AI models,<br>recommendations |
 | 5 | Frontend | React 18, Next.js 14,<br>TypeScript | user interface |
 | 6 | KnowledgeCenter | Go 1.22, Gin,<br>PostgreSQL 16, RabbitMQ | learning tracks, progress,<br>dev recommendations |
