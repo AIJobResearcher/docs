@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+# Cleanup function for temporary directory
+cleanup() {
+    if [ -n "${TMP_DIR:-}" ] && [ -d "$TMP_DIR" ]; then
+        rm -rf "$TMP_DIR"
+    fi
+}
+trap cleanup EXIT
+
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 RED='\033[0;31m'
@@ -66,6 +74,50 @@ echo -e "  ${GREEN}Moved Dockerfile → deploy/${NC}"
 echo -e "  ${GREEN}Moved nginx.conf → deploy/${NC}"
 echo -e "  ${BLUE}docker-compose.yml → ./${NC}"
 echo ""
+
+# ============================================
+# Step 2.5: Copy docs
+# ============================================
+
+echo -e "${BLUE}📚 Step 2.5: Copying \`docs/\` directory from repository root...${NC}"
+TMP_DIR=$(mktemp -d)
+REPO_ARCHIVE="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.zip"
+
+echo -n "  Downloading repository archive... "
+if curl -sSL --fail "$REPO_ARCHIVE" -o "$TMP_DIR/repo.zip" 2>/dev/null; then
+    echo -e "${GREEN}done${NC}"
+else
+    echo -e "${YELLOW}skipped (could not download archive)${NC}"
+fi
+
+if [ -f "$TMP_DIR/repo.zip" ]; then
+    echo -n "  Extracting docs/ from archive... "
+    if unzip -q "$TMP_DIR/repo.zip" -d "$TMP_DIR" 2>/dev/null; then
+        echo -e "${GREEN}done${NC}"
+        SRC_DIR="$TMP_DIR/${REPO_NAME}-${BRANCH}/docs"
+        if [ -d "$SRC_DIR" ]; then
+            echo -n "  Copying docs/ to project root... "
+            mkdir -p ./docs
+            if rsync -a --delete "$SRC_DIR/" ./docs/ 2>/dev/null; then
+                echo -e "${GREEN}done${NC}"
+            else
+                echo -e "${YELLOW}rsync failed, clearing and retrying...${NC}"
+                rm -rf ./docs
+                mkdir -p ./docs
+                if cp -r "$SRC_DIR"/* ./docs/ 2>/dev/null; then
+                    echo -e "${GREEN}copied (fallback)${NC}"
+                else
+                    echo -e "${RED}failed to copy docs/${NC}"
+                fi
+            fi
+        else
+            echo -e "${YELLOW}no docs/ directory found in archive, skipping${NC}"
+        fi
+    else
+        echo -e "${YELLOW}failed to extract archive${NC}"
+    fi
+fi
+
 
 # ============================================
 # Step 3: Create required directories

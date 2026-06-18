@@ -100,4 +100,4 @@ Manage vacancies, employers, interviewers; import data from external portals
 ## Implementation
 
 - Service: `Vacancies`
-- Technologies: PHP 8.3, Laravel 11, PostgreSQL 16, Redis
+- Technologies: PHP 8.5, Laravel 13, PostgreSQL 16, Redis
