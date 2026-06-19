@@ -48,19 +48,19 @@ paths:
             type: string
             enum: [open, closed]
           description: Vacancy status
-        - name: limit
+        - name: per_page
           in: query
           schema:
             type: integer
             maximum: 100
             default: 20
           description: Number of records per page
-        - name: offset
+        - name: page
           in: query
           schema:
             type: integer
-            default: 0
-          description: Offset for pagination
+            default: 1
+          description: Page number
         - name: sort
           in: query
           schema:
@@ -80,16 +80,36 @@ paths:
               schema:
                 type: object
                 properties:
-                  items:
+                  data:
                     type: array
                     items:
                       $ref: '#/components/schemas/VacancyPreview'
-                  total:
-                    type: integer
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+                      last_page:
+                        type: integer
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                      last:
+                        type: string
+                      prev:
+                        type: string
+                        nullable: true
+                      next:
+                        type: string
+                        nullable: true
         '422':
           description: Validation failed
-        '401':
-          description: Unauthorised
         '429':
           description: Rate limit exceeded
   /vacancies/{id}:
