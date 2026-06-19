@@ -10,7 +10,7 @@
 The domain model of the system is divided into four bounded contexts, each
 described in a separate file:
 
-- [Vacancy Management (Vacancies Service)](bounded-contexts/vacancies.md)
+- [Vacancy Management (Vacancies Market Service)](bounded-contexts/vacancies-market.md)
 - [Job Search & CRM (ResearcherCrm Service)](bounded-contexts/researcher-crm.md)
 - [AI & Parsing (Parsing&AIConnector)](bounded-contexts/parsing-ai-connector.md)
 - [Learning Management (KnowledgeCenter Service)](bounded-contexts/knowledge-center.md)
@@ -33,8 +33,8 @@ ownership descriptions are in the corresponding bounded context files. Quick
 summary:
 
 | Service | Owns (main aggregates) |
-| --- | --- |
-| Vacancies | Vacancy, Employer, Interviewer, Portal, Requirement, Location |
+| --------------------- | --- |
+| Vacancies  Market | Vacancy, Employer, Interviewer, Portal, Requirement, Location |
 | ResearcherCrm | Researcher, Job, Reply, Meet, Message, AIRecommendation |
 | Parsing&AIConnector | ParsingTask, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
 | KnowledgeCenter | LearningTrack, TrackItem, Progress, Skill, DevelopmentRecommendation |
@@ -53,9 +53,9 @@ Each aggregate is described in the corresponding bounded context file. The main
 root aggregates for quick navigation:
 
 - **Employer** – root in Vacancies →
-  [details](bounded-contexts/vacancies.md)
+  [details](bounded-contexts/vacancies-market.md)
 - **Vacancy** – part of Employer but a separate aggregate for search →
-  [details](bounded-contexts/vacancies.md)
+  [details](bounded-contexts/vacancies-market.md)
 - **Researcher** – root in ResearcherCrm →
   [details](bounded-contexts/researcher-crm.md)
 - **Reply** – application to a vacancy →

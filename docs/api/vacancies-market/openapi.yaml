@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Vacancies Service API
+  title: Vacancies Market Service API
   description: Manage vacancies, employers, interviewers.
   version: 1.0.0
 servers:

@@ -28,9 +28,9 @@ Full description: `/docs/domain/domain-vision.md`
 ## 3. Platform architecture (services, stacks, implementation order)
 
 | # | Service | Stack | Notes |
-| --- | --- | --- | --- |
+| --- | --------------------- | --- | --- |
 | 1 | Deploy & Docs | DevOps | Docker Compose, K8s, GitHub Actions, ADR |
-| 2 | Vacancies | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | employers, vacancies,<br>interviewers, import |
+| 2 | Vacancies Market | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | employers, vacancies,<br>interviewers, import |
 | 3 | ResearcherCrm | PHP 8.5, Symfony 7.1,<br>Doctrine ORM, PostgreSQL 16,<br>Redis | job seekers, desired jobs,<br>replies, meetings, messages,<br>analytics |
 | 4 | Parsing&AIConnector | Python 3.12, FastAPI,<br>Celery, RabbitMQ | portal parsing, AI models,<br>recommendations |
 | 5 | Frontend | React 18, Next.js 14,<br>TypeScript | user interface |
@@ -39,12 +39,12 @@ Full description: `/docs/domain/domain-vision.md`
 ## 4. Service communication
 
 | Source | Destination | Protocol | Purpose |
-| --- | --- | --- | --- |
+| --------------------- | --------------------- | --- | --- |
 | Frontend | ResearcherCrm | REST | user interaction |
-| Frontend | Vacancies | REST | view vacancies |
+| Frontend | Vacancies Market | REST | view vacancies |
 | ResearcherCrm | KnowledgeCenter | RabbitMQ | learning plan |
-| Vacancies | ResearcherCrm | RabbitMQ | vacancy events |
-| Parsing&AIConnector | Vacancies | RabbitMQ | import vacancies |
+| Vacancies Market | ResearcherCrm | RabbitMQ | vacancy events |
+| Parsing&AIConnector | Vacancies Market | RabbitMQ | import vacancies |
 | ResearcherCrm | Parsing&AIConnector | RabbitMQ | AI requests |
 | KnowledgeCenter | ResearcherCrm | RabbitMQ | learning recommendations |
 
@@ -52,7 +52,7 @@ Full description: `/docs/domain/domain-vision.md`
 
 | Context | Service |
 | --- | --- |
-| Vacancy Management | Vacancies |
+| Vacancy Management | Vacancies Market |
 | Job Search & Management | ResearcherCrm |
 | AI & Parsing | Parsing&AIConnector |
 | Learning Management | KnowledgeCenter |

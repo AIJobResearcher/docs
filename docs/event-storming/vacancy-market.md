@@ -14,7 +14,7 @@
 | `VacancyImported` | Parsing&AIConnector | New vacancy imported |
 | `VacancyUpdated` | Parsing&AIConnector | Vacancy updated (text, salary, date) |
 | `VacancyClosed` | Parsing&AIConnector | Vacancy closed on the portal |
-| `InterviewerAssigned` | Vacancies | Interviewer linked to vacancy |
+| `InterviewerAssigned` | Vacancies Market | Interviewer linked to vacancy |
 | `ExternalPortalUnreachable` | Parsing&AIConnector | Portal unreachable during parsing |
 
 ## Aggregates

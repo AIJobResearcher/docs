@@ -5,12 +5,12 @@ The project defines four main bounded contexts. Their relationships
 
 ## 1. Bounded Contexts
 
-| Context             | Service                      | Main responsibility                                            |
-|---------------------|------------------------------|----------------------------------------------------------------|
-| Vacancy Management  | Vacancies (PHP/Laravel)      | Import, store, manage vacancies, employers, interviewers       |
-| Job Search & CRM    | ResearcherCrm (PHP/Symfony)  | Job seeker profiles, desired jobs, replies, meetings, messages |
-| AI & Parsing        | Parsing&AIConnector (Python) | Portal parsing, AI recommendations, RAG                        |
-| Learning Management | KnowledgeCenter (Go)         | Long‑term learning plans, tracks, progress                     |
+| Context             | Service                        | Main responsibility                                            |
+|---------------------|--------------------------------|----------------------------------------------------------------|
+| Vacancy Management  | Vacancies Market (PHP/Laravel) | Import, store, manage vacancies, employers, interviewers       |
+| Job Search & CRM    | ResearcherCrm (PHP/Symfony)    | Job seeker profiles, desired jobs, replies, meetings, messages |
+| AI & Parsing        | Parsing&AIConnector (Python)   | Portal parsing, AI recommendations, RAG                        |
+| Learning Management | KnowledgeCenter (Go)           | Long‑term learning plans, tracks, progress                     |
 
 ## 2. Interactions between contexts
 

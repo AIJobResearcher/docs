@@ -16,7 +16,7 @@ We use **logical isolation via `researcher_id`**:
   the request matches the JWT claim `researcher_id`.
 - RabbitMQ events containing personal data also include the `researcher_id`
   field for filtering.
-- Vacancies (the `Vacancies` service) are public, the `researcher_id` field is
+- Vacancies (the `Vacancies Market` service) are public, the `researcher_id` field is
   absent.
 
 ## Why this decision

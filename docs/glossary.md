@@ -4,7 +4,7 @@ Main terms of the AIJobResearcher project. Used in code, events, API and
 documentation.
 
 | Term | Description |
-| --- | --- |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ACL (Anti-Corruption Layer)** | Component that protects the domain model from external systems (portals, AI providers, calendars). Transforms external data and errors into internal objects. |
 | **Admin** | User role with rights to manage portal parsing, configure AI models, view audit logs. |
 | **AIProvider** | Interface for interacting with AI models (OllamaAIProvider, OpenAIProvider). |
@@ -26,7 +26,7 @@ documentation.
 | **Domain Layer** | Layer in Clean Architecture containing business entities, aggregates, value objects and invariants. |
 | **Domain Vision** | Document describing strategic goals, actors, domains and success metrics. |
 | **Embeddings** | Vector representation of text used in RAG to find relevant fragments. |
-| **Employer** | Employer (company), owner of vacancies and interviewers. Aggregate in Vacancies service. |
+| **Employer** | Employer (company), owner of vacancies and interviewers. Aggregate in Vacancies Market service. |
 | **Event Storming** | Method for modelling events, commands, aggregates and business rules for a domain. |
 | **Eventual Consistency** | Consistency model where a delay of 2‑5 seconds between services is allowed. |
 | **ExternalPortalUnreachable** | Event signalling that an external job portal is unreachable. |
@@ -35,7 +35,7 @@ documentation.
 | **Gherkin** | Language for BDD scenarios (Feature, Scenario, Given/When/Then). |
 | **HPA (Horizontal Pod Autoscaler)** | Kubernetes mechanism for automatically scaling the number of replicas. |
 | **Idempotency Key** | Unique key sent by the client in the request header to prevent duplication. |
-| **Interviewer** | Interviewer – representative of the employer, linked to a vacancy. Aggregate in Vacancies service. |
+| **Interviewer** | Interviewer – representative of the employer, linked to a vacancy. Aggregate in Vacancies Market service. |
 | **Jaeger** | Distributed tracing system (OpenTelemetry → Jaeger). |
 | **Job** | Desired job – a set of criteria created by the job seeker. Aggregate in ResearcherCrm. |
 | **JWT (JSON Web Token)** | Token format for authentication and authorisation (RS256, lifetime 15 minutes). |

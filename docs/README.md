@@ -28,18 +28,18 @@ OpenTelemetry + Jaeger + Prometheus + Loki.
 ## Documentation
 
 | File / Folder | Content |
-| --- | --- |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Technical Requirements](./technical-requirements.md) | NFR, SLO, capacity, security, API, observability, load testing, risks |
 | [Architecture Overview](./architecture-overview.md) | Services, communication, bounded contexts, Clean Architecture, EDA, ACL, search, versioning, idempotency, outbox |
 | [Domain Model](./domain/domain-model.md) | Quick overview of domains, cross-domain processes, data ownership, aggregates summary (links to detailed files) |
 | [Domain Vision](./domain/domain-vision.md) | Strategic goals, actors, competitive advantages |
 | [Glossary](./glossary.md) | Glossary of terms (Ubiquitous Language) |
 | [Context Map](./context-map.md) | Interaction map of bounded contexts (upstream/downstream) |
-| [Bounded Contexts](./domain/bounded-contexts/) | Detailed descriptions of each bounded context: - [Vacancies Service](./domain/bounded-contexts/vacancies.md) - [Researcher CRM](./domain/bounded-contexts/researcher-crm.md) - [Parsing&AIConnector](./domain/bounded-contexts/parsing-ai-connector.md) - [KnowledgeCenter](./domain/bounded-contexts/knowledge-center.md) |
+| [Bounded Contexts](./domain/bounded-contexts/) | Detailed descriptions of each bounded context: - [Vacancies Market Service](./domain/bounded-contexts/vacancies-market.md) - [Researcher CRM](./domain/bounded-contexts/researcher-crm.md) - [Parsing&AIConnector](./domain/bounded-contexts/parsing-ai-connector.md) - [KnowledgeCenter](./domain/bounded-contexts/knowledge-center.md) |
 | [AI & RAG Pipeline](domain/ai-rag-pipeline.md) | RAG pipeline, AI providers, embeddings, vector DB, parsing, caching, prompts |
 | [AsyncAPI Events](./asyncapi/events.yaml) | Specification of all domain events in AsyncAPI 2.6.0 format |
-| **API specifications (OpenAPI)** | Automatically generated specifications for each service: - [api/vacancies/](./api/vacancies/) - [api/researcher-crm/](./api/researcher-crm/) - [api/parsing-ai-connector/](./api/parsing-ai-connector/) - [api/knowledge-center/](./api/knowledge-center/) |
-| **BDD scenarios (Gherkin)** | Executable scenarios for each service: - [Vacancies: manage vacancies](./features/vacancies/managing_vacancies.feature) - [Researcher CRM: schedule interviews](./features/researcher-crm/interview-scheduling.feature) - [Parsing&AIConnector: parse vacancies](./features/parsing-ai-connector/parsing-vacancies.feature) - [KnowledgeCenter: learning plan](./features/knowledge-center/learning-plan.feature) |
+| **API specifications (OpenAPI)** | Automatically generated specifications for each service: - [api/vacancies/](api/vacancies-market/) - [api/researcher-crm/](./api/researcher-crm/) - [api/parsing-ai-connector/](./api/parsing-ai-connector/) - [api/knowledge-center/](./api/knowledge-center/) |
+| **BDD scenarios (Gherkin)** | Executable scenarios for each service: - [Vacancies: manage vacancies](features/vacancies-market/managing_vacancies.feature) - [Researcher CRM: schedule interviews](./features/researcher-crm/interview-scheduling.feature) - [Parsing&AIConnector: parse vacancies](./features/parsing-ai-connector/parsing-vacancies.feature) - [KnowledgeCenter: learning plan](./features/knowledge-center/learning-plan.feature) |
 | [C4 diagrams](./c4/) | Context, containers, components |
 | [ADR](./adr/) | Architectural decisions (microservices, RabbitMQ, RAG, outbox, capacity planning, etc.) |
 | [Event Storming](./event-storming/) | Event modeling for each domain |
