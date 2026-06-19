@@ -1,4 +1,4 @@
-# Bounded Context: Vacancy Management (Vacancies Service)
+# Bounded Context: Vacancy Management (Vacancies Market Service)
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |

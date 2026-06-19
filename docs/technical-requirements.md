@@ -28,7 +28,7 @@
 
 | Service             | Operation                                  | p95     | p99     | Note                                                                                            |
 |---------------------|--------------------------------------------|---------|---------|-------------------------------------------------------------------------------------------------|
-| Vacancies           | `GET /api/vacancies` (search with filters) | 300 ms  | 600 ms  | Redis caching                                                                                   |
+| Vacancies Market    | `GET /api/vacancies` (search with filters) | 300 ms  | 600 ms  | Redis caching                                                                                   |
 | Researcher CRM      | `POST /api/interviews/schedule`            | 400 ms  | 800 ms  | includes interviewer availability check, aggregate save, event publish; Google Calendar – async |
 | Parsing&AIConnector | `POST /api/ai/recommendations`             | 2000 ms | 4000 ms | external AI providers; alert on exceed                                                          |
 | KnowledgeCenter     | `GET /api/knowledge/plan?userId={id}`      | 500 ms  | 1000 ms | learning plan based on aggregated data                                                          |
@@ -73,19 +73,19 @@ multi‑region.
 
 ### 2.1 Compute resources (production)
 
-| Service / Component          | CPU (cores) per replica | RAM (GB) | Min replicas            |
-|------------------------------|-------------------------|----------|-------------------------|
-| Vacancies (PHP/Laravel)      | 2                       | 2        | 6                       |
-| ResearcherCrm (PHP/Symfony)  | 2                       | 2        | 6                       |
-| Parsing&AIConnector (Python) | 4                       | 8        | 4 + Celery workers      |
-| KnowledgeCenter (Go)         | 1                       | 1        | 3                       |
-| Frontend (Next.js)           | 1                       | 2        | 3                       |
-| PostgreSQL Vacancies         | 4                       | 16       | 1 master + 2 replicas   |
-| PostgreSQL ResearcherCrm     | 4                       | 16       | 1 master + 2 replicas   |
-| PostgreSQL KnowledgeCenter   | 2                       | 8        | 1 master + 1 replica    |
-| Redis (cache)                | 2                       | 8        | 3 nodes (cluster)       |
-| RabbitMQ                     | 2                       | 4        | 3 nodes                 |
-| OpenSearch / Elasticsearch   | 4                       | 16       | 3 nodes (data + master) |
+| Service / Component            | CPU (cores) per replica | RAM (GB) | Min replicas            |
+|--------------------------------|-------------------------|----------|-------------------------|
+| Vacancies Market (PHP/Laravel) | 2                       | 2        | 6                       |
+| ResearcherCrm (PHP/Symfony)    | 2                       | 2        | 6                       |
+| Parsing&AIConnector (Python)   | 4                       | 8        | 4 + Celery workers      |
+| KnowledgeCenter (Go)           | 1                       | 1        | 3                       |
+| Frontend (Next.js)             | 1                       | 2        | 3                       |
+| PostgreSQL VacanciesMarket     | 4                       | 16       | 1 master + 2 replicas   |
+| PostgreSQL ResearcherCrm       | 4                       | 16       | 1 master + 2 replicas   |
+| PostgreSQL KnowledgeCenter     | 2                       | 8        | 1 master + 1 replica    |
+| Redis (cache)                  | 2                       | 8        | 3 nodes (cluster)       |
+| RabbitMQ                       | 2                       | 4        | 3 nodes                 |
+| OpenSearch / Elasticsearch     | 4                       | 16       | 3 nodes (data + master) |
 
 *Celery workers: 4 workers with 4 vCPU / 8 GB RAM each.
 *Demo environment: reduce resources by 2–3 times.*
@@ -94,7 +94,7 @@ multi‑region.
 
 | Database                     | Yearly growth     | Disk type | Min size       |
 |------------------------------|-------------------|-----------|----------------|
-| PostgreSQL Vacancies         | 50 GB             | SSD       | 200 GB         |
+| PostgreSQL Vacancies Market  | 50 GB             | SSD       | 200 GB         |
 | PostgreSQL ResearcherCrm     | 100 GB            | SSD       | 300 GB         |
 | PostgreSQL KnowledgeCenter   | 10 GB             | SSD       | 50 GB          |
 | RabbitMQ (persistent queues) | 50 GB             | SSD       | 100 GB         |

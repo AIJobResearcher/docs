@@ -55,7 +55,7 @@ cache results, RAG pipeline.
 6. **Parse portals**
 
    - As a system, I want to automatically (on schedule) parse external job portals,
-     respecting `robots.txt` and frequency limits, to keep the Vacancies service
+     respecting `robots.txt` and frequency limits, to keep the Vacancies Market service
      filled with fresh data.
    - As a system, I want to automatically monitor parsing success and when it drops
      below the threshold (80%) – suspend activity for a set interval (30 minutes),
@@ -110,7 +110,7 @@ cache results, RAG pipeline.
 
 ## Interaction with other contexts
 
-- **Downstream:** Vacancies (import data via ACL)
+- **Downstream:** Vacancies Market (import data via ACL)
 - **Downstream:** Researcher CRM (AI recommendations)
 - **Downstream:** KnowledgeCenter (generate summaries)
 - **Upstream:** External portals (LinkedIn, Djinni) and AI providers (OpenAI, Ollama)

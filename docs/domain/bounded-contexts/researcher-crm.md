@@ -129,7 +129,7 @@ Manage job seeker profile, desired jobs, replies, meetings, messages, analytics.
 
 ## Interaction with other contexts
 
-- **Upstream:** Vacancies (vacancy and interviewer events)
+- **Upstream:** Vacancies Market (vacancy and interviewer events)
 - **Upstream:** Parsing&AIConnector (AI recommendations)
 - **Downstream:** KnowledgeCenter (reply and meeting events for learning)
 - **Downstream:** Search Engine (for analytics)

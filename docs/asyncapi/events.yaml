@@ -6,7 +6,7 @@ info:
 
 channels:
   vacancies/events:
-    description: Vacancies service events
+    description: Vacancies Market service events
     publish:
       summary: Vacancy management events
       message:

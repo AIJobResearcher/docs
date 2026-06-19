@@ -1,9 +1,9 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Vacancies Service Components
+title Vacancies Market Service Components
 
-Container(vacancies, "Vacancies Service", "PHP/Laravel")
+Container(vacancies, "Vacancies Market Service", "PHP/Laravel")
 
 Boundary(vacancies_boundary, "Vacancies") {
     Component(presentation, "Presentation Layer", "Controllers", "Handles HTTP requests")
