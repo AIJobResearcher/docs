@@ -4,7 +4,7 @@ info:
   description: Manage vacancies, employers, interviewers.
   version: 1.0.0
 servers:
-  - url: https://api.aijobresearcher.com/v1
+  - url: https://api.aijobresearcher.com/api/v1
     description: Production server
 paths:
   /vacancies:
@@ -86,8 +86,8 @@ paths:
                       $ref: '#/components/schemas/VacancyPreview'
                   total:
                     type: integer
-        '400':
-          description: Invalid request parameters
+        '422':
+          description: Validation failed
         '401':
           description: Unauthorised
         '429':
@@ -143,8 +143,8 @@ paths:
                       $ref: '#/components/schemas/Portal'
                   total:
                     type: integer
-        '400':
-          description: Invalid request parameters
+        '422':
+          description: Validation failed
         '401':
           description: Unauthorised
   /jobs:
@@ -180,8 +180,8 @@ paths:
                       $ref: '#/components/schemas/Job'
                   total:
                     type: integer
-        '400':
-          description: Invalid request parameters
+        '422':
+          description: Validation failed
         '401':
           description: Unauthorised
   /countries:
@@ -217,8 +217,8 @@ paths:
                       $ref: '#/components/schemas/Country'
                   total:
                     type: integer
-        '400':
-          description: Invalid request parameters
+        '422':
+          description: Validation failed
         '401':
           description: Unauthorised
   /employers/{id}:

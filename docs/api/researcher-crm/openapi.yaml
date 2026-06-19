@@ -4,7 +4,7 @@ info:
   description: Manage job seeker profile, applications, meetings, messages.
   version: 1.0.0
 servers:
-  - url: https://api.aijobresearcher.com/v1
+  - url: https://api.aijobresearcher.com/api/v1
     description: Production server
 paths:
   /researchers:
@@ -110,8 +110,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reply'
-        '400':
-          description: Invalid data or already applied
+        '422':
+          description: Validation failed
   /replies/{reply_id}:
     delete:
       summary: Withdraw an application

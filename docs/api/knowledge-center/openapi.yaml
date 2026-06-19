@@ -4,7 +4,7 @@ info:
   description: Manage learning tracks, progress, development recommendations.
   version: 1.0.0
 servers:
-  - url: https://api.aijobresearcher.com/v1
+  - url: https://api.aijobresearcher.com/api/v1
     description: Production server
 paths:
   /knowledge/plan:

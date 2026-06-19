@@ -4,7 +4,7 @@ info:
   description: Portal parsing, AI recommendation generation, task management.
   version: 1.0.0
 servers:
-  - url: https://api.aijobresearcher.com/v1
+  - url: https://api.aijobresearcher.com/api/v1
     description: Production server
 paths:
   /ai/recommendations:
@@ -34,8 +34,8 @@ paths:
               schema:
                 type: string
               description: Task URL (/tasks/{id})
-        '400':
-          description: Invalid request
+        '422':
+          description: Validation failed
   /tasks/{id}:
     get:
       summary: Get status and result of an AI task
