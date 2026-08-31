@@ -30,7 +30,7 @@ Full description: `/docs/domain/domain-vision.md`
 | # | Service | Stack | Notes |
 | --- | --------------------- | --- | --- |
 | 1 | Deploy & Docs | DevOps | Docker Compose, K8s, GitHub Actions, ADR |
-| 2 | Vacancies Market | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | employers, vacancies,<br>interviewers, import |
+| 2 | Vacancies Market | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | catalogue of employers,<br>vacancies and interviewers |
 | 3 | ResearcherCrm | PHP 8.5, Symfony 7.1,<br>Doctrine ORM, PostgreSQL 16,<br>Redis | job seekers, desired jobs,<br>replies, meetings, messages,<br>analytics |
 | 4 | Parsing&AIConnector | Python 3.12, FastAPI,<br>Celery, RabbitMQ | portal parsing, AI models,<br>recommendations |
 | 5 | Frontend | React 18, Next.js 14,<br>TypeScript | user interface |
@@ -44,7 +44,7 @@ Full description: `/docs/domain/domain-vision.md`
 | Frontend | Vacancies Market | REST | view vacancies |
 | ResearcherCrm | KnowledgeCenter | RabbitMQ | learning plan |
 | Vacancies Market | ResearcherCrm | RabbitMQ | vacancy events |
-| Parsing&AIConnector | Vacancies Market | RabbitMQ | import vacancies |
+| Parsing&AIConnector | Vacancies Market | RabbitMQ | approved catalogue-change commands |
 | ResearcherCrm | Parsing&AIConnector | RabbitMQ | AI requests |
 | KnowledgeCenter | ResearcherCrm | RabbitMQ | learning recommendations |
 

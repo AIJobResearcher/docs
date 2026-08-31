@@ -1,7 +1,7 @@
 # language: en
-Feature: Manage vacancies
+Feature: Browse and manage the vacancy catalogue
   As a job seeker or administrator
-  I want to view, import and update vacancies
+  I want to view and manage vacancies
   So that the system contains up‑to‑date data for job search
 
   Scenario: Search vacancies with filter by employer
@@ -19,20 +19,20 @@ Feature: Manage vacancies
     And response contains exactly 10 vacancies
     And header `X-Total-Count` is present with total count of vacancies
 
-  Scenario: Administrator manually triggers full import
-    Given I am authenticated as administrator
-    And portal "LinkedIn" is available
-    When I send POST request to `/api/v1/parsing/import?portal=linkedin&type=full`
-    Then response status is 202
-    And Parsing&AIConnector starts full scan
-
-  Scenario: Update existing vacancy on re‑parse
+  Scenario: Persist an approved update to an existing vacancy
     Given the system has vacancy "Java Developer" from portal "LinkedIn"
-    And the vacancy description changed on the portal
-    When incremental parsing runs
+    And Parsing&AIConnector approved an updated canonical vacancy
+    When Vacancies Market processes `CatalogueChangeRequested` with mutation type "update"
     Then the vacancy is updated
     And the `updated_at` field changes
     And the vacancy version increases
+
+  Scenario: Reject a stale catalogue-change request
+    Given the system has vacancy "Java Developer" at version 4
+    And `CatalogueChangeRequested` contains expected version 3
+    When Vacancies Market processes the command
+    Then the catalogue is unchanged
+    And the command is rejected as retryable
 
   Scenario: Assign interviewer to vacancy
     Given I am authenticated as administrator

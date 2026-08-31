@@ -5,30 +5,33 @@ The project defines four main bounded contexts. Their relationships
 
 ## 1. Bounded Contexts
 
-| Context             | Service                        | Main responsibility                                            |
-|---------------------|--------------------------------|----------------------------------------------------------------|
-| Vacancy Management  | Vacancies Market (PHP/Laravel) | Import, store, manage vacancies, employers, interviewers       |
-| Job Search & CRM    | ResearcherCrm (PHP/Symfony)    | Job seeker profiles, desired jobs, replies, meetings, messages |
-| AI & Parsing        | Parsing&AIConnector (Python)   | Portal parsing, AI recommendations, RAG                        |
-| Learning Management | KnowledgeCenter (Go)           | Long‑term learning plans, tracks, progress                     |
+| Context             | Service                        | Main responsibility                                              |
+|---------------------|--------------------------------|------------------------------------------------------------------|
+| Vacancy Management  | Vacancies Market (PHP/Laravel) | Read catalogue, persist approved changes, publish committed data |
+| Job Search & CRM    | ResearcherCrm (PHP/Symfony)    | Job seeker profiles, desired jobs, replies, meetings, messages   |
+| AI & Parsing        | Parsing&AIConnector (Python)   | Portal parsing, AI recommendations, RAG                          |
+| Learning Management | KnowledgeCenter (Go)           | Long‑term learning plans, tracks, progress                       |
 
 ## 2. Interactions between contexts
 
 ### 2.1 AI & Parsing → Vacancy Management
 
 - **Type:** Upstream (Customer‑Supplier)
-- **Protocol:** RabbitMQ (async events) + REST (manual trigger)
-- **Events:** `VacancyImported`, `VacancyUpdated`, `VacancyClosed`,
-  `EmployerImported`
-- **Purpose:** Fill the vacancy database with data from external portals.
+- **Protocol:** RabbitMQ (internal integration messages)
+- **Messages:** `CatalogueChangeRequested`
+- **Purpose:** Supply an approved create, update, merge or close decision for
+  atomic persistence in the vacancy catalogue.
 - **ACL:** Anti‑Corruption Layer inside Parsing&AIConnector transforms external
-  formats into Vacancies domain objects.
+  formats, requirement normalization and AI-assisted duplicate matching into the
+  integration command. It owns portal schedules, rate limits and parsing
+  failures.
 
 ### 2.2 Vacancy Management → Job Search & CRM
 
 - **Type:** Upstream (Publisher‑Subscriber)
 - **Protocol:** RabbitMQ (events)
-- **Events:** `VacancyImported`, `VacancyClosed`, `InterviewerAssigned`
+- **Events:** `EmployerImported`, `VacancyImported`, `VacancyUpdated`,
+  `VacancyMerged`, `VacancyClosed`, `InterviewerAssigned`
 - **Purpose:** Provide CRM service with up‑to‑date vacancy and interviewer data
   for replies and meetings.
 
@@ -112,8 +115,8 @@ between contexts.
 ```mermaid
 graph TD
     EP[External Portals] -->|parsing| AI[AI & Parsing]
-    AI -->|VacancyImported, VacancyUpdated, VacancyClosed| VM[Vacancy Management]
-    VM -->|VacancyImported, InterviewerAssigned| CRM[Job Search & CRM]
+    AI -->|CatalogueChangeRequested| VM[Vacancy Management]
+    VM -->|Vacancy and interviewer events| CRM[Job Search & CRM]
     CRM -->|ReplyCreated, MeetCompleted, JobPreferencesUpdated| LM[Learning Management]
     LM -->|DevelopmentRecommendationGenerated, LearningTrackCreated| CRM
     CRM -->|AIRecommendationRequested| AI
