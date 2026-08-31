@@ -7,7 +7,7 @@
 ## Responsibility
 
 Integration with AI models to generate recommendations, parse external portals,
-cache results, RAG pipeline.
+enrich and deduplicate vacancy data, cache results, RAG pipeline.
 
 ## Key NFRs
 
@@ -23,6 +23,8 @@ cache results, RAG pipeline.
 - Generate interview preparation recommendations
 - Generate AI summaries for learning (on KnowledgeCenter request)
 - Parse portals with automatic recovery
+- Normalize source data and use AI-assisted matching to decide catalogue
+  creates, updates, merges and closures
 
 ## User stories
 
@@ -73,13 +75,34 @@ cache results, RAG pipeline.
   parsing for 30 minutes, then automatically resumes. If the success rate again
   drops below 80% after resumption – a critical alert is generated, parsing
   continues with increased delay between requests.
+- This context is the sole owner of requirement normalization, source matching
+  and duplicate/merge decisions. It must include the decision, confidence and
+  source provenance in each `CatalogueChangeRequested` command.
 
 ## Domain events
 
 - `RecommendationGenerated` – for KnowledgeCenter
 - `ParsingFailed` – alert
+- `ExternalPortalUnreachable` – portal is unavailable during parsing
 - `AITokenBudgetExceeded` – warning
 - `ParsingSuspended` – on automatic suspension
+
+## Integration command for Vacancy Management
+
+After parsing, normalization and AI-assisted duplicate resolution, this context
+publishes a `CatalogueChangeRequested` command over RabbitMQ for
+`Vacancies Market`. The command contains one selected mutation:
+`create`, `update`, `merge` or `close`.
+
+It includes the target vacancy ID and expected version where applicable, the
+complete canonical data, source provenance, duplicate IDs to merge, confidence
+and the decision rationale. `Vacancies Market` validates and persists this
+decision atomically; it does not repeat matching or merge selection.
+
+To make decisions without accessing another service's database,
+`Parsing&AIConnector` maintains a local catalogue projection by consuming
+`Vacancies Market` events such as `VacancyImported`, `VacancyUpdated`,
+`VacancyMerged` and `VacancyClosed`.
 
 ## RAG Pipeline (short)
 
@@ -103,6 +126,15 @@ cache results, RAG pipeline.
 - Fields: `id`, `type`, `input_prompt`, `response` (JSON), `status`, `created_at`,
   `completed_at`
 
+### VacancyCandidate (internal entity)
+
+- Fields: `id`, `source_key`, `external_vacancy_id`, `raw_payload`,
+  `normalized_payload`, `candidate_vacancy_ids`, `similarity_scores`,
+  `decision` (create/update/merge/close), `decision_rationale`, `status`,
+  `created_at`, `decided_at`
+- Behaviour: `normalize()`, `findDuplicateCandidates()`, `selectMutation()`,
+  `requestCatalogueChange()`
+
 ### AIModel (lookup)
 
 - Fields: `id`, `name`, `version`, `endpoint`, `input_schema`, `output_schema`,
@@ -110,7 +142,7 @@ cache results, RAG pipeline.
 
 ## Interaction with other contexts
 
-- **Downstream:** Vacancies Market (import data via ACL)
+- **Downstream:** Vacancies Market (supplies approved catalogue-change commands)
 - **Downstream:** Researcher CRM (AI recommendations)
 - **Downstream:** KnowledgeCenter (generate summaries)
 - **Upstream:** External portals (LinkedIn, Djinni) and AI providers (OpenAI, Ollama)

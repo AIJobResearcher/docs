@@ -2,7 +2,7 @@ asyncapi: 2.6.0
 info:
   title: AIJobResearcher Domain Events
   version: 1.0.0
-  description: Asynchronous events published by AIJobResearcher microservices.
+  description: Asynchronous domain events and integration messages published by AIJobResearcher microservices.
 
 channels:
   vacancies/events:
@@ -11,11 +11,19 @@ channels:
       summary: Vacancy management events
       message:
         oneOf:
+          - $ref: '#/components/messages/EmployerImported'
           - $ref: '#/components/messages/VacancyImported'
           - $ref: '#/components/messages/VacancyUpdated'
+          - $ref: '#/components/messages/VacancyMerged'
           - $ref: '#/components/messages/VacancyClosed'
           - $ref: '#/components/messages/InterviewerAssigned'
-          - $ref: '#/components/messages/ExternalPortalUnreachable'
+
+  vacancies/commands:
+    description: Commands handled by Vacancies Market
+    publish:
+      summary: Catalogue mutation request from Parsing&AIConnector
+      message:
+        $ref: '#/components/messages/CatalogueChangeRequested'
 
   researcher/events:
     description: ResearcherCrm service events
@@ -40,9 +48,9 @@ channels:
       summary: AI and parsing events
       message:
         oneOf:
-          - $ref: '#/components/messages/EmployerImported'
           - $ref: '#/components/messages/RecommendationGenerated'
           - $ref: '#/components/messages/ParsingFailed'
+          - $ref: '#/components/messages/ExternalPortalUnreachable'
           - $ref: '#/components/messages/AITokenBudgetExceeded'
           - $ref: '#/components/messages/ParsingSuspended'
 
@@ -60,8 +68,110 @@ channels:
 
 components:
   messages:
+    CatalogueChangeRequested:
+      summary: Parser-approved mutation request for the vacancy catalogue
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: CatalogueChangeRequested
+          event_version:
+            type: integer
+            minimum: 1
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              mutation_type:
+                type: string
+                enum: [create, update, merge, close]
+              target_vacancy_id:
+                type: string
+              expected_version:
+                type: integer
+              merge_vacancy_ids:
+                type: array
+                items:
+                  type: string
+              decision_confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+              decision_rationale:
+                type: string
+              source:
+                type: object
+                properties:
+                  source_key:
+                    type: string
+                  external_vacancy_id:
+                    type: string
+                  external_url:
+                    type: string
+                  first_seen_at:
+                    type: string
+                    format: date-time
+                  last_seen_at:
+                    type: string
+                    format: date-time
+              canonical_vacancy:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  posted_at:
+                    type: string
+                    format: date-time
+                  country:
+                    type: string
+                  city:
+                    type: string
+                  min_salary:
+                    type: number
+                  max_salary:
+                    type: number
+                  currency:
+                    type: string
+                  requirements:
+                    type: array
+                    items:
+                      type: string
+                  employer:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      description:
+                        type: string
+                      website:
+                        type: string
+                  interviewers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        full_name:
+                          type: string
+                        position:
+                          type: string
+                        profile_urls:
+                          type: object
     VacancyImported:
-      summary: New vacancy imported from a portal
+      summary: New canonical vacancy added to the catalogue
       payload:
         type: object
         properties:
@@ -105,10 +215,10 @@ components:
                     type: number
                   currency:
                     type: string
-              portal_id:
+              source_key:
                 type: string
     EmployerImported:
-      summary: New employer imported from a portal
+      summary: New employer added to the catalogue
       payload:
         type: object
         properties:
@@ -139,7 +249,7 @@ components:
                 type: string
               website:
                 type: string
-              portal_id:
+              source_key:
                 type: string
     VacancyUpdated:
       summary: Vacancy updated (text, salary, date changed)
@@ -154,6 +264,7 @@ components:
             const: VacancyUpdated
           event_version:
             type: integer
+            minimum: 1
           aggregate_id:
             type: string
           timestamp:
@@ -173,7 +284,7 @@ components:
               changes:
                 type: object
     VacancyClosed:
-      summary: Vacancy closed on the portal
+      summary: Canonical vacancy closed after source confirmation
       payload:
         type: object
         properties:
@@ -183,6 +294,9 @@ components:
           event_type:
             type: string
             const: VacancyClosed
+          event_version:
+            type: integer
+            minimum: 1
           aggregate_id:
             type: string
           timestamp:
@@ -198,6 +312,40 @@ components:
               closed_at:
                 type: string
                 format: date-time
+    VacancyMerged:
+      summary: Parser-selected duplicate vacancies merged into a canonical vacancy
+      payload:
+        type: object
+        properties:
+          event_id:
+            type: string
+            format: uuid
+          event_type:
+            type: string
+            const: VacancyMerged
+          event_version:
+            type: integer
+            minimum: 1
+          aggregate_id:
+            type: string
+          timestamp:
+            type: string
+            format: date-time
+          correlation_id:
+            type: string
+          data:
+            type: object
+            properties:
+              canonical_vacancy_id:
+                type: string
+              merged_vacancy_ids:
+                type: array
+                items:
+                  type: string
+              decision_confidence:
+                type: number
+              decision_rationale:
+                type: string
     InterviewerAssigned:
       summary: Interviewer linked to a vacancy
       payload:
@@ -209,6 +357,9 @@ components:
           event_type:
             type: string
             const: InterviewerAssigned
+          event_version:
+            type: integer
+            minimum: 1
           aggregate_id:
             type: string
           timestamp:
@@ -219,9 +370,11 @@ components:
           data:
             type: object
             properties:
+              vacancy_id:
+                type: string
               interviewer_id:
                 type: string
-              vacancy_id:
+              employer_id:
                 type: string
     ExternalPortalUnreachable:
       summary: External portal is unreachable
@@ -234,6 +387,9 @@ components:
           event_type:
             type: string
             const: ExternalPortalUnreachable
+          event_version:
+            type: integer
+            minimum: 1
           timestamp:
             type: string
             format: date-time

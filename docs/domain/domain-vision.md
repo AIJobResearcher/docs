@@ -38,7 +38,7 @@ it.
 
 | Domain | Role | Relationship to Core Domain |
 | --- | --- | --- |
-| Vacancy Market | Import, store, update vacancies, employers, interviewers | Provides data for searching and applying |
+| Vacancy Market | Store, update vacancies, employers, interviewers | Provides data for searching and applying |
 | AI & Parsing | Integrate with AI models, parse portals, generate recommendations | Provides intelligent support for the job seeker |
 | Knowledge & Learning | Create tracks, progress, development recommendations | Helps the job seeker close skill gaps |
 

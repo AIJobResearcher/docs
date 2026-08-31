@@ -10,43 +10,50 @@ paths:
   /vacancies:
     get:
       summary: Search vacancies
-      description: Full‑text search with filtering and pagination. Uses OpenSearch/Elasticsearch.
+      description: Search vacancies by job ID with filtering and pagination.
       parameters:
-        - name: query
+        - name: job_id
           in: query
           schema:
             type: string
-          description: Search string (title, description, requirements)
+            nullable: false
+          description: Id of the job
         - name: employer_id
           in: query
           schema:
             type: string
+            nullable: true
           description: Filter by employer
         - name: country
           in: query
           schema:
             type: string
+            nullable: false
           description: Filter by country
         - name: city
           in: query
           schema:
             type: string
+            nullable: true
           description: Filter by city
         - name: salary_min
           in: query
           schema:
             type: integer
+            nullable: true
           description: Minimum salary
         - name: salary_max
           in: query
           schema:
             type: integer
+            nullable: true
           description: Maximum salary
         - name: status
           in: query
           schema:
             type: string
             enum: [open, closed]
+            nullable: false
           description: Vacancy status
         - name: per_page
           in: query
@@ -54,18 +61,22 @@ paths:
             type: integer
             maximum: 100
             default: 20
+            nullable: false
           description: Number of records per page
         - name: page
           in: query
           schema:
             type: integer
             default: 1
+            nullable: true
           description: Page number
         - name: sort
           in: query
           schema:
             type: string
-            enum: [relevance, date, salary_asc, salary_desc]
+            enum: [date, salary_asc, salary_desc]
+            default: date
+            nullable: true
           description: Sort field
       responses:
         '200':
@@ -110,8 +121,6 @@ paths:
                         nullable: true
         '422':
           description: Validation failed
-        '429':
-          description: Rate limit exceeded
   /vacancies/{id}:
     get:
       summary: Get vacancy details
@@ -130,43 +139,6 @@ paths:
                 $ref: '#/components/schemas/Vacancy'
         '404':
           description: Vacancy not found
-  /portals:
-    get:
-      summary: Get portals collections
-      parameters:
-        - name: query
-          in: query
-          schema:
-            type: string
-          description: Search string (title, description, requirements)
-        - name: employer_id
-          in: query
-          schema:
-            type: string
-          description: Filter by employer
-        - name: country
-          in: query
-          schema:
-            type: string
-          description: Filter by country
-      responses:
-        '200':
-          description: Portals list collection
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Portal'
-                  total:
-                    type: integer
-        '422':
-          description: Validation failed
-        '401':
-          description: Unauthorised
   /jobs:
     get:
       summary: Get jobs collections
@@ -175,17 +147,13 @@ paths:
           in: query
           schema:
             type: string
-          description: Search string (title, description, requirements)
+          description: Search string (title)
         - name: employer_id
           in: query
           schema:
             type: string
+            nullable: true
           description: Filter by employer
-        - name: country
-          in: query
-          schema:
-            type: string
-          description: Filter by country
       responses:
         '200':
           description: Jobs list collection
@@ -198,43 +166,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Job'
-                  total:
-                    type: integer
-        '422':
-          description: Validation failed
-        '401':
-          description: Unauthorised
-  /countries:
-    get:
-      summary: Get countries collections
-      parameters:
-        - name: query
-          in: query
-          schema:
-            type: string
-          description: Search string (title, description, requirements)
-        - name: employer_id
-          in: query
-          schema:
-            type: string
-          description: Filter by employer
-        - name: country
-          in: query
-          schema:
-            type: string
-          description: Filter by country
-      responses:
-        '200':
-          description: Countries list collection
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Country'
                   total:
                     type: integer
         '422':
@@ -259,31 +190,6 @@ paths:
                 $ref: '#/components/schemas/Employer'
         '404':
           description: Employer not found
-  /parsing/import:
-    post:
-      summary: Manually trigger vacancy import (administrator)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: portal
-          in: query
-          required: true
-          schema:
-            type: string
-            enum: [linkedin, djinni]
-        - name: type
-          in: query
-          required: true
-          schema:
-            type: string
-            enum: [full, incremental]
-      responses:
-        '202':
-          description: Import started asynchronously
-        '401':
-          description: Unauthorised
-        '403':
-          description: Access only for administrator
 components:
   securitySchemes:
     BearerAuth:
@@ -311,6 +217,9 @@ components:
         published_at:
           type: string
           format: date-time
+        status:
+          type: string
+          enum: [open, closed]
     Vacancy:
       allOf:
         - $ref: '#/components/schemas/VacancyPreview'
@@ -324,9 +233,6 @@ components:
                 type: string
             employer:
               $ref: '#/components/schemas/Employer'
-            status:
-              type: string
-              enum: [open, closed]
             created_at:
               type: string
               format: date-time
@@ -336,24 +242,6 @@ components:
             version:
               type: integer
     Employer:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        website:
-          type: string
-        contacts:
-          type: object
-          properties:
-            email:
-              type: string
-            phone:
-              type: string
-    Portal:
       type: object
       properties:
         id:
@@ -386,14 +274,3 @@ components:
         created_at:
           type: string
           format: date-time
-    Country:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        code:
-          type: string
-        region:
-          type: string

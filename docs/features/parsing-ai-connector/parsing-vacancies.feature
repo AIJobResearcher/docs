@@ -9,8 +9,15 @@ Feature: Parse portals and AI recommendations
     And the system last parse date was 24 hours ago
     When incremental parsing runs on schedule
     Then Parsing&AIConnector receives new vacancies from the portal
-    And event `VacancyImported` is published for each new vacancy
+    And message `CatalogueChangeRequested` with mutation type "create" is published for each new vacancy
     And metric `parsing_success_rate` increases
+
+  Scenario: Administrator manually starts a full parsing run
+    Given I am authenticated as administrator
+    And portal "LinkedIn" is available
+    When I send POST request to `/api/v1/parsing/run?portal=linkedin&mode=full`
+    Then response status is 202
+    And Parsing&AIConnector starts a full scan
 
   Scenario: Detected change of portal structure
     Given the parser configuration for portal "Djinni" expects 20 elements per page
@@ -18,6 +25,12 @@ Feature: Parse portals and AI recommendations
     Then parsing stops
     And event `ParsingFailed` is published
     And the administrator is notified
+
+  Scenario: AI-assisted duplicate resolution
+    Given normalized vacancy data matches an existing catalogue vacancy with confidence 0.97
+    When the duplicate-resolution workflow completes
+    Then message `CatalogueChangeRequested` with mutation type "merge" is published
+    And the message contains the canonical vacancy ID and decision rationale
 
   Scenario: Generate AI recommendation for vacancies
     Given I am authenticated as a job seeker

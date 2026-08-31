@@ -2,32 +2,42 @@
 
 ## Commands (triggers)
 
-- **ImportVacancy** – request to import a vacancy (scheduled or manual)
-- **UpdateVacancy** – update existing vacancy on re‑parse
-- **CloseVacancy** – close vacancy on the portal
-- **AssignInterviewer** – link interviewer to vacancy
+- **ApplyCatalogueChange** – atomically persist a parser-approved create,
+  update, merge or close command.
+- **AssignInterviewer** – link an interviewer to a compatible vacancy.
+
+`ApplyCatalogueChange` is an internal integration command. It does not start
+parsing, normalize data or select duplicate candidates.
 
 ## Domain events
 
 | Event | Published by | Description |
 | --- | --- | --- |
-| `VacancyImported` | Parsing&AIConnector | New vacancy imported |
-| `VacancyUpdated` | Parsing&AIConnector | Vacancy updated (text, salary, date) |
-| `VacancyClosed` | Parsing&AIConnector | Vacancy closed on the portal |
-| `InterviewerAssigned` | Vacancies Market | Interviewer linked to vacancy |
-| `ExternalPortalUnreachable` | Parsing&AIConnector | Portal unreachable during parsing |
+| `EmployerImported` | Vacancies Market | A new employer was added to the catalogue. |
+| `VacancyImported` | Vacancies Market | A new canonical vacancy was added to the catalogue. |
+| `VacancyUpdated` | Vacancies Market | A canonical vacancy changed or was reopened. |
+| `VacancyMerged` | Vacancies Market | Parser-selected duplicates were merged into a canonical vacancy. |
+| `VacancyClosed` | Vacancies Market | A canonical vacancy was closed after source data confirmed it. |
+| `InterviewerAssigned` | Vacancies Market | An interviewer was linked to a vacancy. |
+
+Parser status events, including `ExternalPortalUnreachable` and `ParsingFailed`,
+are published by `Parsing&AIConnector`, not by this context.
 
 ## Aggregates
 
 - `Employer` – root
-- `Vacancy` – part of Employer but a separate aggregate for search
-- `Interviewer`
-- `Portal` (lookup)
+- `Vacancy` – separate root aggregate for catalogue and search
+- `Job` – root aggregate for the job catalogue
+- `Requirement` – shared reference entity
+- `Interviewer` – entity belonging to an employer
+- `VacancySource` – source provenance for parser projections and audit
 
 ## Business rules (invariants)
 
-- An interviewer belongs to exactly one employer.
 - A vacancy cannot exist without an employer.
-- Vacancies are only imported, not created manually.
-- When updated on the portal, a new version of the vacancy is created
-  (history).
+- A public API cannot manually create or update a vacancy; only a valid
+  `CatalogueChangeRequested` command can change the catalogue.
+- Duplicate resolution, source closure policy and merge selection are owned by
+  `Parsing&AIConnector`; this context applies the approved result only.
+- When a vacancy changes, a new aggregate version preserves its history.
+- An interviewer can be assigned only to a vacancy of the same employer.

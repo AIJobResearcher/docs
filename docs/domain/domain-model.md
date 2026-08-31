@@ -17,8 +17,10 @@ described in a separate file:
 
 ## Cross‑domain processes (summary)
 
-- **Vacancy synchronisation** (Domain 1 + Domain 3) – parsing imports vacancies,
-  then events are generated to update the search index.
+- **Vacancy synchronisation** (Domain 1 + Domain 3) – the parsing context uses
+  AI-assisted enrichment and duplicate resolution, then sends an approved
+  catalogue-change command. The vacancy catalogue persists it and publishes
+  changes to update the search index.
 - **Learning personalisation** (Domain 2 + Domain 4) – based on interview results
   (`MeetCompleted`) and replies (`ReplyCreated`), development recommendations
   are formed.
@@ -34,9 +36,9 @@ summary:
 
 | Service | Owns (main aggregates) |
 | --------------------- | --- |
-| Vacancies  Market | Vacancy, Employer, Interviewer, Portal, Requirement, Location |
+| Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, VacancySource |
 | ResearcherCrm | Researcher, Job, Reply, Meet, Message, AIRecommendation |
-| Parsing&AIConnector | ParsingTask, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
+| Parsing&AIConnector | ParsingTask, VacancyCandidate, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
 | KnowledgeCenter | LearningTrack, TrackItem, Progress, Skill, DevelopmentRecommendation |
 | Frontend | (only UI states: UserSession, UIConfig) |
 

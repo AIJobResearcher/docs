@@ -13,6 +13,7 @@ documentation.
 | **BDD (Behavior-Driven Development)** | Development approach through executable Gherkin scenarios run in CI. |
 | **Bounded Context** | Boundary of a domain model. The project defines contexts: Vacancy Management, Job Search & CRM, AI & Parsing, Learning Management. |
 | **Breaking change** | Change in an event that requires increasing `event_version` (removal of a mandatory field, type change, etc.). |
+| **CatalogueChangeRequested** | Command from Parsing&AIConnector asking Vacancies Market to atomically persist an approved vacancy create, update, merge or closure. |
 | **Celery** | Background worker for async tasks (parsing, AI requests) in Parsing&AIConnector. |
 | **Chunking** | Splitting a document into fragments (chunks) for RAG (500 tokens, overlap 50). |
 | **Clean Architecture** | Architectural approach independent of external frameworks; layers: Presentation, Application, Domain, Infrastructure. |
@@ -78,7 +79,9 @@ documentation.
 | **TrackItem** | Learning plan item (course, article, practice). Aggregate in KnowledgeCenter. |
 | **Ubiquitous Language** | Common language used in code, events, API and documentation. |
 | **Vacancies** | PHP service (Laravel) managing vacancies, employers, interviewers. |
-| **Vacancy** | Vacancy – public information, imported from portals. Aggregate in Vacancies. |
+| **Vacancy** | Public vacancy information. Parsing&AIConnector selects approved catalogue changes; Vacancies Market persists and exposes the catalogue aggregate. |
+| **VacancyCandidate** | Internal Parsing&AIConnector entity containing normalized source data, duplicate candidates, confidence and a selected catalogue mutation. |
+| **VacancyMerged** | Event published by Vacancies Market after parser-selected duplicate vacancies are merged into one canonical record. |
 | **Vector Database** | Database for storing and searching vector representations (Qdrant). |
 | **Version (aggregate)** | Field for optimistic locking. |
 | **event_version** | Schema version of an event (integer, increased on breaking changes). |
