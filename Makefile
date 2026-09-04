@@ -39,23 +39,12 @@ test-yaml:
 	@echo "Running YAML linting on docs/..."
 	@yamllint -c .yamllint.yaml docs/ && echo "✅ All YAML files passed validation"
 
-test-bdd:
-	@echo "Checking BDD feature files syntax..."
-	@output=$$(npx cucumber-js --config cucumber.js --format json 2>&1); \
-	if echo "$$output" | grep -qi "syntax error"; then \
-		echo "❌ Syntax error found"; \
-		echo "$$output"; \
-		exit 1; \
-	else \
-		echo "✅ All feature files are valid"; \
-	fi
-
 test-links:
 	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest \
     		--config /input/lychee.toml \
     		/input/docs /input/*.md
 
-test: test-md test-yaml test-bdd test-links
+test: test-md test-yaml test-links
 	@echo "All validations passed."
 
 help:

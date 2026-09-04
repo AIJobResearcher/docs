@@ -175,7 +175,8 @@ Details – [ADR-011](./adr/adr-011-outbox-pattern.md).
 - All documentation in the `/docs` repository.
 - **API specifications:** OpenAPI 3.0, generated in CI, published to
   `docs/api/<service>/`.
-- **BDD scenarios:** Gherkin in `docs/features/<service>/`, run in CI.
+- **Requirement scenarios:** `.feature` files in `docs/features/<service>/`
+  documenting behavior requirements for each service.
 - **C4 diagrams:** in `/docs/c4/`.
 - **Main registry:** `/docs/README.md`.
 - **ADR:** in `/docs/adr/`.
@@ -186,17 +187,10 @@ CI rejects changes without updating specifications and passing tests.
 
 CI pipeline (`.github/workflows/ci.yml`):
 
-1. **Testing:** unit + integration + BDD (by cloning `docs` repo).
+1. **Testing:** unit and integration tests (PHPUnit).
 2. **OpenAPI/AsyncAPI publication:** via Deploy Key to `docs/api/`.
 
-**Run BDD tests locally:**
-
-    git clone https://github.com/AIJobResearcher/docs.git ../docs
-    cd <service-dir>
-    vendor/bin/behat   # for PHP
-    # or behave (Python), godog (Go)
-
-Filter: `vendor/bin/behat --tags @interview`
+Test coverage of services is provided by PHPUnit (`vendor/bin/phpunit`).
 
 ## 11. Links to detailed artifacts
 

@@ -227,8 +227,7 @@ not domain events of this context.
 - Fields: `id` (UUID), `title` (string), `description` (text, nullable),
   `website` (string, nullable), `email` (string, nullable), `phone` (string,
   nullable), `logo_url` (string, nullable), `created_at` (timestamp),
-  `updated_at` (timestamp), `version` (integer, default 1), `is_active`
-  (boolean, default true)
+  `updated_at` (timestamp), `version` (integer, default 1)
 - Behavior: `addVacancy()`, `removeVacancy()` (only if vacancy is closed),
   `addInterviewer()`, `removeInterviewer()`
 
