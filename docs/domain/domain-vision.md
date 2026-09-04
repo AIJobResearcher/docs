@@ -68,8 +68,8 @@ it.
 5. **Flexibility of AI providers** – ability to use local models (Ollama) for
    free or commercial ones (OpenAI) if needed.
 6. **Full observability**: tracing, structured logs, metrics and SLO alerts.
-7. **Documentation as Code** – live OpenAPI/AsyncAPI specifications, Gherkin
-   scenarios, ADRs.
+7. **Documentation as Code** – live OpenAPI/AsyncAPI specifications, requirement
+   scenarios (`.feature` files), ADRs.
 
 ## 7. Success Metrics
 

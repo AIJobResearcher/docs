@@ -73,7 +73,7 @@ Override host and port:
 
 | Command | Description |
 | --- | --- |
-| `make build` | Install all npm dependencies, markdownlint, cucumber-js, pull Lychee Docker image, install yamllint, and build documentation Docker image |
+| `make build` | Install all npm dependencies, markdownlint, pull Lychee Docker image, install yamllint, and build documentation Docker image |
 
 ### Local docs deployment
 
@@ -89,9 +89,8 @@ Override host and port:
 | --- | --- |
 | `make test-md` | Lint Markdown files with markdownlint-cli2 |
 | `make test-yaml` | Validate YAML files with yamllint |
-| `make test-bdd` | Check Gherkin syntax with cucumber-js |
 | `make test-links` | Check links in Markdown with Lychee (Docker) |
-| `make test` | Run all validations (md + yaml + bdd + links) |
+| `make test` | Run all validations (md + yaml + links) |
 
 ### Direct deployment commands
 
@@ -111,8 +110,7 @@ Runs on every push to `main` and pull requests:
 1. **Lint Markdown** - Check Markdown files with markdownlint-cli2
 2. **Check Links** - Validate links with Lychee Docker image
 3. **Validate YAML** - Check all YAML files with yamllint
-4. **BDD Tests** - Validate Gherkin feature files syntax with cucumber-js
-5. **Generate OpenAPI** (only on push to main) - Create placeholder OpenAPI specs and publish to GitHub Pages
+4. **Generate OpenAPI** (only on push to main) - Create placeholder OpenAPI specs and publish to GitHub Pages
 
 ### Continuous Deployment (CD) - .github/workflows/cd.yml
 
@@ -132,7 +130,6 @@ This runs all the same checks as the CI pipeline:
 
 - Markdown linting
 - YAML validation
-- BDD syntax checking
 - Link checking with Lychee
 
 ## Project Structure
@@ -148,8 +145,7 @@ This runs all the same checks as the CI pipeline:
     ├── Makefile               # Main make commands
     ├── lychee.toml           # Lychee link checker config
     ├── .markdownlint.json    # Markdown linting config
-    ├── .yamllint.yaml        # YAML linting config
-    └── cucumber.js           # Cucumber BDD config
+    └── .yamllint.yaml        # YAML linting config
 
 ## Troubleshooting
 
@@ -186,7 +182,6 @@ Run the validation step-by-step to identify the problem:
 
     make test-md      # Check only Markdown
     make test-yaml    # Check only YAML files
-    make test-bdd     # Check only BDD features
     make test-links   # Check only links
 
 Or run all checks with verbose output:

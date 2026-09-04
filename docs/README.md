@@ -39,7 +39,6 @@ OpenTelemetry + Jaeger + Prometheus + Loki.
 | [AI & RAG Pipeline](domain/ai-rag-pipeline.md) | RAG pipeline, AI providers, embeddings, vector DB, parsing, caching, prompts |
 | [AsyncAPI Events](./asyncapi/events.yaml) | Specification of all domain events in AsyncAPI 2.6.0 format |
 | **API specifications (OpenAPI)** | Automatically generated specifications for each service: - [api/vacancies/](api/vacancies-market/) - [api/researcher-crm/](./api/researcher-crm/) - [api/parsing-ai-connector/](./api/parsing-ai-connector/) - [api/knowledge-center/](./api/knowledge-center/) |
-| **BDD scenarios (Gherkin)** | Executable scenarios for each service: - [Vacancies: manage vacancies](features/vacancies-market/managing_vacancies.feature) - [Researcher CRM: schedule interviews](./features/researcher-crm/interview-scheduling.feature) - [Parsing&AIConnector: parse vacancies](./features/parsing-ai-connector/parsing-vacancies.feature) - [KnowledgeCenter: learning plan](./features/knowledge-center/learning-plan.feature) |
 | [C4 diagrams](./c4/) | Context, containers, components |
 | [ADR](./adr/) | Architectural decisions (microservices, RabbitMQ, RAG, outbox, capacity planning, etc.) |
 | [Event Storming](./event-storming/) | Event modeling for each domain |

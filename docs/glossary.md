@@ -10,7 +10,7 @@ documentation.
 | **AIProvider** | Interface for interacting with AI models (OllamaAIProvider, OpenAIProvider). |
 | **AIRecommendation** | Entity in ResearcherCrm that stores a generated AI recommendation (text, type, target object). |
 | **Application Layer** | Layer in Clean Architecture containing use cases / commands. Coordinates domain objects. |
-| **BDD (Behavior-Driven Development)** | Development approach through executable Gherkin scenarios run in CI. |
+| **BDD (Behavior-Driven Development)** | Development approach where behavior is described with Gherkin scenarios (Given/When/Then). |
 | **Bounded Context** | Boundary of a domain model. The project defines contexts: Vacancy Management, Job Search & CRM, AI & Parsing, Learning Management. |
 | **Breaking change** | Change in an event that requires increasing `event_version` (removal of a mandatory field, type change, etc.). |
 | **CatalogueChangeRequested** | Command from Parsing&AIConnector asking Vacancies Market to atomically persist an approved vacancy create, update, merge or closure. |
