@@ -30,11 +30,11 @@ Full description: `/docs/domain/domain-vision.md`
 | # | Service | Stack | Notes |
 | --- | --------------------- | --- | --- |
 | 1 | Deploy & Docs | DevOps | Docker Compose, K8s, GitHub Actions, ADR |
-| 2 | Vacancies Market | PHP 8.5, Laravel 13,<br>PostgreSQL 16, Redis | catalogue of employers,<br>vacancies and interviewers |
-| 3 | ResearcherCrm | PHP 8.5, Symfony 7.1,<br>Doctrine ORM, PostgreSQL 16,<br>Redis | job seekers, desired jobs,<br>replies, meetings, messages,<br>analytics |
-| 4 | Parsing&AIConnector | Python 3.12, FastAPI,<br>Celery, RabbitMQ | portal parsing, AI models,<br>recommendations |
-| 5 | Frontend | React 18, Next.js 14,<br>TypeScript | user interface |
-| 6 | KnowledgeCenter | Go 1.22, Gin,<br>PostgreSQL 16, RabbitMQ | learning tracks, progress,<br>dev recommendations |
+| 2 | Vacancies Market | PHP 8.5, Laravel 13, PostgreSQL 16, Redis | catalogue of employers, vacancies and interviewers |
+| 3 | ResearcherCrm | PHP 8.5, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis | job seekers, desired jobs, replies, meetings, messages, analytics |
+| 4 | Parsing&AIConnector | Python 3.12, FastAPI, Celery, RabbitMQ | portal parsing, AI models, recommendations |
+| 5 | Frontend | React 18, Next.js 14, TypeScript | user interface |
+| 6 | KnowledgeCenter | Go 1.22, Gin, PostgreSQL 16, RabbitMQ | learning tracks, progress, dev recommendations |
 
 ## 4. Service communication
 
@@ -78,8 +78,8 @@ More about search engine choice – [ADR-014](./adr/adr-014-opensearch.md).
 
 | External system | ACL located in | Tasks |
 | --- | --- | --- |
-| Job portals (LinkedIn, Djinni) | Parsing&AIConnector | parse HTML/JSON, normalise,<br>map to domain |
-| AI providers (OpenAI, Ollama) | Parsing&AIConnector | unify prompts, error handling,<br>fallback |
+| Job portals (LinkedIn, Djinni) | Parsing&AIConnector | parse HTML/JSON, normalise, map to domain |
+| AI providers (OpenAI, Ollama) | Parsing&AIConnector | unify prompts, error handling, fallback |
 | Google Calendar | ResearcherCrm (async) | create events, OAuth |
 | Google OAuth2 | authentication module | token verification, role mapping |
 
@@ -112,15 +112,17 @@ old version is published in parallel for at least 30 days.
 
 **Message format example:**
 
-    {
-      "event_id": "uuid",
-      "event_type": "ReplyCreated",
-      "event_version": 1,
-      "aggregate_id": "reply-123",
-      "timestamp": "2025-02-24T10:00:00Z",
-      "correlation_id": "xxx",
-      "data": { ... }
-    }
+```json
+{
+  "event_id": "uuid",
+  "event_type": "ReplyCreated",
+  "event_version": 1,
+  "aggregate_id": "reply-123",
+  "timestamp": "2025-02-24T10:00:00Z",
+  "correlation_id": "xxx",
+  "data": { ... }
+}
+```
 
 **Compatibility rules:**
 
@@ -150,11 +152,13 @@ mechanisms is used:
 
 **Example for ReplyCreated:**
 
-    BEGIN;
-    INSERT INTO processed_events (event_id, event_type, processed_at)
-    VALUES ('evt_12345', 'ReplyCreated', NOW());
-    -- then business logic to create Reply
-    COMMIT;
+```sql
+BEGIN;
+INSERT INTO processed_events (event_id, event_type, processed_at)
+VALUES ('evt_12345', 'ReplyCreated', NOW());
+-- then business logic to create Reply
+COMMIT;
+```
 
 Idempotency strategy is described in [ADR-013](./adr/adr-013-idempotency.md).
 

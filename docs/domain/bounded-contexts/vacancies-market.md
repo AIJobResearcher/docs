@@ -240,7 +240,7 @@ not domain events of this context.
   (timestamp), `updated_at` (timestamp), `posted_at` (timestamp),
   `employment_type` (enum: part-time/contract/internship/full-time/volunteer),
   `workplace` (enum: remote/on-site/hybrid), `version` (integer, default 1),
-  `internal_url` (string, nullable), `external_urls` (list<string>),
+  `internal_url` (string, nullable), `external_urls` (`list<string>`),
   `closed_at` (timestamp, nullable)
 - Relationships:
   - has many `Requirement` via many‑to‑many table `vacancy_requirements`

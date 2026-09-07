@@ -33,7 +33,7 @@ logs:
 	$(MAKE) -C deploy/docs/local logs
 
 test-md:
-	npx markdownlint-cli2 "docs/**/*.md" --config .markdownlint.json
+	npx markdownlint-cli2 "docs/**/*.md" "AGENTS.md" ".ai-agent/standards/md-files-standards.md" --config .markdownlint.json
 
 test-yaml:
 	@echo "Running YAML linting on docs/..."
@@ -61,6 +61,5 @@ help:
 	@echo "Validations:"
 	@echo "  test-md      - Lint Markdown files"
 	@echo "  test-yaml    - Validate YAML files"
-	@echo "  test-bdd     - Check Gherkin syntax"
 	@echo "  test-links   - Check links with Lychee (Docker)"
 	@echo "  test         - Run all validations"

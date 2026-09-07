@@ -1,3 +1,5 @@
 # Ide
 .idea/
 /node_modules/
+/.ai-agent/temp/
+/.ai-agent/user.data/temp/
