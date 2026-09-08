@@ -1,116 +1,83 @@
 # MD files Standards
 
-Apply to every Markdown file written or edited in this repository.
-
 ## 1. Formatting requirements
 
-1. Headings: ATX hash style, one space after the hashes; no setext
-   underlines. ✅ `## Overview`
-2. Unordered lists: dashes only (`- item`), never `*` or `+`.
-3. No trailing spaces and no two-space hard breaks — separate blocks with
-   blank lines.
-4. Prose and headings wrap at 80 characters; code blocks and table rows may
-   be longer.
-5. No duplicate headings among siblings — one occurrence per parent; the same
-   heading under different parents is fine.
-6. Horizontal rule: `---`, never `***` or `___`.
-7. Names capitalized exactly: AIJobResearcher, GitHub, GitHub Actions,
-   Docker, Docker Compose, YAML, Markdown, OpenAPI, AsyncAPI, Gherkin,
-   Cucumber, Lychee, markdownlint (text only, code excluded).
-8. No raw HTML or bare angle brackets (`<br>`, `list<string>`) — wrap them in
-   inline code; never `<br>` inside tables.
-9. Code blocks: fenced with three backticks, blank line before and after;
-   indented blocks are forbidden; add a language label (json, sql, text)
-   after the opening fence.
-10. Fences: backticks, not tildes.
-11. Emphasis: asterisks (`*i*`, `**b**`), not underscores.
+- **1.1** Headings: ATX hash style, one space after the hashes; no setext
+  underlines. ✅ `## Overview`
+- **1.2** Unordered lists: dashes only (`- item`), never `*` or `+`.
+- **1.3** No trailing spaces and no two-space hard breaks — separate blocks
+  with blank lines.
+- **1.4** Prose and headings wrap at 80 characters; code blocks and table
+  rows may be longer.
+- **1.5** No duplicate headings among siblings — one per parent; the same
+  heading under different parents is fine.
+- **1.6** Horizontal rule: `---`, never `***` or `___`.
+- **1.7** Names capitalized exactly: AIJobResearcher, GitHub, GitHub
+  Actions, Docker, Docker Compose, YAML, Markdown, OpenAPI, AsyncAPI,
+  Gherkin, Cucumber, Lychee, markdownlint (text only, code excluded).
+- **1.8** No raw HTML or bare angle brackets (`<br>`, `list<string>`) —
+  wrap in inline code; never `<br>` inside tables.
+- **1.9** Code blocks: fenced with backticks (not tildes), blank line
+  before and after; indented blocks forbidden; add a language label (json,
+  sql, text) after the opening fence.
+- **1.10** Emphasis: asterisks (`*i*`, `**b**`), not underscores.
 
-## 2. Document structure and completeness
+## 2. Document structure
 
-1. Number headings hierarchically (`1.`, `1.1`, `1.1.1`); no skipped or
-   repeated numbers; depth of three levels or fewer.
-2. Standalone documents open with 2–4 sentences: purpose, audience, scope.
-3. Cross-reference sections by number (`see 1.1`), one style per file.
-4. Link, do not duplicate — one source of truth per fact.
-5. First occurrence of every domain term links to `docs/glossary.md`; never
-   redefine terms inline.
-6. Headings state exactly what their section contains and match sibling
-   form; no empty headings.
-7. Normative or living documents carry a status line or revision table
-   (status, date, author, note); ADR files follow their template.
-8. Ship nothing unfinished: no `TODO`, `TBD`, placeholder ellipses, or empty
-   sections.
+- **2.1** Number all structure in one hierarchy: headings `1.`, subheadings
+  `1.1`, and each rule-item inherits its heading number plus an ordinal as a
+  bold dash-bullet label (`1.1`, `2.3`). No skipped or repeated numbers;
+  depth of three levels or fewer.
+- **2.2** Standalone documents open with 2–4 sentences: purpose, audience,
+  scope.
+- **2.3** Cross-reference sections by number (`see 1.1`), one style per
+  file.
+- **2.4** Reference, do not duplicate or paste: link by relative path and
+  line range (`path#L10-L20`); keep one source of truth per fact.
+- **2.5** First occurrence of every domain term links to `docs/glossary.md`;
+  never redefine terms inline.
+- **2.6** Headings state exactly what their section contains and match
+  sibling form; no empty headings.
+- **2.7** Normative or living documents carry a status line or revision
+  table (status, date, author, note).
+- **2.8** Keep the items of a document mutually consistent and
+  non-overlapping — no rule repeats or contradicts another; merge overlaps
+  into one terse rule.
 
-## 3. Before you finish
+## 3. Agent-system files
 
-1. Structure: hierarchical numbered headings, no empty headings, purpose
-   block present (§2).
-2. Type: ADR and requirements files include their mandatory elements (§4).
-3. References: numeric cross-links used, relative links resolve, first
-   glossary term linked.
-4. No duplicated facts — link what already exists.
-5. Clean text: no `TODO`/`TBD`, trailing spaces, raw HTML, or prose over 80
-   characters (§1).
+### 3.1 AGENTS.md
 
-## 4. Document-type requirements
+- **3.1.1** One top-level heading; numbered section headings (see section 2
+  of this file).
+- **3.1.2** Loaded into every session — keep only pointers and stable
+  facts; every line must earn its place. Move detail and drifting content to
+  standards files or live configs; link, never duplicate.
+- **3.1.3** Global behaviour rules (reporting, file access, no auto runs,
+  security) belong to the root `AGENTS.md`; never copy them into standards.
+- **3.1.4** Keep one canonical section order — scope, quality, behaviour,
+  done, limits — for instant navigation.
+- **3.1.5** Phrase rules as an action plus scope plus the rare exception,
+  never as a principle or "be …" filler.
+- **3.1.6** Never store secrets, credentials, or absolute personal paths.
+- **3.1.7** Update when a language or service is added, or when a repeated
+  agent mistake reveals a missing rule; it is a living file.
+- **3.1.8** Keep the same section titles and numbers across every project's
+  `AGENTS.md` so references stay stable.
 
-Mandatory type-specific elements on top of sections 1 and 2.
+### 3.2 Standards files
 
-### 4.1 ADR
-
-In `docs/adr/`, one file per decision.
-
-1. File: `adr-NNN-<slug>.md`; NNN is the next free zero-padded number, never
-   reused or renumbered.
-2. Title: `# ADR-NNN: <Decision summary>`.
-3. Sections in fixed order: Context, Decision, Why this decision,
-   Alternatives, Consequences, Related artifacts.
-4. Decision records concrete choices; Alternatives lists rejected options
-   with reasons. Link other ADRs instead of duplicating them.
-5. Optional lifecycle header after the title: `**Status:** proposed |
-   accepted | superseded`, `**Date:** YYYY-MM-DD`; a superseded ADR names its
-   replacement.
-
-### 4.2 Technical requirements
-
-Pattern file: `docs/technical-requirements.md`.
-
-1. Metadata block after the title: `**Version:**`, `**Target load:**`,
-   `**Application version:**`.
-2. After a `---` divider, a `> **Related documentation:**` blockquote linking
-   glossary, overview, and related documents.
-3. Numbered sections (`1.`, `1.1`); quantified requirements (SLO, latency,
-   capacity) are tables with named columns and explicit units, not prose.
-
-### 4.3 Bounded-context pages
-
-In `docs/domain/bounded-contexts/`, one page per context.
-
-1. Title: `# Bounded Context: <Name> (<Service> Service)`.
-2. Related-documentation blockquote right after the title (glossary,
-   architecture overview, domain model, repository README).
-3. Core section order: Responsibility, Key NFRs, Business processes, User
-   stories, Business invariants, Domain events, Aggregates and entities,
-   Interaction with other contexts, Implementation.
-4. Context-specific extras may be added where they fit (e.g. integration
-   contract).
-5. Under "Aggregates and entities", each aggregate/entity is an `###`
-   heading; root aggregates are marked `(root)`.
-
-### 4.4 Event-storming pages
-
-In `docs/event-storming/`, one page per business process stream.
-
-1. Title: `# Event Storming: <Domain>`.
-2. Sections: Commands (triggers), Domain events, Aggregates, Business rules
-   (invariants); "Integration messages" only for events crossing contexts.
-3. Entries: `**<Name>** – one-line description`; reuse the bounded-context
-   names (same Ubiquitous Language).
-
-### 4.5 API specifications
-
-One OpenAPI file per service, `docs/api/<service>/openapi.yaml`. These are
-YAML — Markdown rules do not apply inside them: formatting follows
-`.yamllint.yaml`, correctness the OpenAPI specification. Reference the file
-from the bounded-context page; the service name in the path equals the
-bounded context name.
+- **3.2.1** Platform-document rules (2.2, 2.6, 2.7) do not apply; headings
+  are 1–3 words that label, never describe.
+- **3.2.2** Maximally dense — one directive per line, every word earned; no
+  filler, connectors, or explanation.
+- **3.2.3** The standards set: `md-files-standards.md` (general Markdown),
+  `docs-files-standards.md` (docs), and the language standards
+  `php-standards.md`, `laravel-standards.md`, `python-standards.md`,
+  `react-standards.md`.
+- **3.2.4** On a conflict the more specific file wins — a language or docs
+  standard overrides the general one; otherwise surface the contradiction
+  to the user instead of guessing.
+- **3.2.5** Standards files load on demand by task type; each is
+  self-contained yet short and references common rules instead of repeating
+  them.

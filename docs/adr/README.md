@@ -2,7 +2,7 @@
 
 Architecture Decision Records capture the platform's architectural choices
 and their rationale — one file per decision. The required ADR structure is
-defined in `../.ai-agent/standards/md-files-standards.md` (§4.1). Status and
+defined in `../.ai-agent/standards/docs-files-standards.md` (ADR). Status and
 date fields are not used yet; they can be introduced when lifecycle tracking
 (proposed/accepted/superseded) starts.
 

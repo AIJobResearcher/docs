@@ -16,11 +16,17 @@ or test suite.
    other formats mirror the edited file's style.
 2. When renaming/moving/deleting a `docs/` file or heading, grep for
    references to it and update them.
+3. Load the standard that matches the file kind: Markdown/agent files →
+   `.ai-agent/standards/md-files-standards.md`; `docs/` content →
+   `docs-files-standards.md`.
+4. Patch only the affected section of a file; never rewrite or reformat a
+   whole document just to make an edit.
 
 ## 3. Token Efficiency
 
 1. Ambiguous scope or design decision: ask at most one round of
-   questions.
+   questions; if none arrives, proceed on the most plausible default and
+   mark choices "ASSUMPTION".
 2. Report as a single short line — "Done — `<files>`" or "Done —
    `<file>`: <2-3 words>" — plus diff hunks only. No explanations,
    rationale, or step summaries unless asked.
@@ -41,11 +47,17 @@ or test suite.
    `.ai-agent/agent.data`, each under 40 lines.
 9. After ~20 messages or when context grows large, suggest a fresh
    session.
+10. Task intake: silently check the request for a clear verb, a target
+    `@file#L..L`, an expected result, and constraints. Ask — in one block,
+    one round — only the gaps that are missing and material; otherwise
+    apply the standing defaults in this file (output format, gates,
+    boundaries) and mark choices ASSUMPTION.
 
 ## 4. Definition of done
 
 1. Fully deliver the requested scope; interrupt only when genuinely
-   blocked or scope is ambiguous (§3.1).
+   blocked or scope is ambiguous (§3.1), and then state the single missing
+   input that would unblock.
 
 ## 5. Limitations
 
@@ -62,3 +74,7 @@ or test suite.
    STOP — no tool runs, no extra analyzers, no widened scope. Do not
    self-verify edits by running gates. On an explicit run request,
    scope to the changed files only and re-report briefly.
+5. Change only what the task requires — no speculative rewrites or
+   reformats of unrelated files or sections.
+6. Never put secrets, credentials, API keys, or real tokens into files or
+   output; refer to `.env` by variable name only.
