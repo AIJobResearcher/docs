@@ -21,7 +21,7 @@ jobs:
         run: npm install markdownlint-cli2 --save-dev
 
       - name: Lint Markdown files
-        run: npx markdownlint-cli2 "docs/**/*.md" --config .markdownlint.json
+        run: npx markdownlint-cli2 "docs/**/*.md" "AGENTS.md" --config .markdownlint.json
 
   check-links:
     runs-on: ubuntu-latest

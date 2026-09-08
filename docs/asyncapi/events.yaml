@@ -76,6 +76,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: CatalogueChangeRequested
@@ -84,6 +85,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -178,6 +180,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: VacancyImported
@@ -186,6 +189,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -225,6 +229,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: EmployerImported
@@ -233,6 +238,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -259,6 +265,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: VacancyUpdated
@@ -267,6 +274,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -291,6 +299,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: VacancyClosed
@@ -299,6 +308,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -320,6 +330,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: VacancyMerged
@@ -328,6 +339,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -354,6 +366,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: InterviewerAssigned
@@ -362,6 +375,7 @@ components:
             minimum: 1
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -384,6 +398,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ExternalPortalUnreachable
@@ -410,11 +425,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ResearcherRegistered
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -435,11 +452,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: JobPreferencesUpdated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -462,11 +481,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ReplyCreated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -489,11 +510,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ReplyWithdrawn
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -516,11 +539,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: MeetScheduled
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -548,11 +573,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: MeetCompleted
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -573,11 +600,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: MeetCancelled
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -598,11 +627,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: MessageSent
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -628,11 +659,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: AccountDeleted
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -654,11 +687,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: DataExported
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -680,11 +715,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: RecommendationGenerated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -712,6 +749,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ParsingFailed
@@ -735,6 +773,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: AITokenBudgetExceeded
@@ -761,6 +800,7 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ParsingSuspended
@@ -786,11 +826,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: LearningTrackCreated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -813,11 +855,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: LearningTrackCompleted
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -841,11 +885,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: ProgressUpdated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -869,11 +915,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: DevelopmentRecommendationGenerated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time
@@ -899,11 +947,13 @@ components:
           event_id:
             type: string
             format: uuid
+            description: Unique id of this event instance (auto-generated uuid). Independent of and never equal to aggregate_id.
           event_type:
             type: string
             const: AIConspectGenerated
           aggregate_id:
             type: string
+            description: Id of the source aggregate; shared by all events of the same aggregate. Independent of event_id.
           timestamp:
             type: string
             format: date-time

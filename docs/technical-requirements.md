@@ -34,8 +34,8 @@
 | KnowledgeCenter     | `GET /api/knowledge/plan?userId={id}`      | 500 ms  | 1000 ms | learning plan based on aggregated data                                                          |
 
 - **Metrics:** Prometheus histograms with buckets covering the stated thresholds.
-- **Alerting:** when p99 exceeds target by 50% for 5 minutes – warning; by 100% –
-  critical.
+- **Alerting:** when p99 exceeds target by 50% for 5 minutes – warning;
+  by 100% – critical.
 
 ### 1.3 Availability and reliability
 
@@ -61,9 +61,9 @@ multi‑region.
 
 ### 1.4 Consistency
 
-- **Eventual consistency:** allowed delay between services – p95 ≤ 2 sec, p99 ≤ 5
-  sec, max window (alert) – 30 sec. Example: `ReplyCreated` event from
-  publication to display in Researcher CRM analytics.
+- **Eventual consistency:** allowed delay between services – p95 ≤ 2 sec,
+  p99 ≤ 5 sec, max window (alert) – 30 sec. Example: `ReplyCreated`
+  event from publication to display in Researcher CRM analytics.
 - **Strong consistency** – inside a single service via local transactions (Clean
   Architecture).
 

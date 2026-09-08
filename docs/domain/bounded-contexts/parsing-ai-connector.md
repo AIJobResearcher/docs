@@ -56,9 +56,10 @@ enrich and deduplicate vacancy data, cache results, RAG pipeline.
 
 6. **Parse portals**
 
-   - As a system, I want to automatically (on schedule) parse external job portals,
-     respecting `robots.txt` and frequency limits, to keep the Vacancies Market service
-     filled with fresh data.
+   - As a system, I want to automatically (on schedule) parse external job
+     portals,
+     respecting `robots.txt` and frequency limits,
+     to keep the Vacancies Market service filled with fresh data.
    - As a system, I want to automatically monitor parsing success and when it drops
      below the threshold (80%) – suspend activity for a set interval (30 minutes),
      then resume, to avoid blocks and reduce load on the problematic portal.

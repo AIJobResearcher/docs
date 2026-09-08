@@ -8,76 +8,63 @@ servers:
     description: Production server
 paths:
   /vacancies:
-    get:
+    post:
       summary: Search vacancies
-      description: Search vacancies by job ID with filtering and pagination.
-      parameters:
-        - name: job_id
-          in: query
-          schema:
-            type: string
-            nullable: false
-          description: Id of the job
-        - name: employer_id
-          in: query
-          schema:
-            type: string
-            nullable: true
-          description: Filter by employer
-        - name: country
-          in: query
-          schema:
-            type: string
-            nullable: false
-          description: Filter by country
-        - name: city
-          in: query
-          schema:
-            type: string
-            nullable: true
-          description: Filter by city
-        - name: salary_min
-          in: query
-          schema:
-            type: integer
-            nullable: true
-          description: Minimum salary
-        - name: salary_max
-          in: query
-          schema:
-            type: integer
-            nullable: true
-          description: Maximum salary
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [open, closed]
-            nullable: false
-          description: Vacancy status
-        - name: per_page
-          in: query
-          schema:
-            type: integer
-            maximum: 100
-            default: 20
-            nullable: false
-          description: Number of records per page
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 1
-            nullable: true
-          description: Page number
-        - name: sort
-          in: query
-          schema:
-            type: string
-            enum: [date, salary_asc, salary_desc]
-            default: date
-            nullable: true
-          description: Sort field
+      description: Search vacancies by job ID with filtering and pagination. All
+        criteria are sent in the request body as multipart/form-data.
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                job_id:
+                  type: string
+                  nullable: true
+                  description: Id of the job the vacancy is assigned to
+                employer_id:
+                  type: string
+                  nullable: true
+                  description: Filter by employer
+                country:
+                  type: string
+                  nullable: true
+                  description: Filter by country
+                city:
+                  type: string
+                  nullable: true
+                  description: Filter by city
+                min_salary:
+                  type: integer
+                  nullable: true
+                  description: Minimum salary (USD)
+                max_salary:
+                  type: integer
+                  nullable: true
+                  description: Maximum salary (USD)
+                status:
+                  type: string
+                  nullable: true
+                  enum: [open, closed]
+                  description: Vacancy status
+                per_page:
+                  type: integer
+                  maximum: 100
+                  default: 20
+                  nullable: true
+                  description: Number of records per page
+                page:
+                  type: integer
+                  default: 1
+                  nullable: true
+                  description: Page number
+                sort:
+                  type: string
+                  enum: [date, salary_asc, salary_desc]
+                  default: date
+                  nullable: true
+                  description: Sort field
       responses:
         '200':
           description: Successful response
@@ -204,22 +191,34 @@ components:
           type: string
         title:
           type: string
-        employer_name:
+        employer_id:
           type: string
-        salary_min:
+        employer_title:
+          type: string
+        min_salary:
           type: integer
-        salary_max:
+        max_salary:
           type: integer
         currency:
           type: string
-        location:
+        country:
           type: string
-        published_at:
+          nullable: true
+        city:
           type: string
-          format: date-time
+          nullable: true
+        employment_type:
+          type: string
+          enum: [part-time, contract, internship, full-time, volunteer]
+        workplace:
+          type: string
+          enum: [remote, on-site, hybrid]
         status:
           type: string
           enum: [open, closed]
+        posted_at:
+          type: string
+          format: date-time
     Vacancy:
       allOf:
         - $ref: '#/components/schemas/VacancyPreview'
@@ -227,12 +226,24 @@ components:
           properties:
             description:
               type: string
+              nullable: true
             requirements:
+              type: array
+              items:
+                type: string
+            internal_url:
+              type: string
+              nullable: true
+            external_urls:
               type: array
               items:
                 type: string
             employer:
               $ref: '#/components/schemas/Employer'
+            closed_at:
+              type: string
+              format: date-time
+              nullable: true
             created_at:
               type: string
               format: date-time
@@ -246,7 +257,7 @@ components:
       properties:
         id:
           type: string
-        name:
+        title:
           type: string
         description:
           type: string
@@ -265,9 +276,9 @@ components:
           type: string
         location:
           type: string
-        salary_min:
+        min_salary:
           type: integer
-        salary_max:
+        max_salary:
           type: integer
         currency:
           type: string

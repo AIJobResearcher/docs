@@ -94,7 +94,8 @@ undergo:
 
 ### 4.4 Vector Database
 
-**Chosen: Qdrant (self‑hosted).**  
+**Chosen: Qdrant (self‑hosted).**
+
 Reasons: easy deployment, high CPU search performance, metadata filtering,
 official Python client.
 
@@ -114,18 +115,20 @@ official Python client.
 Templates stored in YAML files (`docs/prompts/`). Example for resume
 improvement:
 
-    You are a career consulting expert. Below are fragments from vacancy
-    requirements and the job seeker’s profile.
-    Use them to give recommendations for improving the resume. The answer
-    should be structured: a list of concrete actions.
+```text
+You are a career consulting expert. Below are fragments from vacancy
+requirements and the job seeker’s profile.
+Use them to give recommendations for improving the resume. The answer
+should be structured: a list of concrete actions.
 
-    --- Context ---
-    {context}
+--- Context ---
+{context}
 
-    --- Job seeker’s query ---
-    {query}
+--- Job seeker’s query ---
+{query}
 
-    --- Recommendations ---
+--- Recommendations ---
+```
 
 ### 4.7 Context Assembly
 

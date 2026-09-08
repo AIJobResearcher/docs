@@ -1,7 +1,53 @@
 {
-  "MD013": false,
-  "MD033": false,
-  "MD036": false,
-  "MD041": false,
-  "MD047": false
+  "default": true,
+  "MD003": {
+    "style": "atx"
+  },
+  "MD004": {
+    "style": "dash"
+  },
+  "MD009": {
+    "br_spaces": 0
+  },
+  "MD013": {
+    "line_length": 80,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD024": {
+    "siblings_only": true
+  },
+  "MD035": {
+    "style": "---"
+  },
+  "MD044": {
+    "names": [
+      "AIJobResearcher",
+      "GitHub",
+      "GitHub Actions",
+      "Docker",
+      "Docker Compose",
+      "YAML",
+      "Markdown",
+      "OpenAPI",
+      "AsyncAPI",
+      "Gherkin",
+      "Cucumber",
+      "Lychee",
+      "markdownlint"
+    ],
+    "code_blocks": false
+  },
+  "MD046": {
+    "style": "fenced"
+  },
+  "MD048": {
+    "style": "backtick"
+  },
+  "MD049": {
+    "style": "asterisk"
+  },
+  "MD050": {
+    "style": "asterisk"
+  }
 }
