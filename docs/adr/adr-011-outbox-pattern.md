@@ -21,6 +21,11 @@ We use the **Transactional Outbox** pattern:
   it increments `retry_count` and retries with exponential backoff.
 - After 10 failed attempts, the record is marked as failed and an alert is sent.
 
+`event_id` is unique per event instance (auto-generated uuid), so several events
+of the same aggregate are written to `outbox_messages` as separate rows with
+distinct `event_id`. This keeps the outbox UNIQUE index and the idempotent
+releaser (at-least-once delivery, see ADR-013) correct.
+
 ## Why this decision
 
 - Guarantees atomicity between state persistence and event publication.

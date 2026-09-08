@@ -124,6 +124,11 @@ old version is published in parallel for at least 30 days.
 }
 ```
 
+`event_id` is unique per event instance (auto-generated uuid) and never equals
+`aggregate_id`; `aggregate_id` only identifies the source aggregate. Deduplication
+and idempotency therefore rely solely on `event_id` — never on `aggregate_id` or
+on matching `event_id == aggregate_id`.
+
 **Compatibility rules:**
 
 - **Backward compatible:** adding optional field, extending enum – version

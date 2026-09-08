@@ -24,10 +24,12 @@
 
 ## 2. Document structure
 
-- **2.1** Number all structure in one hierarchy: headings `1.`, subheadings
-  `1.1`, and each rule-item inherits its heading number plus an ordinal as a
-  bold dash-bullet label (`1.1`, `2.3`). No skipped or repeated numbers;
-  depth of three levels or fewer.
+- **2.1** Number every referenceable unit in one hierarchy: headings `1.`,
+  subheadings `1.1`; each content item — every bullet, list item, and thematic
+  paragraph under a numbered section — inherits the section number plus an
+  ordinal as a bold dash-bullet label (`1.1`, `1.2`, `2.3`). No item is left
+  without a number, no skipped or repeated numbers; depth of three levels or
+  fewer.
 - **2.2** Standalone documents open with 2–4 sentences: purpose, audience,
   scope.
 - **2.3** Cross-reference sections by number (`see 1.1`), one style per

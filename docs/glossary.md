@@ -7,6 +7,7 @@ documentation.
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ACL (Anti-Corruption Layer)** | Component that protects the domain model from external systems (portals, AI providers, calendars). Transforms external data and errors into internal objects. |
 | **Admin** | User role with rights to manage portal parsing, configure AI models, view audit logs. |
+| **Aggregate ID (`aggregate_id`)** | Identifier of the source aggregate that produced an event; shared by all events of the same aggregate; independent of and never equal to `event_id`. |
 | **AIProvider** | Interface for interacting with AI models (OllamaAIProvider, OpenAIProvider). |
 | **AIRecommendation** | Entity in ResearcherCrm that stores a generated AI recommendation (text, type, target object). |
 | **Application Layer** | Layer in Clean Architecture containing use cases / commands. Coordinates domain objects. |
@@ -24,6 +25,7 @@ documentation.
 | **Dead Letter Queue (DLQ)** | Queue for RabbitMQ messages that could not be processed after several attempts. |
 | **Deploy Key** | SSH key for publishing OpenAPI specifications to the `docs` repository. |
 | **Documentation as Code** | Approach where documentation is stored in the repository, versioned, checked in CI. |
+| **Domain Event ID (`event_id`)** | Unique uuid of a specific event instance; generated automatically when the event is created; never equal to the `aggregate_id`. |
 | **Domain Layer** | Layer in Clean Architecture containing business entities, aggregates, value objects and invariants. |
 | **Domain Vision** | Document describing strategic goals, actors, domains and success metrics. |
 | **Embeddings** | Vector representation of text used in RAG to find relevant fragments. |
@@ -55,7 +57,7 @@ documentation.
 | **Outbox Pattern** | Pattern for reliable event publication: saving to an `outbox_messages` table in the same transaction. |
 | **Parsing&AIConnector** | Python service responsible for portal parsing, AI recommendations and RAG. |
 | **ParsingTask** | External portal parsing task. Aggregate in Parsing&AIConnector. |
-| **Portal** | External job portal (LinkedIn, Djinni). Lookup table. |
+| **Portal** | External job portal (LinkedIn, Djinni). Reference/lookup entity owned by Vacancies Market; `Employer` and `Interviewer` reference it via `portal_id`. |
 | **PostgreSQL** | Relational database. Used by all services except Frontend. |
 | **Processed Events Table** | Table for storing already processed `event_id`s (used for idempotency). |
 | **Progress** | Progress of completing a track item. Aggregate in KnowledgeCenter. |

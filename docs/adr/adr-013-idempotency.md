@@ -20,6 +20,11 @@ We use a combination of three mechanisms:
 Business invariants (e.g., "one application per vacancy") serve as a second line
 of defence.
 
+`event_id` is generated anew (UUIDv4) for every event instance and is not reused
+as `aggregate_id`. Multiple events of one aggregate therefore have distinct
+`event_id` values; otherwise the `processed_events` PK and the outbox UNIQUE index
+could not distinguish them and deduplication by `event_id` would collapse them.
+
 ## Why this decision
 
 - Covers both synchronous and asynchronous scenarios.

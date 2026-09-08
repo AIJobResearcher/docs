@@ -25,11 +25,12 @@ date fields are not used yet; they can be introduced when lifecycle tracking
 | 015 | Using an Anti-Corruption Layer (ACL) for External Systems | [adr-015-acl.md](./adr-015-acl.md) |
 | 016 | Logical Data Isolation for Job Seekers (Multi-Tenancy for B2C) | [adr-016-multitenancy.md](./adr-016-multitenancy.md) |
 | 017 | Aggregate Creation and Hydration (Domain ↔ Eloquent Bridge) | [adr-017-aggregate-creation-and-hydration.md](./adr-017-aggregate-creation-and-hydration.md) |
+| 018 | Domain Event ID (`event_id`) Auto-Generation | [adr-018-event-id-generation.md](./adr-018-event-id-generation.md) |
 
 ## 1. How to add an ADR
 
-1. Take the next free number (currently `018`).
-2. Create `adr-018-<short-slug>.md` with sections in the fixed order from
+1. Take the next free number (currently `019`).
+2. Create `adr-019-<short-slug>.md` with sections in the fixed order from
    the standards file: Context, Decision, Why this decision, Alternatives,
    Consequences, Related artifacts.
 3. Add a row to the table above.
