@@ -83,16 +83,19 @@ echo -e "${BLUE}📚 Step 2.5: Copying \`docs/\` and \`.ai-agent/\` directories 
 TMP_DIR=$(mktemp -d)
 REPO_ARCHIVE="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.zip"
 
-# Copy directory contents into destination, replacing existing files.
+# Copy directory contents into destination, overwriting same-named files.
+# Files missing in the destination are added; destination-only files are kept.
 # Usage: copy_dir <src> <dst>
 copy_dir() {
     local src="$1"
     local dst="$2"
     mkdir -p "$dst"
-    if rsync -a "$src/" "$dst/" 2>/dev/null; then
+    # --checksum: replace by content, not by size+mtime quick check.
+    if rsync -a --checksum "$src/" "$dst/" 2>/dev/null; then
         return 0
     fi
-    cp -r "$src"/. "$dst"/ 2>/dev/null
+    # -f: overwrite an existing destination file that cannot be opened.
+    cp -rf "$src"/. "$dst"/ 2>/dev/null
 }
 
 echo -n "  Downloading repository archive... "
