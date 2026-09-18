@@ -1,7 +1,9 @@
 # React Code Standards
 
 Apply with the project `AGENTS.md` and `md-files-standards.md` (shared
-rules); this file adds React/Next.js (TypeScript) rules. Binding: strict
+rules); this file adds React/Next.js (TypeScript) rules. Stack: React 19.2,
+Next.js 16.3 App Router, TypeScript 7
+(`docs/adr/adr-020-frontend-stack-selection.md`). Binding: strict
 `tsconfig.json` and the repository's typescript-eslint configuration.
 
 ## 1. Types
@@ -26,6 +28,14 @@ rules); this file adds React/Next.js (TypeScript) rules. Binding: strict
 
 - **3.1** Respect server/client boundaries: DB access, secrets, and business
   calls run server-side only and must not leak into serialized client props.
+- **3.2** Render public pages on the server (SSR/SSG/ISR); render app pages as a
+  server shell and fetch their data on the client (ADR-019).
+- **3.3** Keep server state in TanStack Query; keep local UI state in hooks —
+  no global Redux or Context store.
+- **3.4** Call the backend APIs through the typed client generated from
+  OpenAPI; introduce no BFF.
+- **3.5** Keep the access token in memory and the refresh token in an httpOnly
+  cookie; on `401` refresh once, then surface the error state.
 
 ## 4. Contracts
 
@@ -49,3 +59,10 @@ rules); this file adds React/Next.js (TypeScript) rules. Binding: strict
 
 - **7.1** If tests are requested, follow existing `*.test.ts(x)` patterns —
   introduce no new framework.
+
+## 8. Accessibility
+
+- **8.1** Meet WCAG 2.1 AA: keyboard access, visible focus, contrast 4.5:1,
+  labels/ARIA, `alt` for images.
+- **8.2** Keep user-facing strings as keys (i18n-ready); write no hardcoded
+  copy.

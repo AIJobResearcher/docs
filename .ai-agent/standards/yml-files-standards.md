@@ -43,8 +43,9 @@ service at `docs/api/<service>/openapi.yaml` and the AsyncAPI catalog at
   service described by the spec.
 - **2.3** Keep each spec file the single source of truth for its contract;
   never duplicate its content in other files.
-- **2.4** Change OpenAPI or AsyncAPI only together with the code change it
-  describes; never edit a spec separately.
+- **2.4** A spec change is a contract change: land it in the owning service's
+  code before release and never leave spec and code diverged; the spec lives
+  here, the code change lands in the service repository.
 - **2.5** A breaking contract change updates the spec, the client, and all
   consumers in the same change.
 - **2.6** Before altering a shared event schema, check producer–consumer
