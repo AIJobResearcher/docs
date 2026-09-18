@@ -1,68 +1,86 @@
 # React Code Standards
 
-Apply with the project `AGENTS.md` and `md-files-standards.md` (shared
-rules); this file adds React/Next.js (TypeScript) rules. Stack: React 19.2,
-Next.js 16.3 App Router, TypeScript 7
-(`docs/adr/adr-020-frontend-stack-selection.md`). Binding: strict
-`tsconfig.json` and the repository's typescript-eslint configuration.
+React 19.2, Next.js 16.3 App Router, TypeScript 7 (ADR-020); strict tsconfig,
+typescript-eslint, React Compiler.
 
 ## 1. Types
 
-- **1.1** Never use `any`; isolate external boundaries behind typed adapters and
-  never bypass types with unchecked casts unless adjacent runtime validation
-  exists.
-- **1.2** Type props and state explicitly and derive them from one source of
-  truth.
+- **1.1** No `any`; validate external data at the boundary; derive types from
+  the OpenAPI client or validator, never duplicate shapes.
+- **1.2** Type props and state explicitly; discriminated unions over optional
+  flags; no `!` or `as` on untrusted data; never mutate props or state.
 
 ## 2. Components
 
-- **2.1** Write functional components with hooks only (no class components);
-  obey the Rules of Hooks.
-- **2.2** Keep components free of business logic — server/client state,
-  validation, and transport live in typed hooks, services, or route handlers.
-- **2.3** Handle every promise; no floating or unhandled promise rejections.
-- **2.4** Sanitize all rendered output (XSS) and validate untrusted server or
-  API data at the boundary before use.
+- **2.1** Function components and hooks only; one per file, `PascalCase`, named
+  exports (default only for routes); no nested component declarations.
+- **2.2** Pure render: no side effects, I/O, ref access or non-deterministic
+  values.
+- **2.3** No business logic or transport in components; stable ids as `key`;
+  handle every promise; avoid `dangerouslySetInnerHTML`.
 
-## 3. Next.js
+## 3. State and Effects
 
-- **3.1** Respect server/client boundaries: DB access, secrets, and business
-  calls run server-side only and must not leak into serialized client props.
-- **3.2** Render public pages on the server (SSR/SSG/ISR); render app pages as a
-  server shell and fetch their data on the client (ADR-019).
-- **3.3** Keep server state in TanStack Query; keep local UI state in hooks —
-  no global Redux or Context store.
-- **3.4** Call the backend APIs through the typed client generated from
-  OpenAPI; introduce no BFF.
-- **3.5** Keep the access token in memory and the refresh token in an httpOnly
-  cookie; on `401` refresh once, then surface the error state.
+- **3.1** Minimal colocated state, one source of truth; derive instead of
+  storing; reset by `key`.
+- **3.2** Server state in TanStack Query; never copy it into local state.
+- **3.3** Effects only synchronize external systems; complete deps, cleanup,
+  abort fetches; StrictMode-safe.
+- **3.4** `useReducer` for multi-field transitions; `useTransition`/
+  `useDeferredValue` for non-urgent updates; `useSyncExternalStore` for
+  external stores.
 
-## 4. Contracts
+## 4. Hooks
 
-- **4.1** Treat the OpenAPI/AsyncAPI specs as the source of truth for client
-  types and payloads; never hardcode contract shapes.
-- **4.2** Never change a public HTTP or event contract without authorization;
-  update the spec, the client, and all consumers in the same change.
+- **4.1** Top level only; custom hooks are `use*`, one concern each.
+- **4.2** Memoize only measured hotspots the React Compiler misses.
 
-## 5. Naming
+## 5. Data and Next.js
 
-- **5.1** Components and types: `PascalCase`; variables, functions, hooks:
-  `camelCase`; constants: `UPPER_SNAKE_CASE`.
-- **5.2** One component per file, file named after the component.
+- **5.1** Public pages server-render (SSR/SSG/ISR); app pages client-fetch via
+  TanStack Query (ADR-019).
+- **5.2** All calls go through the generated OpenAPI client; auth and
+  `Correlation-ID` live there; no ad-hoc `fetch` or `axios`.
+- **5.3** One cache key per resource and params; precise invalidation; parallel
+  requests; model loading, empty, error and unauthorized; append-only infinite
+  queries; no per-user data in shared caches.
+- **5.4** Server Components by default; `'use client'` only at interactive
+  leaves; `server-only` for server modules; only `NEXT_PUBLIC_*` reaches the
+  client.
+- **5.5** Stream with Suspense and `loading.tsx`; `error.tsx`/`not-found.tsx`;
+  mutate through Server Actions or route handlers with server-side validation
+  and explicit revalidation; cache explicitly; Metadata API for public pages.
 
-## 6. Error handling
+## 6. Contracts and Errors
 
-- **6.1** Throw and catch typed errors; never swallow in an empty `catch`.
-- **6.2** Surface user-facing errors at the boundary; keep the rest structured.
+- **6.1** Specs are the source of truth; regenerate and commit the client on
+  change; no contract change without authorization; two backends only, no BFF.
+- **6.2** Typed errors, no empty `catch`; one error boundary per route or
+  feature with retry.
+- **6.3** Map codes: `401` refresh once then error, `429` retry-after, `5xx` or
+  network retry; user copy at the boundary; log with the correlation id, never
+  secrets or PII.
 
-## 7. Tests
+## 7. Security
 
-- **7.1** If tests are requested, follow existing `*.test.ts(x)` patterns —
-  introduce no new framework.
+- **7.1** Access token in memory, refresh token in an httpOnly cookie; never
+  `localStorage`.
+- **7.2** Secrets server-side only; `server-only` and taint APIs for sensitive
+  objects; CSP and security headers.
+- **7.3** Encode output, validate server-side, authorize at the data layer; pin
+  dependencies.
 
-## 8. Accessibility
+## 8. Quality
 
-- **8.1** Meet WCAG 2.1 AA: keyboard access, visible focus, contrast 4.5:1,
-  labels/ARIA, `alt` for images.
-- **8.2** Keep user-facing strings as keys (i18n-ready); write no hardcoded
-  copy.
+- **8.1** Budgets: LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1, TTFB ≤ 500 ms;
+  `next/image` with `sizes`, `next/font`, `next/dynamic`; virtualize long
+  lists; profile before optimizing.
+- **8.2** WCAG 2.1 AA: keyboard, visible focus, contrast 4.5:1, labels/ARIA,
+  `alt`; semantic HTML; trap focus; live regions; reduced motion.
+- **8.3** Strings as i18n keys; `Intl` formatting; no fixed-width text
+  containers.
+- **8.4** Test behavior by role and label in the existing framework; mock the
+  network, not modules; a regression test per fix.
+- **8.5** Feature-sliced `app/` → `features/` → `entities/` → `shared/`,
+  downward imports only; `PascalCase`/`camelCase`/`UPPER_SNAKE_CASE`/
+  `kebab-case`; zero-warning lint and type-check in CI.
