@@ -1,6 +1,6 @@
 # Domain Model for AIJobResearcher
 
-**Version:** 1.0
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [Architecture Overview](../architecture-overview.md) |
@@ -37,10 +37,9 @@ summary:
 | Service | Owns (main aggregates) |
 | --------------------- | --- |
 | Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, VacancySource |
-| ResearcherCrm | Researcher, Job, Reply, Meet, Message, AIRecommendation |
+| ResearcherCrm | Researcher, Reply, Meet, Message, AIRecommendation |
 | Parsing&AIConnector | ParsingTask, VacancyCandidate, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
 | KnowledgeCenter | LearningTrack, TrackItem, Progress, Skill, DevelopmentRecommendation |
-| Frontend | (only UI states: UserSession, UIConfig) |
 
 **Notes:**
 
@@ -57,6 +56,8 @@ root aggregates for quick navigation:
 - **Employer** – root in Vacancies →
   [details](bounded-contexts/vacancies-market.md)
 - **Vacancy** – part of Employer but a separate aggregate for search →
+  [details](bounded-contexts/vacancies-market.md)
+- **Job** – job (occupation) in the catalogue →
   [details](bounded-contexts/vacancies-market.md)
 - **Researcher** – root in ResearcherCrm →
   [details](bounded-contexts/researcher-crm.md)

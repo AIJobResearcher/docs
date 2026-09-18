@@ -8,7 +8,7 @@ Container(researcher_crm, "Researcher CRM", "PHP/Symfony")
 Boundary(researcher_boundary, "Researcher CRM") {
     Component(presentation, "Presentation Layer", "Controllers", "REST API")
     Component(application, "Application Layer", "Commands/Queries", "Registration, replies, meetings")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "Researcher, Job, Reply, Meet, Message")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Researcher, Reply, Meet, Message")
     Component(infrastructure, "Infrastructure Layer", "Doctrine, Event bus", "PostgreSQL, Redis, RabbitMQ")
     Component(audit, "Audit Logger", "Listens to events", "Append-only store")
 

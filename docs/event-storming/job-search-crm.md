@@ -31,7 +31,6 @@
 ## Aggregates
 
 - `Researcher` – root
-- `Job` – desired job
 - `Reply` – application
 - `Meet` – meeting
 - `Message` – message

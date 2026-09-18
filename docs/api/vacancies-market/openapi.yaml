@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Vacancies Market Service API
   description: Manage vacancies, employers, interviewers.
-  version: 1.0.0
+  version: 1.3.0
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     description: Production server
@@ -61,7 +61,7 @@ paths:
                   description: Page number
                 sort:
                   type: string
-                  enum: [date, salary_asc, salary_desc]
+                  enum: [date]
                   default: date
                   nullable: true
                   description: Sort field
@@ -240,6 +240,10 @@ components:
                 type: string
             employer:
               $ref: '#/components/schemas/Employer'
+            interviewer:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/Interviewer'
             closed_at:
               type: string
               format: date-time
@@ -263,6 +267,35 @@ components:
           type: string
         website:
           type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        logo_url:
+          type: string
+          nullable: true
+          description: URL/path to the employer logo (server path now, S3 later)
+    Interviewer:
+      type: object
+      properties:
+        id:
+          type: string
+        full_name:
+          type: string
+        position:
+          type: string
+          nullable: true
+        profile_urls:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
+        avatar_url:
+          type: string
+          nullable: true
+          description: URL/path to the interviewer photo (server path now, S3 later)
     Job:
       type: object
       properties:

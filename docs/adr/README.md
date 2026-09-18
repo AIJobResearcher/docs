@@ -1,10 +1,7 @@
 # ADR Index
 
 Architecture Decision Records capture the platform's architectural choices
-and their rationale — one file per decision. The required ADR structure is
-defined in `../.ai-agent/standards/docs-files-standards.md` (ADR). Status and
-date fields are not used yet; they can be introduced when lifecycle tracking
-(proposed/accepted/superseded) starts.
+and their rationale — one file per decision.
 
 | ADR | Decision | File |
 | --- | --- | --- |
@@ -26,11 +23,13 @@ date fields are not used yet; they can be introduced when lifecycle tracking
 | 016 | Logical Data Isolation for Job Seekers (Multi-Tenancy for B2C) | [adr-016-multitenancy.md](./adr-016-multitenancy.md) |
 | 017 | Aggregate Creation and Hydration (Domain ↔ Eloquent Bridge) | [adr-017-aggregate-creation-and-hydration.md](./adr-017-aggregate-creation-and-hydration.md) |
 | 018 | Domain Event ID (`event_id`) Auto-Generation | [adr-018-event-id-generation.md](./adr-018-event-id-generation.md) |
+| 019 | Frontend Architecture | [adr-019-frontend-architecture.md](./adr-019-frontend-architecture.md) |
+| 020 | Frontend Stack Selection | [adr-020-frontend-stack-selection.md](./adr-020-frontend-stack-selection.md) |
 
 ## 1. How to add an ADR
 
-1. Take the next free number (currently `019`).
-2. Create `adr-019-<short-slug>.md` with sections in the fixed order from
+1. Take the next free number (currently `021`).
+2. Create `adr-021-<short-slug>.md` with sections in the fixed order from
    the standards file: Context, Decision, Why this decision, Alternatives,
    Consequences, Related artifacts.
 3. Add a row to the table above.
