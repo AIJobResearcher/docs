@@ -1,78 +1,61 @@
 openapi: 3.0.3
 info:
   title: Vacancies Market Service API
-  description: Manage vacancies, employers, interviewers.
-  version: 1.3.0
+  description: 'Read API for the vacancy catalogue: vacancy search and details.'
+  version: 2.0.0
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     description: Production server
+security:
+  - BearerAuth: []
 paths:
   /vacancies:
     post:
       summary: Search vacancies
-      description: Search vacancies by job ID with filtering and pagination. All
-        criteria are sent in the request body as multipart/form-data.
+      description: Search vacancies with filtering and pagination; criteria are
+        sent in the request body.
       requestBody:
-        required: false
+        required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required: [job_id]
               properties:
                 job_id:
                   type: string
-                  nullable: true
                   description: Id of the job the vacancy is assigned to
                 employer_id:
                   type: string
-                  nullable: true
                   description: Filter by employer
                 country:
                   type: string
-                  nullable: true
                   description: Filter by country
                 city:
                   type: string
-                  nullable: true
                   description: Filter by city
                 min_salary:
                   type: integer
-                  nullable: true
                   description: Minimum salary (USD)
                 max_salary:
                   type: integer
-                  nullable: true
                   description: Maximum salary (USD)
                 status:
                   type: string
-                  nullable: true
                   enum: [open, closed]
                   description: Vacancy status
                 per_page:
                   type: integer
                   maximum: 100
                   default: 20
-                  nullable: true
                   description: Number of records per page
                 page:
                   type: integer
                   default: 1
-                  nullable: true
                   description: Page number
-                sort:
-                  type: string
-                  enum: [date]
-                  default: date
-                  nullable: true
-                  description: Sort field
       responses:
         '200':
           description: Successful response
-          headers:
-            X-Total-Count:
-              schema:
-                type: integer
-              description: Total number of vacancies matching the query
           content:
             application/json:
               schema:
@@ -93,22 +76,11 @@ paths:
                         type: integer
                       last_page:
                         type: integer
-                  links:
-                    type: object
-                    properties:
-                      first:
-                        type: string
-                      last:
-                        type: string
-                      prev:
-                        type: string
-                        nullable: true
-                      next:
-                        type: string
-                        nullable: true
+        '401':
+          description: Unauthenticated
         '422':
           description: Validation failed
-  /vacancies/{id}:
+  /vacancy/{id}:
     get:
       summary: Get vacancy details
       parameters:
@@ -124,59 +96,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Vacancy'
+        '401':
+          description: Unauthenticated
         '404':
           description: Vacancy not found
-  /jobs:
-    get:
-      summary: Get jobs collections
-      parameters:
-        - name: query
-          in: query
-          schema:
-            type: string
-          description: Search string (title)
-        - name: employer_id
-          in: query
-          schema:
-            type: string
-            nullable: true
-          description: Filter by employer
-      responses:
-        '200':
-          description: Jobs list collection
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
-                  total:
-                    type: integer
-        '422':
-          description: Validation failed
-        '401':
-          description: Unauthorised
-  /employers/{id}:
-    get:
-      summary: Get employer information
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Employer data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Employer'
-        '404':
-          description: Employer not found
 components:
   securitySchemes:
     BearerAuth:
@@ -265,8 +188,10 @@ components:
           type: string
         description:
           type: string
+          nullable: true
         website:
           type: string
+          nullable: true
         email:
           type: string
           nullable: true
@@ -296,25 +221,3 @@ components:
           type: string
           nullable: true
           description: URL/path to the interviewer photo (server path now, S3 later)
-    Job:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        employer_id:
-          type: string
-        location:
-          type: string
-        min_salary:
-          type: integer
-        max_salary:
-          type: integer
-        currency:
-          type: string
-        created_at:
-          type: string
-          format: date-time

@@ -60,7 +60,7 @@ blocks. Audience: frontend engineers, QA and analytics.
 ## 4. API Operations
 
 - **4.1 List and filters (3.1-3.3):** `POST /vacancies`.
-- **4.2 Details (3.4):** `GET /vacancies/{id}`.
+- **4.2 Details (3.4):** `GET /vacancy/{id}`.
 - **4.3 Auth:** OAuth2/JWT bearer (`BearerAuth`); the access token is kept in
   memory and the refresh token in an httpOnly cookie — on `401` the client
   refreshes once, then shows the error state (6.5); `Correlation-ID` on every

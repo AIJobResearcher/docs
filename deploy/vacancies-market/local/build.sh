@@ -76,12 +76,24 @@ echo -e "  ${BLUE}docker-compose.yml → ./${NC}"
 echo ""
 
 # ============================================
-# Step 2.5: Copy docs
+# Step 2.5: Copy docs and .ai-agent content
 # ============================================
 
-echo -e "${BLUE}📚 Step 2.5: Copying \`docs/\` directory from repository root...${NC}"
+echo -e "${BLUE}📚 Step 2.5: Copying \`docs/\` and \`.ai-agent/\` directories from repository root...${NC}"
 TMP_DIR=$(mktemp -d)
 REPO_ARCHIVE="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/${BRANCH}.zip"
+
+# Copy directory contents into destination, replacing existing files.
+# Usage: copy_dir <src> <dst>
+copy_dir() {
+    local src="$1"
+    local dst="$2"
+    mkdir -p "$dst"
+    if rsync -a "$src/" "$dst/" 2>/dev/null; then
+        return 0
+    fi
+    cp -r "$src"/. "$dst"/ 2>/dev/null
+}
 
 echo -n "  Downloading repository archive... "
 if curl -sSL --fail "$REPO_ARCHIVE" -o "$TMP_DIR/repo.zip" 2>/dev/null; then
@@ -91,31 +103,34 @@ else
 fi
 
 if [ -f "$TMP_DIR/repo.zip" ]; then
-    echo -n "  Extracting docs/ from archive... "
+    echo -n "  Extracting archive... "
     if unzip -q "$TMP_DIR/repo.zip" -d "$TMP_DIR" 2>/dev/null; then
         echo -e "${GREEN}done${NC}"
-        SRC_DIR="$TMP_DIR/${REPO_NAME}-${BRANCH}/docs"
-        if [ -d "$SRC_DIR" ]; then
-            echo -n "  Copying docs/ to project root... "
-            mkdir -p ./docs
-            if rsync -a --delete "$SRC_DIR/" ./docs/ 2>/dev/null; then
-                echo -e "${GREEN}done${NC}"
-            else
-                echo -e "${YELLOW}rsync failed, clearing and retrying...${NC}"
-                rm -rf ./docs
-                mkdir -p ./docs
-                if cp -r "$SRC_DIR"/* ./docs/ 2>/dev/null; then
-                    echo -e "${GREEN}copied (fallback)${NC}"
+        SRC_ROOT="$TMP_DIR/${REPO_NAME}-${BRANCH}"
+
+        for dir in "docs" ".ai-agent/agent.data" ".ai-agent/standards"; do
+            if [ -d "$SRC_ROOT/$dir" ]; then
+                echo -n "  Copying $dir/ to project root... "
+                if copy_dir "$SRC_ROOT/$dir" "./$dir"; then
+                    echo -e "${GREEN}done${NC}"
                 else
-                    echo -e "${RED}failed to copy docs/${NC}"
+                    echo -e "${RED}failed to copy $dir/${NC}"
                 fi
+            else
+                echo -e "  ${YELLOW}no $dir/ directory found in archive, skipping${NC}"
             fi
-        else
-            echo -e "${YELLOW}no docs/ directory found in archive, skipping${NC}"
-        fi
+        done
     else
         echo -e "${YELLOW}failed to extract archive${NC}"
     fi
+fi
+
+# Ensure .ai-agent/user.data/temp exists in the project
+if [ ! -d ".ai-agent/user.data/temp" ]; then
+    mkdir -p .ai-agent/user.data/temp
+    echo -e "  ${GREEN}Created .ai-agent/user.data/temp${NC}"
+else
+    echo -e "  ${BLUE}.ai-agent/user.data/temp already exists${NC}"
 fi
 
 
