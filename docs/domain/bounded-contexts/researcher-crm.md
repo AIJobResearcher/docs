@@ -99,9 +99,13 @@ Manage job seeker profile, desired jobs, replies, meetings, messages, analytics.
 - Behaviour: `updateProfile()`, `addDesiredJob()`, `removeDesiredJob()`, `addReply()`,
   `withdrawReply()`
 
-### Job (desired job)
+### Desired Job (reference to Vacancies Market)
 
-- Fields: `id`, `researcher_id`, `title`, `vacancy_ids` (link), `priority`,
+- The `Job` aggregate belongs to
+  [Vacancies Market](vacancies-market.md) (8.2); this context stores only the
+  researcher's desired-job list referencing Job ids (see Researcher
+  `desired_job_ids`).
+- Fields: `id`, `researcher_id`, `job_id` (Vacancies Market `Job`), `priority`,
   `status` (active/filled/archived), `custom_notes`, `ai_resume`, `timestamp`
 - Behaviour: `archive()`, `markAsFilled()`
 

@@ -5,7 +5,7 @@
 Docs + deployment repository; Markdown/YAML content only, no application code
 or test suite.
 
-1. `docs/` — pages, ADR, domain, api, event-storming, AsyncAPI, c4, loadtests
+1. `docs/` — pages, ADR, domain, api, event-storming, AsyncAPI, c4, loadtests, ui
 2. `deploy/` — Docker Compose helpers
 3. `.github/workflows/ci.yml` — lint + link checks
 

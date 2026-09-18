@@ -42,6 +42,7 @@ OpenTelemetry + Jaeger + Prometheus + Loki.
 | [C4 diagrams](./c4/) | Context, containers, components |
 | [ADR](./adr/) | Architectural decisions (microservices, RabbitMQ, RAG, outbox, capacity planning, etc.) |
 | [Event Storming](./event-storming/) | Event modeling for each domain |
+| [UI Page Specs](./ui/) | Frontend page specifications and user flows |
 | **Deploy & Infrastructure** | Deployment files (located in the repository root and in the `deploy/` folder): - [Local docs Docker Compose](../deploy/docs/local/compose.yml) - [GitHub Actions workflows](../.github/workflows/) |
 
 All artifacts are maintained as **Documentation as Code** – CI checks for

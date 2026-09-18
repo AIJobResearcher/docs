@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Researcher CRM API
   description: Manage job seeker profile, applications, meetings, messages.
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     description: Production server
@@ -74,7 +74,7 @@ paths:
           description: JSON with all job seeker data
   /jobs:
     post:
-      summary: Add a desired job
+      summary: Add a desired job to the researcher's list
       security:
         - BearerAuth: []
       requestBody:
@@ -82,14 +82,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JobInput'
+              $ref: '#/components/schemas/DesiredJobInput'
       responses:
         '201':
           description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Job'
+                $ref: '#/components/schemas/DesiredJob'
   /replies:
     post:
       summary: Apply to a vacancy
@@ -248,21 +248,22 @@ components:
             updated_at:
               type: string
               format: date-time
-    JobInput:
+    DesiredJobInput:
       type: object
-      required: [title]
+      required: [job_id]
       properties:
-        title:
+        job_id:
           type: string
+          description: Id of the Vacancies Market Job
         priority:
           type: integer
           minimum: 1
           maximum: 5
         criteria:
           type: object
-    Job:
+    DesiredJob:
       allOf:
-        - $ref: '#/components/schemas/JobInput'
+        - $ref: '#/components/schemas/DesiredJobInput'
         - type: object
           properties:
             id:

@@ -15,7 +15,7 @@
   blockquote in the glossary and the docs home, which are link targets.
 - **1.5** Documentation structure: overview pages and standalone docs in
   `docs/` root, ADRs in `docs/adr/`, domain pages in `docs/domain/`, event
-  streams in `docs/event-storming/`.
+  streams in `docs/event-storming/`, UI page specs in `docs/ui/`.
 
 ## 2. ADR
 

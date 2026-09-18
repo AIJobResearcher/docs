@@ -1,8 +1,8 @@
 # Bounded Context: Vacancy Management (Vacancies Market Service)
 
 **Status:** accepted
-**Date:** 2026-09-08
-**Version:** 1.1
+**Date:** 2026-09-18
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -244,7 +244,8 @@
 - **8.3.1 Fields:** `id` (UUID), `portal_id` (UUID, references `Portal`),
   `title` (string), `description` (text, nullable), `website` (string,
   nullable), `email` (string, nullable), `phone` (string, nullable),
-  `logo_url` (string, nullable), `created_at` (timestamp), `updated_at`
+  `logo_url` (string, nullable — URL/path to the employer logo; server path
+  now, S3 later), `created_at` (timestamp), `updated_at`
   (timestamp), `version` (integer, default 1).
 - **8.3.2 Behavior:** `addVacancy()`, `removeVacancy()` (only if vacancy is
   closed), `addInterviewer()`, `removeInterviewer()`.
@@ -273,9 +274,10 @@
 - **8.5.1 Fields:** `id` (UUID), `portal_id` (UUID, references `Portal`),
   `employer_id` (UUID), `full_name` (string), `position` (string, nullable),
   `profile_urls` (JSON, nullable — e.g., `{"Linkedin": "...", "DOU": "..."}`),
-  `created_at` (timestamp), `updated_at` (timestamp), `version` (integer,
-  default 1), `is_active` (boolean, default true), `deleted_at` (timestamp,
-  nullable).
+  `avatar_url` (string, nullable — URL/path to the interviewer photo; server
+  path now, S3 later), `created_at` (timestamp), `updated_at` (timestamp),
+  `version` (integer, default 1), `is_active` (boolean, default true),
+  `deleted_at` (timestamp, nullable).
 - **8.5.2 Behavior:** `assignToVacancy()`, `unassignFromVacancy()` (the
   aggregate does not record events itself).
 - **8.5.3** `InterviewerAssignedEvent` is published by the assign-interviewer

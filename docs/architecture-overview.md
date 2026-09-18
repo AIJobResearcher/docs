@@ -1,6 +1,6 @@
 # Architecture Overview for AIJobResearcher
 
-**Version:** 1.0
+**Version:** 1.3
 **Target load:** 50,000 concurrent users
 
 > **Related documentation:** [Glossary](glossary.md) |
@@ -33,7 +33,7 @@ Full description: `/docs/domain/domain-vision.md`
 | 2 | Vacancies Market | PHP 8.5, Laravel 13, PostgreSQL 16, Redis | catalogue of employers, vacancies and interviewers |
 | 3 | ResearcherCrm | PHP 8.5, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis | job seekers, desired jobs, replies, meetings, messages, analytics |
 | 4 | Parsing&AIConnector | Python 3.12, FastAPI, Celery, RabbitMQ | portal parsing, AI models, recommendations |
-| 5 | Frontend | React 18, Next.js 14, TypeScript | user interface |
+| 5 | Frontend | React 19.2, Next.js 16.3 (App Router), TypeScript 7 | user interface |
 | 6 | KnowledgeCenter | Go 1.22, Gin, PostgreSQL 16, RabbitMQ | learning tracks, progress, dev recommendations |
 
 ## 4. Service communication
@@ -184,8 +184,7 @@ Details – [ADR-011](./adr/adr-011-outbox-pattern.md).
 - All documentation in the `/docs` repository.
 - **API specifications:** OpenAPI 3.0, generated in CI, published to
   `docs/api/<service>/`.
-- **Requirement scenarios:** `.feature` files in `docs/features/<service>/`
-  documenting behavior requirements for each service.
+- **UI specifications:** page specifications and user flows in `/docs/ui/`.
 - **C4 diagrams:** in `/docs/c4/`.
 - **Main registry:** `/docs/README.md`.
 - **ADR:** in `/docs/adr/`.

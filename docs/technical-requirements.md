@@ -1,6 +1,6 @@
 # Technical Requirements for AIJobResearcher
 
-- **Version:** 1.0
+- **Version:** 1.5
 - **Target load:** 50,000 concurrent active users
 - **Application version:** v1.0
 
@@ -36,6 +36,8 @@
 - **Metrics:** Prometheus histograms with buckets covering the stated thresholds.
 - **Alerting:** when p99 exceeds target by 50% for 5 minutes – warning;
   by 100% – critical.
+- **Frontend (Core Web Vitals, field data):** LCP p75 ≤ 2.5 s, INP p75 ≤
+  200 ms, CLS p75 ≤ 0.1; TTFB p95 ≤ 500 ms.
 
 ### 1.3 Availability and reliability
 
@@ -67,6 +69,13 @@ multi‑region.
 - **Strong consistency** – inside a single service via local transactions (Clean
   Architecture).
 
+### 1.5 Accessibility and localisation
+
+- **Accessibility:** WCAG 2.1 AA for user-facing pages (keyboard access, visible
+  focus, contrast 4.5:1, labels/ARIA, `alt` for images).
+- **Localisation:** English UI now; user-facing strings kept as keys so other
+  locales can be added later.
+
 ---
 
 ## 2. Capacity Planning
@@ -79,7 +88,7 @@ multi‑region.
 | ResearcherCrm (PHP/Symfony)    | 2                       | 2        | 6                       |
 | Parsing&AIConnector (Python)   | 4                       | 8        | 4 + Celery workers      |
 | KnowledgeCenter (Go)           | 1                       | 1        | 3                       |
-| Frontend (Next.js)             | 1                       | 2        | 3                       |
+| Frontend (Next.js 16.3)        | 1                       | 2        | 3                       |
 | PostgreSQL VacanciesMarket     | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL ResearcherCrm       | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL KnowledgeCenter     | 2                       | 8        | 1 master + 1 replica    |
@@ -154,7 +163,7 @@ multi‑region.
 - **Response codes:** 200, 201, 400, 401, 403, 404, 429, 500.
 - **Async operations:** 202 Accepted + `Location: /tasks/{id}`.
 - **Correlation‑ID:** mandatory in headers, forwarded to all calls and events.
-- **Rate limiting:** 100 requests/min (authenticated), 10/min (unauthenticated).
+- **Rate limiting:** 100 requests/min (authenticated).
 
 ---
 
@@ -235,8 +244,8 @@ data is not allowed via API or events.
 
 ### 8.2 Implementation
 
-- In the `ResearcherCrm` service, each record (Researcher, Job, Reply, Meet,
-  Message) contains a `researcher_id` field. This field is a foreign key to the
+- In the `ResearcherCrm` service, each record (Researcher, Reply, Meet, Message)
+  contains a `researcher_id` field. This field is a foreign key to the
   Researcher table and serves as the natural `tenant_id`.
 - In the `KnowledgeCenter` service, tables (LearningTrack, Progress) also contain
   `researcher_id`.

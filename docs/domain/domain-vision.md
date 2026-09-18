@@ -68,8 +68,8 @@ it.
 5. **Flexibility of AI providers** – ability to use local models (Ollama) for
    free or commercial ones (OpenAI) if needed.
 6. **Full observability**: tracing, structured logs, metrics and SLO alerts.
-7. **Documentation as Code** – live OpenAPI/AsyncAPI specifications, requirement
-   scenarios (`.feature` files), ADRs.
+7. **Documentation as Code** – live OpenAPI/AsyncAPI specifications, page
+   specifications and flows (`docs/ui/`), ADRs.
 
 ## 7. Success Metrics
 
@@ -103,7 +103,8 @@ Canvas. Key terms:
 - **Employer** – employer (company)
 - **Vacancy** – job vacancy
 - **Interviewer** – interviewer (representative of the employer)
-- **Job** – desired job (set of criteria)
+- **Job** – job (occupation) in the vacancy catalogue; the job seeker's
+  desired-jobs list references it
 - **Reply** – application to a vacancy
 - **Meet** – meeting / interview
 - **LearningTrack** – long‑term learning plan

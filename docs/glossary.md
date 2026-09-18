@@ -40,7 +40,7 @@ documentation.
 | **Idempotency Key** | Unique key sent by the client in the request header to prevent duplication. |
 | **Interviewer** | Interviewer – representative of the employer, linked to a vacancy. Aggregate in Vacancies Market service. |
 | **Jaeger** | Distributed tracing system (OpenTelemetry → Jaeger). |
-| **Job** | Desired job – a set of criteria created by the job seeker. Aggregate in ResearcherCrm. |
+| **Job** | Job (occupation) in the vacancy catalogue, referenced by Vacancies and Requirements. Aggregate in Vacancies Market service; the job seeker's desired-jobs list references it by id. |
 | **JWT (JSON Web Token)** | Token format for authentication and authorisation (RS256, lifetime 15 minutes). |
 | **k6** | Load testing tool. |
 | **KnowledgeCenter** | Go service that manages long‑term learning plans, tracks, progress. |

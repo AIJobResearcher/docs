@@ -3,21 +3,20 @@
 
 title Frontend Components
 
-Container(frontend, "Frontend", "React/Next.js")
+Container(frontend, "Frontend", "React 19.2 / Next.js 16.3")
 
 Boundary(frontend_boundary, "Frontend") {
-    Component(pages, "Pages & Routes", "Next.js pages", "Handle URL routing")
+    Component(pages, "Pages & Routes", "Next.js 16.3 App Router", "Routing, layout and auth guard")
     Component(components, "UI Components", "React", "Buttons, forms, cards")
-    Component(store, "State Management", "Redux/Context", "Application state")
-    Component(api_client, "API Client", "Fetch/Axios", "Backend calls")
+    Component(server_state, "Server-state Cache", "Data fetching", "Vacancies and desired jobs")
+    Component(api_client, "API Client", "Generated from OpenAPI", "Typed backend calls")
 
     Rel(pages, components, "Uses")
-    Rel(pages, store, "Uses")
-    Rel(pages, api_client, "Calls")
-    Rel(components, store, "Subscribes to")
+    Rel(pages, server_state, "Uses")
+    Rel(server_state, api_client, "Calls")
 }
 
-System_Ext(backend, "Backend Services", "Vacancies, CRM, AI, Knowledge")
+System_Ext(backend, "Vacancies Market, ResearcherCrm", "Backend services")
 
 Rel(frontend, backend, "HTTP", "REST API")
 
