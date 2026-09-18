@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.10
+**Version:** 1.13
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -12,8 +12,8 @@
 > [Technical Requirements](../technical-requirements.md)
 
 This document specifies one page of the Frontend service — the Vacancies
-Market page: the vacancy list plus the details, employer and interviewer
-blocks. Audience: frontend engineers, QA and analytics.
+Market page: the desired-jobs bar, the vacancy list and the details, employer
+and interviewer blocks. Audience: frontend engineers, QA and analytics.
 
 ## 1. Scope
 
@@ -32,41 +32,45 @@ blocks. Audience: frontend engineers, QA and analytics.
   Market" → vacancy title.
 - **2.5 Layout:** desktop — two panes (list, details) that scroll
   independently; mobile — one column, list → details with a back action.
-- **2.6 Header:** logo (links to the home page); desired-jobs bar (`Job.title`)
-  with the active job highlighted and an "Add job" link; switching the job
-  changes the list context.
+- **2.6 Header:** logo (links to the home page) and the desired-jobs bar (3.1).
 - **2.7 Accessibility:** WCAG 2.1 AA — keyboard access, visible focus, contrast
   4.5:1, labels/ARIA, `alt` for logo and avatar.
 - **2.8 Localisation:** English UI; strings kept as keys for future locales.
 
 ## 3. Blocks
 
-- **3.1 Filters:** clickable tags on the cards and in the details block —
+- **3.1 Desired-jobs bar** — the researcher's desired jobs (`Job.title`); the
+  active job is highlighted and scopes the vacancy list to it (2.6, 6.6); holds
+  the "Add job" link.
+- **3.2 Filters:** clickable tags on the cards and in the details block —
   `workplace`, `employment_type`, `country`, `city`, salary; clicking filters
   the list by that value (e.g. `workplace=remote`). `posted_at` is filtered by
   a date range (`posted_from`/`posted_to`) instead of a tag.
-- **3.2 Results list** — `VacancyPreview`: title, employer_title, salary,
+- **3.3 Results list** — `VacancyPreview`: title, employer_title, salary,
   workplace, employment_type, posted_at, country, city; the selected card is
   highlighted.
-- **3.3 Sorting and pagination:** fixed `posted_at` descending (newest first);
+- **3.4 Sorting and pagination:** fixed `posted_at` descending (newest first);
   infinite scroll appends the next page.
-- **3.4 Details block** — `Vacancy`: title, workplace, employment_type,
+- **3.5 Details block** — `Vacancy`: title, workplace, employment_type,
   posted_at, country, city, salary, description, requirements;
   empty-selection placeholder.
-- **3.5 Employer block** — `title`, `logo_url`, `website`, `email`, `phone`,
+- **3.6 Employer block** — `title`, `logo_url`, `website`, `email`, `phone`,
   description (embedded in `Vacancy`).
-- **3.6 Interviewer block** — `full_name`, `position`, `profile_urls`,
+- **3.7 Interviewer block** — `full_name`, `position`, `profile_urls`,
   `avatar_url` (embedded in `Vacancy`).
 
 ## 4. API Operations
 
-- **4.1 List and filters (3.1-3.3):** `POST /vacancies`.
-- **4.2 Details (3.4):** `GET /vacancy/{id}`.
-- **4.3 Auth:** OAuth2/JWT bearer (`BearerAuth`); the access token is kept in
+- **4.1 List and filters (3.2-3.4), Vacancies Market:** `POST /vacancies`.
+- **4.2 Details (3.5), Vacancies Market:** `GET /vacancy/{id}`.
+- **4.3 Desired jobs (3.1), ResearcherCrm:** `GET /jobs`.
+- **4.4 Job titles (3.1), Vacancies Market:** `GET /jobs?ids=...` resolves
+  `Job.title` for the ids from 4.3.
+- **4.5 Auth:** OAuth2/JWT bearer (`BearerAuth`); the access token is kept in
   memory and the refresh token in an httpOnly cookie — on `401` the client
   refreshes once, then shows the error state (6.5); `Correlation-ID` on every
   call.
-- **4.4 Pagination:** `page` / `per_page`, max 100 (default 20).
+- **4.6 Pagination:** `page` / `per_page`, max 100 (default 20).
 
 ## 5. States
 
@@ -80,7 +84,7 @@ stateDiagram-v2
     ListLoading --> Unauthorized: 401
     ListError --> ListLoading: retry
     ListEmpty --> ListLoading: filters / reset
-    ListReady --> ListLoading: filters / reset / pagination
+    ListReady --> ListLoading: filters / reset / job switch / pagination
     ListReady --> ListEnd: next page empty
     ListReady --> DetailsLoading: auto-select / select vacancy
     ListEnd --> ListLoading: filters / reset
@@ -108,7 +112,7 @@ stateDiagram-v2
   highlighted; several tags combine.
 - **6.5** Errors show a per-code message (`401` session expired, `429` too many
   requests, `5xx`/network load error) with a retry action.
-- **6.6** Switching the desired job reloads the list scoped to that job
+- **6.6** Switching the desired job (3.1) reloads the list scoped to that job
   (`job_id`) from the first page; filters, pagination and the selected vacancy
   reset, and the newest vacancy is auto-selected (6.2).
 
