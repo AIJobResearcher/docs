@@ -28,11 +28,30 @@ In `docs/adr/`, one file per decision.
   Alternatives, Consequences, Related artifacts.
 - **2.4** Decision records concrete choices; Alternatives lists rejected
   options with reasons. Link other ADRs instead of duplicating them.
+- **2.5** ADRs from 019 on carry `**Status:**` and `**Date:**` per 1.3; older
+  records are backfilled when they are next touched.
 
-## 3. Before you finish
+## 3. UI page spec
+
+In `docs/ui/`: `pages.md` indexes the pages, `flows.md` holds the user flows,
+one file per page.
+
+- **3.1** File `<page-slug>.md`, title `# UI Page Specification: <Page>`.
+- **3.2** Sections in fixed order: Scope, Page, Blocks, API Operations, States,
+  Behaviour, Edge Cases, Related Documents.
+- **3.3** `Page` fixes route, access, purpose, menu, layout, header,
+  accessibility and localisation; one page has one route.
+- **3.4** `Blocks` names the model fields each block renders.
+- **3.5** `API Operations` maps blocks to endpoints; keep schemas in OpenAPI,
+  never restated here.
+- **3.6** `States` is one Mermaid `stateDiagram-v2`; `flows.md` references it
+  instead of repeating it.
+- **3.7** Register every page and its route in `pages.md`.
+
+## 4. Before you finish
 
 Final self-check before you mark a documentation task done:
 
-- **3.1** After a review changes a file, update its metadata header: set
+- **4.1** After a review changes a file, update its metadata header: set
   `**Date:**` to today and bump `**Version:**` by one tenth (e.g. `1.0` →
   `1.1`).
