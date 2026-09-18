@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.9
+**Version:** 1.10
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -42,15 +42,16 @@ blocks. Audience: frontend engineers, QA and analytics.
 ## 3. Blocks
 
 - **3.1 Filters:** clickable tags on the cards and in the details block —
-  `workplace`, `employment_type`, `posted_at`, `country`, `city`, salary;
-  clicking filters the list by that value (e.g. `workplace=remote`).
-- **3.2 Results list** — `VacancyPreview`: title, employer_title, salary and
-  currency, workplace, employment_type, posted_at, country, city; the selected
-  card is highlighted.
+  `workplace`, `employment_type`, `country`, `city`, salary; clicking filters
+  the list by that value (e.g. `workplace=remote`). `posted_at` is filtered by
+  a date range (`posted_from`/`posted_to`) instead of a tag.
+- **3.2 Results list** — `VacancyPreview`: title, employer_title, salary,
+  workplace, employment_type, posted_at, country, city; the selected card is
+  highlighted.
 - **3.3 Sorting and pagination:** fixed `posted_at` descending (newest first);
   infinite scroll appends the next page.
 - **3.4 Details block** — `Vacancy`: title, workplace, employment_type,
-  posted_at, country, city, salary and currency, description, requirements;
+  posted_at, country, city, salary, description, requirements;
   empty-selection placeholder.
 - **3.5 Employer block** — `title`, `logo_url`, `website`, `email`, `phone`,
   description (embedded in `Vacancy`).
