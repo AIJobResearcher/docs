@@ -57,6 +57,9 @@
   standards files or live configs; link, never duplicate.
 - **3.1.3** Global behaviour rules (reporting, file access, no auto runs,
   security) belong to the root `AGENTS.md`; never copy them into standards.
+  One exception: `token-economy-rules.md` is the single home for reading,
+  context, deliberation, asking, verification and reporting cost rules, and
+  `AGENTS.md` only points to it.
 - **3.1.4** Keep one canonical section order — scope, quality, behaviour,
   done, limits — for instant navigation.
 - **3.1.5** Phrase rules as an action plus scope plus the rare exception,
@@ -66,6 +69,8 @@
   agent mistake reveals a missing rule; it is a living file.
 - **3.1.8** Keep the same section titles and numbers across every project's
   `AGENTS.md` so references stay stable.
+- **3.1.9** Keep the file under roughly 120 lines: it is re-sent on every turn
+  of every session, so detail moves to on-demand standards.
 
 ### 3.2 Standards files
 
@@ -74,12 +79,27 @@
 - **3.2.2** Maximally dense — one directive per line, every word earned; no
   filler, connectors, or explanation.
 - **3.2.3** The standards set: `md-files-standards.md` (general Markdown),
-  `docs-files-standards.md` (docs), and the language standards
-  `php-standards.md`, `laravel-standards.md`, `python-standards.md`,
-  `react-standards.md`.
+  `docs-files-standards.md` (docs), `token-economy-rules.md` (token economy),
+  and the language standards `php-standards.md`, `laravel-standards.md`,
+  `python-standards.md`, `react-standards.md`.
 - **3.2.4** On a conflict the more specific file wins — a language or docs
   standard overrides the general one; otherwise surface the contradiction
   to the user instead of guessing.
 - **3.2.5** Standards files load on demand by task type; each is
   self-contained yet short and references common rules instead of repeating
   them.
+
+### 3.3 DECISIONS.md
+
+- **3.3.1** An entry here outranks every standards file: on a conflict the
+  entry is followed and the standard is not applied — no standards file
+  overrides a decision.
+- **3.3.2** One living `DECISIONS.md` per project; read it before any design
+  work.
+- **3.3.3** Status line; numbered entries in the form `decision — reason —
+  date`.
+- **3.3.4** A task that contradicts an entry is confirmed with the user
+  before code changes.
+- **3.3.5** Only format and role belong here: the domain model (aggregate
+  roots), the repository read-side choice, and the environment facts (service
+  names, ports, container user) stay project-local.

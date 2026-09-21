@@ -11,27 +11,27 @@ or test suite.
 
 ## 2. Quality
 
-1. Before editing a file, load and strictly obey its standard: Markdown/agent
-   files → `.ai-agent/standards/md-files-standards.md`; any `docs/` content →
-   `docs-files-standards.md`; other formats mirror the edited file's style.
+1. Before editing a file, load and strictly obey its standard, and read
+   `.ai-agent/DECISIONS.md` (it outranks every standard): Markdown/agent
+   files → `.ai-agent/standards/md-files-standards.md`; any `docs/` content
+   → `docs-files-standards.md`; other formats mirror the edited file's
+   style.
 2. Renaming/moving/deleting a `docs/` file or heading: grep for references and
    update them.
 3. Change and produce only what the task requires: patch only the affected
    section; no speculative rewrites/reformats of a whole document, no extra
    artifacts.
 
-## 3. Token Efficiency
+## 3. Token Economy
 
-1. Read and reference selectively: grep first, read matching ranges only, cite
-   `path#L..L`; cap shell output to `head`/`tail`/`grep`.
-2. Reuse known values; skip repeated operations. Keep AI temp artifacts under
-   `.ai-agent/agent.data`, each <40 lines. After ~20 messages or large context,
-   suggest a fresh session.
-3. Before acting, restate the task in one line and name the affected files (in
-   order). Ask at most once, in one block, only for material missing inputs;
-   otherwise apply the defaults here and mark ASSUMPTION.
-4. Report as one short line — "Done — `<files>`" — plus diff hunks only; no
-   rationale, step summaries, or interim reports unless asked.
+1. `.ai-agent/standards/token-economy-rules.md` is mandatory: read it once
+   before the first search, read, or edit of every task and follow it as
+   written.
+2. It is the only source of truth for reading, editing, batching, context,
+   deliberation, asking, prompt cache, sessions, verification, routing,
+   delegation, web search, reporting, and measurement: never restate, weaken,
+   or work around its rules — a rule breached on a small task is still
+   breached.
 
 ## 4. Definition of done
 
