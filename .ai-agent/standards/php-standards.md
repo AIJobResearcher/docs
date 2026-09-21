@@ -24,6 +24,8 @@ not restate them.
 - **2.3** Compare with `===` / `!==` only, never loose `==`.
 - **2.4** Handle null before a non-nullable parameter (`??`, default, early
   return); cast explicitly only when needed (`(int) $model->version`).
+- **2.5** Duplicate an array shape in a docblock only when a typed read-model
+  class is not justified; a typed read model wins for nested response data.
 
 ## 3. Design
 
@@ -60,3 +62,9 @@ not restate them.
 
 - **7.1** If tests are requested, follow the existing `tests/` patterns
   (`*Test.php`, PHPUnit) — introduce no new framework.
+
+## 8. Comments
+
+- **8.1** Comments: English, one line; write nothing the code already says.
+- **8.2** Temporary code only on explicit request, marked `TEMPORARY HACK`
+  with the owning service and the removal condition.
