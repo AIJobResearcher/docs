@@ -48,13 +48,14 @@ one 37-turn session with 292 tool calls cost 48.5M input tokens, about
 - **5.2** Never restate the task, the standards, or code just read.
 - **5.3** Never re-open a decision settled in this session or in
   `.ai-agent/DECISIONS.md`.
-- **5.4** Reasoning was 55–73% of output tokens in the reviewed sessions;
-  trim it before any other output.
+- **5.4** Reasoning is about half of the output tokens; trim it before any
+  other output.
 
 ## 6. Prompt cache
 
-- **6.1** Keep the always-loaded prefix (`AGENTS.md`, standards)
-  byte-stable during a task; change it between sessions.
+- **6.1** Keep the always-loaded prefix (`AGENTS.md`, plus any standards
+  file already loaded) byte-stable during a task; change it between
+  sessions.
 - **6.2** One changed character before the cache breakpoint invalidates
   everything after it; a cache read costs ≈ 0.1× base input, a write
   1.25–2×.
@@ -66,16 +67,20 @@ one 37-turn session with 292 tool calls cost 48.5M input tokens, about
 - **7.2** At 20 messages or 300 tool calls, write a handoff note — state,
   files, next step, open questions — to the artifact directory (4.2) and
   continue in a fresh session.
+- **7.3** An aborted turn leaves partial state: before continuing, re-read
+  the files you touched and do not resume the abandoned work unless asked.
 
 ## 8. Verification
 
 - **8.1** Verify with the cheapest check the repo supports (`php -l` for
-  PHP, `bash -n` for shell, a parse check for YAML, none for prose) and
-  prefer one narrow runtime call through `docker exec` (`curl`, `psql`) to
-  analyzers and full test gates, which run only on request (`AGENTS.md` 5.4).
+  PHP, `bash -n` for shell, `tsc --noEmit` for TypeScript, a parse check for
+  YAML, none for prose) and prefer one narrow runtime call (`curl`, `psql`,
+  the running dev server) to analyzers and full test gates, which run only
+  on request (`AGENTS.md` 5.4).
 - **8.2** A failed call costs the turn twice — pre-flight the cheap failure
   classes: file permissions, container user, empty database, missing binding,
-  and arguments the tool rejects (search patterns, paths).
+  arguments the tool rejects (search patterns, paths), and output too large
+  to cap.
 
 ## 9. Routing
 
@@ -92,12 +97,11 @@ one 37-turn session with 292 tool calls cost 48.5M input tokens, about
 
 ## 11. Web search
 
-- **11.1** Measured: page fetching, not the search, is the cost — 12
-  searches, all inside the session holding 55% of the window's input
-  tokens, where `web_fetch` was the second-most-used tool.
-- **11.2** Search the repo first: code, docs, and the `vendor/` source of
-  the pinned framework version answer Laravel/PHP questions exactly and
-  cheaply; the web is the last resort.
+- **11.1** Measured: page fetching, not the search itself, is the cost — cap
+  the fetches (11.4) rather than the queries.
+- **11.2** Search the repo first: the code, `docs/`, and the vendored
+  sources of the pinned stack answer stack questions exactly and cheaply;
+  the web is the last resort.
 - **11.3** Send one `web_search` with up to four queries, never repeated
   single searches; refine only when the first result set is empty.
 - **11.4** Cap `web_fetch` at two pages per question, and only pages that
