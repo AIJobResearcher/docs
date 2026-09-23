@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Vacancies Market Service API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 6.1.0
+  version: 8.1.0
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     description: Production server
@@ -28,16 +28,11 @@ paths:
                 employer_id:
                   type: string
                   description: Filter by employer
-                countries:
+                location_ids:
                   type: array
                   items:
-                    type: string
-                  description: Filter by country
-                cities:
-                  type: array
-                  items:
-                    type: string
-                  description: Filter by city
+                    type: integer
+                  description: Filter by researcher Location ids
                 min_salary:
                   type: integer
                   description: Minimum salary (USD)
@@ -61,11 +56,11 @@ paths:
                 posted_from:
                   type: string
                   format: date-time
-                  description: Earliest posted_at (inclusive)
+                  description: Earliest VacancySource.posted_at (inclusive)
                 posted_to:
                   type: string
                   format: date-time
-                  description: Latest posted_at (inclusive)
+                  description: Latest VacancySource.posted_at (inclusive)
                 per_page:
                   type: integer
                   maximum: 100
@@ -130,25 +125,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-  /vacancies-filtering-data:
-    get:
-      summary: Get vacancy filtering data
-      description: Vocabulary of employer countries and cities for filtering.
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [data]
-                properties:
-                  data:
-                    $ref: '#/components/schemas/VacancyFilteringData'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '429':
           $ref: '#/components/responses/TooManyRequests'
   /jobs:
@@ -221,6 +197,27 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+  /locations:
+    get:
+      summary: List locations
+      description: Location dictionary for employer and researcher location ids.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Location'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 components:
   securitySchemes:
     BearerAuth:
@@ -273,7 +270,7 @@ components:
           type: string
     VacancyPreview:
       type: object
-      required: [id, title, employer_id, employer_title, min_salary, employment_type, workplace, status, posted_at]
+      required: [id, title, employer_id, employer_title, min_salary, employment_type, workplace, status]
       properties:
         id:
           type: string
@@ -287,10 +284,6 @@ components:
           type: integer
         max_salary:
           type: [integer, 'null']
-        country:
-          type: [string, 'null']
-        city:
-          type: [string, 'null']
         employment_type:
           $ref: '#/components/schemas/EmploymentType'
         workplace:
@@ -298,24 +291,13 @@ components:
         status:
           type: string
           enum: [open, closed]
-        posted_at:
-          type: string
-          format: date-time
     Vacancy:
       allOf:
         - $ref: '#/components/schemas/VacancyPreview'
         - type: object
-          required: [requirements, external_urls, employer, created_at, updated_at, version]
+          required: [requirements, employer, created_at, updated_at, version]
           properties:
-            description:
-              type: [string, 'null']
             requirements:
-              type: array
-              items:
-                type: string
-            internal_url:
-              type: [string, 'null']
-            external_urls:
               type: array
               items:
                 type: string
@@ -323,8 +305,14 @@ components:
               $ref: '#/components/schemas/Employer'
             interviewers:
               type: array
+              description: Interviewers of the vacancy's employer.
               items:
                 $ref: '#/components/schemas/Interviewer'
+            researcher_location_ids:
+              type: array
+              description: Ids of the researcher's desired Locations.
+              items:
+                type: integer
             closed_at:
               type: [string, 'null']
               format: date-time
@@ -355,6 +343,11 @@ components:
         logo_url:
           type: [string, 'null']
           description: URL/path to the employer logo (server path now, S3 later)
+        location_ids:
+          type: array
+          description: Ids of the employer's Locations.
+          items:
+            type: integer
     Interviewer:
       type: object
       required: [id, full_name]
@@ -401,20 +394,21 @@ components:
           type: array
           items:
             type: string
-    VacancyFilteringData:
+    Location:
       type: object
-      required: [employer_countries, employer_cities]
+      required: [id, name, type]
       properties:
-        employer_countries:
-          type: array
-          items:
-            type: string
-          description: Distinct countries across employers
-        employer_cities:
-          type: array
-          items:
-            type: string
-          description: Distinct cities across employers
+        id:
+          type: integer
+        name:
+          type: string
+        iso_name:
+          type: string
+        parent_id:
+          type: [integer, 'null']
+        type:
+          type: string
+          enum: [country, city, unification-of-countries, region]
     Workplace:
       type: string
       description: Workplace arrangement

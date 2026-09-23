@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.29
+**Version:** 1.32
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -47,25 +47,24 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
 - **3.2 Breadcrumbs** — `JobCategory` / `JobSubCategory` / `Parent JobTitle` /
   `JobTitle`, not links.
 - **3.3 Selected filters panel** — active filters shown as tags (`workplace`,
-  `employment_type`, `country`, `city`, salary); date fields are not displayed.
-  Clicking a tag removes it; "Clear all" appears when at least one is active
-  (6.4). The `country` and `city` options come from the reference operation in
-  4.7.
+  `employment_type`, location, salary); date fields are not displayed. Clicking
+  a tag removes it; "Clear all" appears when at least one is active (6.4). The
+  location options come from `GET /locations` (see 4.7).
 - **3.4 ListVacancy Sidebar:**
   - **3.4.1 Header** — filtering accordion with main and advanced fields;
     vacancy count as small text; no "Based on your desired job:" label.
   - **3.4.2 ListVacancy Card** — `VacancyPreview`: title, employer_title,
-    salary, workplace, employment_type, posted_at, country, city; labels are
-    plain text, the card carries no filters; the selected card is highlighted.
+    salary, workplace, employment_type; labels are plain text, the card carries
+    no filters; the selected card is highlighted.
 - **3.5 Vacancy Description Card** — the selected `Vacancy`; empty-selection
   placeholder when no vacancy is selected.
   - **3.5.1 Header** — vacancy title.
   - **3.5.2 Vacancy Tags** — tags in a single row, without columns (workplace,
-    employment_type, posted_at, country, city, salary).
+    employment_type, salary).
   - **3.5.3 About the company and Interviewers** — `title`, `logo_url`,
-    `website`, `email`, `phone`, description; `interviewers` (array, 3–26
-    people): `full_name`, `position`, `profile_urls`, `avatar_url` (embedded in
-    `Vacancy`, moved to the header).
+    `website`, `email`, `phone`, description; `interviewers` (the employer's
+    interviewers, array): `full_name`, `position`, `profile_urls`, `avatar_url`
+    (embedded in `Vacancy`, moved to the header).
   - **3.5.4 Vacancy Requirements** — `requirements` (array of requirement
     titles), one per row; placed before the Vacancy Descriptions block (3.5.5);
     hidden when empty (7.4).
@@ -88,9 +87,8 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
   refreshes once, then shows the error state (6.5); `Correlation-ID` on every
   call.
 - **4.6 Pagination (3.4):** `page` / `per_page`, max 100 (default 20).
-- **4.7 Selected filters panel (3.3), Vacancies Market:**
-  `GET /vacancies-filtering-data` — employer countries and cities for the
-  location selects.
+- **4.7 Selected filters panel (3.3), Vacancies Market:** `GET /locations` —
+  location dictionary for the filter selects.
 
 ## 5. States
 

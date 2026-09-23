@@ -38,13 +38,14 @@ documentation.
 | **Gherkin** | Language for BDD scenarios (Feature, Scenario, Given/When/Then). |
 | **HPA (Horizontal Pod Autoscaler)** | Kubernetes mechanism for automatically scaling the number of replicas. |
 | **Idempotency Key** | Unique key sent by the client in the request header to prevent duplication. |
-| **Interviewer** | Interviewer – representative of the employer, linked to a vacancy. Aggregate in Vacancies Market service. |
+| **Interviewer** | Interviewer – representative of the employer. Child entity of `Employer` in Vacancies Market service. |
 | **Jaeger** | Distributed tracing system (OpenTelemetry → Jaeger). |
 | **Job** | Job (occupation) in the vacancy catalogue, referenced by Vacancies and Requirements. Aggregate in Vacancies Market service; the job seeker's desired-jobs list references it by id. |
 | **JWT (JSON Web Token)** | Token format for authentication and authorisation (RS256, lifetime 15 minutes). |
 | **k6** | Load testing tool. |
 | **KnowledgeCenter** | Go service that manages long‑term learning plans, tracks, progress. |
 | **LearningTrack** | Long‑term learning plan (track). Aggregate in KnowledgeCenter. |
+| **Location** | Country, region, city or unification of countries. Reference entity in Vacancies Market service. |
 | **Meet** | Meeting (interview) between a job seeker and an interviewer. Aggregate in ResearcherCrm. |
 | **Message** | Message between job seeker and interviewer within a meeting or vacancy. |
 | **Multi-tenancy** | Data isolation between users (`researcher_id` in each table). For B2C. |
@@ -57,7 +58,7 @@ documentation.
 | **Outbox Pattern** | Pattern for reliable event publication: saving to an `outbox_messages` table in the same transaction. |
 | **Parsing&AIConnector** | Python service responsible for portal parsing, AI recommendations and RAG. |
 | **ParsingTask** | External portal parsing task. Aggregate in Parsing&AIConnector. |
-| **Portal** | External job portal (LinkedIn, Djinni). Reference/lookup entity owned by Vacancies Market; `Employer` and `Interviewer` reference it via `portal_id`. |
+| **Portal** | External job portal (LinkedIn, Djinni). Reference/lookup entity owned by Vacancies Market; `Employer` references it via `portal_id`, `Interviewer` inherits it through the employer. |
 | **PostgreSQL** | Relational database. Used by all services except Frontend. |
 | **Processed Events Table** | Table for storing already processed `event_id`s (used for idempotency). |
 | **Progress** | Progress of completing a track item. Aggregate in KnowledgeCenter. |
@@ -80,7 +81,7 @@ documentation.
 | **Tenant ID** | Tenant identifier; in the project it matches `researcher_id` for data isolation. |
 | **TrackItem** | Learning plan item (course, article, practice). Aggregate in KnowledgeCenter. |
 | **Ubiquitous Language** | Common language used in code, events, API and documentation. |
-| **Vacancies** | PHP service (Laravel) managing vacancies, employers, interviewers. |
+| **Vacancies** | PHP service (Laravel) managing the vacancy catalogue: vacancies, employers, interviewers, jobs, requirements, portals and locations. |
 | **Vacancy** | Public vacancy information. Parsing&AIConnector selects approved catalogue changes; Vacancies Market persists and exposes the catalogue aggregate. |
 | **VacancyCandidate** | Internal Parsing&AIConnector entity containing normalized source data, duplicate candidates, confidence and a selected catalogue mutation. |
 | **VacancyMerged** | Event published by Vacancies Market after parser-selected duplicate vacancies are merged into one canonical record. |

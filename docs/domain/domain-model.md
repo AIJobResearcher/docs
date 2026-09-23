@@ -1,6 +1,6 @@
 # Domain Model for AIJobResearcher
 
-**Version:** 1.2
+**Version:** 1.4
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [Architecture Overview](../architecture-overview.md) |
@@ -34,9 +34,9 @@ Each microservice is the single source of truth for its aggregates. Detailed
 ownership descriptions are in the corresponding bounded context files. Quick
 summary:
 
-| Service | Owns (main aggregates) |
+| Service | Owns (aggregates and entities) |
 | --------------------- | --- |
-| Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, VacancySource |
+| Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, Portal, Location, VacancySource |
 | ResearcherCrm | Researcher, Reply, Meet, Message, AIRecommendation |
 | Parsing&AIConnector | ParsingTask, VacancyCandidate, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
 | KnowledgeCenter | LearningTrack, TrackItem, Progress, Skill, DevelopmentRecommendation |

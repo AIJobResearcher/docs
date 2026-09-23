@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.1
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -24,9 +24,9 @@ every page. Audience: frontend engineers, QA and analytics.
 
 - **2.1 Contents:** the logo and the Main menu (one link to Vacancies Market page).
 - **2.2 Logo:** links to the home page; `alt` text required.
-- **2.4 Placement:** above the page content and outside its scrolling panes.
-- **2.5 Accessibility:** keyboard access, visible focus, contrast 4.5:1.
-- **2.6 Localisation:** English UI; strings kept as keys for future locales.
+- **2.3 Placement:** above the page content and outside its scrolling panes.
+- **2.4 Accessibility:** keyboard access, visible focus, contrast 4.5:1.
+- **2.5 Localisation:** English UI; strings kept as keys for future locales.
 
 ## 3. Related Documents
 
