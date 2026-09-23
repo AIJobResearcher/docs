@@ -248,9 +248,9 @@
   now, S3 later), `created_at` (timestamp), `updated_at`
   (timestamp), `version` (integer, default 1).
 - **8.3.2 Behavior:** `addVacancy()`, `removeVacancy()` (only if vacancy is
-  closed), `addInterviewer()`, `removeInterviewer()`.
+  closed), `addInterviewer()`, `removeInterviewer()`, `assignToJob()`, `unassignFromJob()`,.
 
-### 8.4 Vacancy (part of Employer but a separate root for search)
+### 8.4 Vacancy (part of Employer)
 
 - **8.4.1 Fields:** `id` (UUID), `employer_id` (UUID), `title` (string),
   `description` (text, nullable), `min_salary` (integer, USD, default 0),
@@ -269,7 +269,7 @@
 - **8.4.4 Note:** Salary is stored in USD only. Multi-currency support is
   planned for a future version.
 
-### 8.5 Interviewer
+### 8.5 Interviewer (part of Employer)
 
 - **8.5.1 Fields:** `id` (UUID), `portal_id` (UUID, references `Portal`),
   `employer_id` (UUID), `full_name` (string), `position` (string, nullable),

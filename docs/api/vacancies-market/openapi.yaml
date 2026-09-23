@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Vacancies Market Service API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 3.0.0
+  version: 6.1.0
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     description: Production server
@@ -11,7 +11,7 @@ security:
 paths:
   /vacancies:
     post:
-      summary: Search vacancies
+      summary: Get vacancies by JobIds
       description: Search vacancies with filtering and pagination; criteria are
         sent in the request body.
       requestBody:
@@ -28,11 +28,15 @@ paths:
                 employer_id:
                   type: string
                   description: Filter by employer
-                country:
-                  type: string
+                countries:
+                  type: array
+                  items:
+                    type: string
                   description: Filter by country
-                city:
-                  type: string
+                cities:
+                  type: array
+                  items:
+                    type: string
                   description: Filter by city
                 min_salary:
                   type: integer
@@ -44,10 +48,16 @@ paths:
                   type: string
                   enum: [open, closed]
                   description: Vacancy status
-                workplace:
-                  $ref: '#/components/schemas/Workplace'
-                employment_type:
-                  $ref: '#/components/schemas/EmploymentType'
+                workplaces:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Workplace'
+                  description: Filter by workplace
+                employment_types:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/EmploymentType'
+                  description: Filter by employment type
                 posted_from:
                   type: string
                   format: date-time
@@ -91,11 +101,11 @@ paths:
                       last_page:
                         type: integer
         '401':
-          description: Unauthenticated
+          $ref: '#/components/responses/Unauthorized'
         '422':
-          description: Validation failed
+          $ref: '#/components/responses/ValidationFailed'
         '429':
-          description: Too many requests
+          $ref: '#/components/responses/TooManyRequests'
   /vacancy/{id}:
     get:
       summary: Get vacancy details
@@ -117,18 +127,150 @@ paths:
                   data:
                     $ref: '#/components/schemas/Vacancy'
         '401':
-          description: Unauthenticated
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: Vacancy not found
+          $ref: '#/components/responses/NotFound'
         '429':
-          description: Too many requests
+          $ref: '#/components/responses/TooManyRequests'
+  /vacancies-filtering-data:
+    get:
+      summary: Get vacancy filtering data
+      description: Vocabulary of employer countries and cities for filtering.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VacancyFilteringData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /jobs:
+    post:
+      summary: Get jobs by list ids
+      description: Returns the job catalogue collection filtered by the given
+        job ids.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [job_ids]
+              properties:
+                job_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Ids of the jobs to return
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  meta:
+                    type: object
+                    required: [current_page, per_page, total, last_page]
+                    properties:
+                      current_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+                      last_page:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationFailed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /job-categories:
+    get:
+      summary: List job categories
+      description: Vocabulary of job categories with their sub-categories.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobCategory'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  headers:
+    RetryAfter:
+      description: Seconds or an HTTP-date after which the request may be retried.
+      schema:
+        oneOf:
+          - type: integer
+          - type: string
+  responses:
+    Unauthorized:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationFailed:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TooManyRequests:
+      description: Too many requests
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      type: object
+      description: Error payload; either `message` or `detail` may be present.
+      properties:
+        message:
+          type: string
+        detail:
+          type: string
     VacancyPreview:
       type: object
       required: [id, title, employer_id, employer_title, min_salary, employment_type, workplace, status, posted_at]
@@ -179,10 +321,10 @@ components:
                 type: string
             employer:
               $ref: '#/components/schemas/Employer'
-            interviewer:
-              oneOf:
-                - $ref: '#/components/schemas/Interviewer'
-                - type: 'null'
+            interviewers:
+              type: array
+              items:
+                $ref: '#/components/schemas/Interviewer'
             closed_at:
               type: [string, 'null']
               format: date-time
@@ -230,6 +372,49 @@ components:
         avatar_url:
           type: [string, 'null']
           description: URL/path to the interviewer photo (server path now, S3 later)
+    Job:
+      type: object
+      required: [id, title, category]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        sub_category:
+          type: [string, 'null']
+          description: Sub-category of the job; null when not set
+        parent_job_id:
+          type: [string, 'null']
+          description: ID of the parent job; null for a root job
+        parent_job_title:
+          type: [string, 'null']
+          description: Title of the parent job; null for a root job
+    JobCategory:
+      type: object
+      required: [category]
+      properties:
+        category:
+          type: string
+        sub_categories:
+          type: array
+          items:
+            type: string
+    VacancyFilteringData:
+      type: object
+      required: [employer_countries, employer_cities]
+      properties:
+        employer_countries:
+          type: array
+          items:
+            type: string
+          description: Distinct countries across employers
+        employer_cities:
+          type: array
+          items:
+            type: string
+          description: Distinct cities across employers
     Workplace:
       type: string
       description: Workplace arrangement
