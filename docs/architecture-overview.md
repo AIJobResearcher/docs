@@ -1,6 +1,6 @@
 # Architecture Overview for AIJobResearcher
 
-**Version:** 1.3
+**Version:** 1.4
 **Target load:** 50,000 concurrent users
 
 > **Related documentation:** [Glossary](glossary.md) |
@@ -30,7 +30,7 @@ Full description: `/docs/domain/domain-vision.md`
 | # | Service | Stack | Notes |
 | --- | --------------------- | --- | --- |
 | 1 | Deploy & Docs | DevOps | Docker Compose, K8s, GitHub Actions, ADR |
-| 2 | Vacancies Market | PHP 8.5, Laravel 13, PostgreSQL 16, Redis | catalogue of employers, vacancies and interviewers |
+| 2 | Vacancies Market | PHP 8.5, Laravel 13, PostgreSQL 16, Redis | catalogue of employers, vacancies, jobs, interviewers and locations |
 | 3 | ResearcherCrm | PHP 8.5, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis | job seekers, desired jobs, replies, meetings, messages, analytics |
 | 4 | Parsing&AIConnector | Python 3.12, FastAPI, Celery, RabbitMQ | portal parsing, AI models, recommendations |
 | 5 | Frontend | React 19.2, Next.js 16.3 (App Router), TypeScript 7 | user interface |

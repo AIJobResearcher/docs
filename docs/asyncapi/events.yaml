@@ -1,7 +1,7 @@
 asyncapi: 2.6.0
 info:
   title: AIJobResearcher Domain Events
-  version: 1.0.0
+  version: 3.0.0
   description: Asynchronous domain events and integration messages published by AIJobResearcher microservices.
 
 channels:
@@ -16,7 +16,6 @@ channels:
           - $ref: '#/components/messages/VacancyUpdated'
           - $ref: '#/components/messages/VacancyMerged'
           - $ref: '#/components/messages/VacancyClosed'
-          - $ref: '#/components/messages/InterviewerAssigned'
 
   vacancies/commands:
     description: Commands handled by Vacancies Market
@@ -138,10 +137,10 @@ components:
                   posted_at:
                     type: string
                     format: date-time
-                  country:
-                    type: string
-                  city:
-                    type: string
+                  location_ids:
+                    type: array
+                    items:
+                      type: integer
                   min_salary:
                     type: number
                   max_salary:
@@ -369,40 +368,6 @@ components:
               decision_confidence:
                 type: number
               decision_rationale:
-                type: string
-    InterviewerAssigned:
-      summary: Interviewer linked to a vacancy
-      payload:
-        type: object
-        properties:
-          event_id:
-            type: string
-            format: uuid
-            description: Unique id of this event instance (auto-generated uuid).
-              Independent of and never equal to aggregate_id.
-          event_type:
-            type: string
-            const: InterviewerAssigned
-          event_version:
-            type: integer
-            minimum: 1
-          aggregate_id:
-            type: string
-            description: Id of the source aggregate; shared by all events of the
-              same aggregate. Independent of event_id.
-          timestamp:
-            type: string
-            format: date-time
-          correlation_id:
-            type: string
-          data:
-            type: object
-            properties:
-              vacancy_id:
-                type: string
-              interviewer_id:
-                type: string
-              employer_id:
                 type: string
     ExternalPortalUnreachable:
       summary: External portal is unreachable

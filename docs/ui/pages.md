@@ -2,10 +2,10 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.1
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../glossary.md) |
-> [UI Flows](./flows.md) |
+> [UI Flows](./flows.md) | [UI Layout](./layout.md) |
 > [ADR-019 Frontend Architecture](../adr/adr-019-frontend-architecture.md)
 
 Index of the Frontend service pages with links to their specifications.
@@ -26,10 +26,12 @@ Audience: frontend engineers, QA and analytics.
 - **2.4** Every page is reachable from the main menu and requires an
   authenticated [Researcher](../glossary.md) unless its specification says
   otherwise.
+- **2.5** The shared page header is specified in [layout.md](./layout.md).
 
 ## 3. Related Documents
 
 - [Vacancies Market](./vacancies-market.md)
+- [UI Layout](./layout.md)
 - [UI Flows](./flows.md)
 - [ADR-019 Frontend Architecture](../adr/adr-019-frontend-architecture.md)
 - [Glossary](../glossary.md)

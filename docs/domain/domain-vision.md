@@ -38,7 +38,7 @@ it.
 
 | Domain | Role | Relationship to Core Domain |
 | --- | --- | --- |
-| Vacancy Market | Store, update vacancies, employers, interviewers | Provides data for searching and applying |
+| Vacancy Market | Store, update vacancies, employers, interviewers, jobs and locations | Provides data for searching and applying |
 | AI & Parsing | Integrate with AI models, parse portals, generate recommendations | Provides intelligent support for the job seeker |
 | Knowledge & Learning | Create tracks, progress, development recommendations | Helps the job seeker close skill gaps |
 
@@ -105,6 +105,7 @@ Canvas. Key terms:
 - **Interviewer** – interviewer (representative of the employer)
 - **Job** – job (occupation) in the vacancy catalogue; the job seeker's
   desired-jobs list references it
+- **Location** – country, region, city or unification of countries
 - **Reply** – application to a vacancy
 - **Meet** – meeting / interview
 - **LearningTrack** – long‑term learning plan
