@@ -14,7 +14,7 @@
 - **1.6** Horizontal rule: `---`, never `***` or `___`.
 - **1.7** Names capitalized exactly: AIJobResearcher, GitHub, GitHub
   Actions, Docker, Docker Compose, YAML, Markdown, OpenAPI, AsyncAPI,
-  Gherkin, Cucumber, Lychee, markdownlint (text only, code excluded).
+  Lychee, markdownlint (text only, code excluded).
 - **1.8** No raw HTML or bare angle brackets (`<br>`, `list<string>`) —
   wrap in inline code; never `<br>` inside tables.
 - **1.9** Code blocks: fenced with backticks (not tildes), blank line

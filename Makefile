@@ -1,4 +1,4 @@
-.PHONY: build up down logs test-md test-yaml test-openapi test-bdd test-links test help
+.PHONY: build up down logs test-md test-yaml test-openapi test-links test help
 
 ifeq ($(OS),Windows_NT)
     CURR_DIR := $(shell cd .; cmd /c echo %CD%)
@@ -11,8 +11,6 @@ build:
 	@if [ ! -d "node_modules" ]; then npm install; else echo "npm dependencies already installed"; fi
 	@echo "Installing markdownlint-cli2 locally..."
 	npm install markdownlint-cli2 --save-dev
-	@echo "Installing cucumber-js locally..."
-	npm install @cucumber/cucumber --save-dev
 	@echo "Installing Redocly CLI locally..."
 	npm install @redocly/cli --save-dev
 	@echo "Pulling Lychee Docker image..."

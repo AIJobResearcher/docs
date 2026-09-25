@@ -11,7 +11,6 @@ documentation.
 | **AIProvider** | Interface for interacting with AI models (OllamaAIProvider, OpenAIProvider). |
 | **AIRecommendation** | Entity in ResearcherCrm that stores a generated AI recommendation (text, type, target object). |
 | **Application Layer** | Layer in Clean Architecture containing use cases / commands. Coordinates domain objects. |
-| **BDD (Behavior-Driven Development)** | Development approach where behavior is described with Gherkin scenarios (Given/When/Then). |
 | **Bounded Context** | Boundary of a domain model. The project defines contexts: Vacancy Management, Job Search & CRM, AI & Parsing, Learning Management. |
 | **Breaking change** | Change in an event that requires increasing `event_version` (removal of a mandatory field, type change, etc.). |
 | **CatalogueChangeRequested** | Command from Parsing&AIConnector asking Vacancies Market to atomically persist an approved vacancy create, update, merge or closure. |
@@ -35,7 +34,6 @@ documentation.
 | **ExternalPortalUnreachable** | Event signalling that an external job portal is unreachable. |
 | **Feature flag** | Mechanism to enable/disable functionality without deployment. |
 | **GDPR** | General Data Protection Regulation – requirements for deletion and export of personal data. |
-| **Gherkin** | Language for BDD scenarios (Feature, Scenario, Given/When/Then). |
 | **HPA (Horizontal Pod Autoscaler)** | Kubernetes mechanism for automatically scaling the number of replicas. |
 | **Idempotency Key** | Unique key sent by the client in the request header to prevent duplication. |
 | **Interviewer** | Interviewer – representative of the employer. Child entity of `Employer` in Vacancies Market service. |

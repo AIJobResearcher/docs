@@ -31,8 +31,6 @@
       "Markdown",
       "OpenAPI",
       "AsyncAPI",
-      "Gherkin",
-      "Cucumber",
       "Lychee",
       "markdownlint"
     ],

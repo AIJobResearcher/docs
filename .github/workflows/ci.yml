@@ -62,19 +62,3 @@ jobs:
 
       - name: Lint OpenAPI specifications
         run: make test-openapi
-
-  bdd-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install cucumber-js locally
-        run: npm install @cucumber/cucumber --save-dev
-
-      - name: Check Gherkin feature files syntax
-        run: npx cucumber-js --config cucumber.js --format json
