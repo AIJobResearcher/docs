@@ -1,6 +1,6 @@
 # Technical Requirements for AIJobResearcher
 
-- **Version:** 1.5
+- **Version:** 1.6
 - **Target load:** 50,000 concurrent active users
 - **Application version:** v1.0
 
@@ -156,7 +156,7 @@ multi‑region.
 
 ## 4. API Requirements
 
-- **Specification:** OpenAPI 3.0+.
+- **Specification:** OpenAPI 3.2.1 (target; the specs are on 3.1.0 and 3.0.3).
 - **Versioning:** `/api/v1/...`.
 - **Pagination:** `limit` (max 100), `offset` / `page+per_page`. Sorting
   `sort=field:asc`.

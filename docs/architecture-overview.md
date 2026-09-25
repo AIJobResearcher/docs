@@ -1,6 +1,6 @@
 # Architecture Overview for AIJobResearcher
 
-**Version:** 1.4
+**Version:** 1.5
 **Target load:** 50,000 concurrent users
 
 > **Related documentation:** [Glossary](glossary.md) |
@@ -182,8 +182,8 @@ Details – [ADR-011](./adr/adr-011-outbox-pattern.md).
 ## 9. Documentation and contracts (Documentation as Code)
 
 - All documentation in the `/docs` repository.
-- **API specifications:** OpenAPI 3.0, generated in CI, published to
-  `docs/api/<service>/`.
+- **API specifications:** OpenAPI 3.2.1 (target; the specs are on 3.1.0 and
+  3.0.3), generated in CI, published to `docs/api/<service>/`.
 - **UI specifications:** page specifications and user flows in `/docs/ui/`.
 - **C4 diagrams:** in `/docs/c4/`.
 - **Main registry:** `/docs/README.md`.

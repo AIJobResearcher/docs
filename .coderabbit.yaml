@@ -25,7 +25,7 @@ reviews:
     3. **🔌 API changes** - Note any OpenAPI endpoint changes (`method /path`), marking added (➕), modified (✏️), or deprecated (❌).
     4. **📦 Services affected** - List which services (Vacancies, ResearcherCrm, Parsing&AIConnector, KnowledgeCenter) need redeployment and the order.
     5. **⚠️ Breaking changes** - Explicitly call out any breaking changes with a migration path.
-    6. **🧪 Testing** - Mention BDD scenarios (Gherkin features) that were added or updated.
+    6. **🧪 Testing** - Mention the checks that were added or updated.
     7. **📊 Contributor Summary** - A table showing contributions (lines of code added, removed, files changed).
 
     Format as Markdown. Keep technical but concise. Use bullet points for readability.
@@ -62,7 +62,6 @@ reviews:
   # Exclude documentation and test files from deep analysis
   path_filters:
     - "!docs/**"
-    - "!**/*.feature"
     - "!**/*.md"
     - "!**/openapi.yaml"
     - "!**/events.yaml"

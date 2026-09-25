@@ -21,7 +21,7 @@ jobs:
         run: npm install markdownlint-cli2 --save-dev
 
       - name: Lint Markdown files
-        run: npx markdownlint-cli2 "docs/**/*.md" "AGENTS.md" --config .markdownlint.json
+        run: make test-md
 
   check-links:
     runs-on: ubuntu-latest
@@ -45,9 +45,9 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y yamllint
 
       - name: Validate YAML files
-        run: yamllint -c .yamllint.yaml .
+        run: make test-yaml
 
-  bdd-tests:
+  validate-openapi:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,8 +57,8 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install cucumber-js locally
-        run: npm install @cucumber/cucumber --save-dev
+      - name: Install Redocly CLI locally
+        run: npm install @redocly/cli --save-dev
 
-      - name: Check Gherkin feature files syntax
-        run: npx cucumber-js --config cucumber.js --format json
+      - name: Lint OpenAPI specifications
+        run: make test-openapi

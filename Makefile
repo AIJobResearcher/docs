@@ -1,4 +1,4 @@
-.PHONY: build up down logs test-md test-yaml test-bdd test-links test help
+.PHONY: build up down logs test-md test-yaml test-openapi test-links test help
 
 ifeq ($(OS),Windows_NT)
     CURR_DIR := $(shell cd .; cmd /c echo %CD%)
@@ -11,8 +11,8 @@ build:
 	@if [ ! -d "node_modules" ]; then npm install; else echo "npm dependencies already installed"; fi
 	@echo "Installing markdownlint-cli2 locally..."
 	npm install markdownlint-cli2 --save-dev
-	@echo "Installing cucumber-js locally..."
-	npm install @cucumber/cucumber --save-dev
+	@echo "Installing Redocly CLI locally..."
+	npm install @redocly/cli --save-dev
 	@echo "Pulling Lychee Docker image..."
 	docker pull lycheeverse/lychee:latest
 	@echo "Installing yamllint..."
@@ -36,15 +36,21 @@ test-md:
 	npx markdownlint-cli2 "docs/**/*.md" "AGENTS.md" ".ai-agent/standards/md-files-standards.md" --config .markdownlint.json
 
 test-yaml:
-	@echo "Running YAML linting on docs/..."
-	@yamllint -c .yamllint.yaml docs/ && echo "✅ All YAML files passed validation"
+	@echo "Running YAML linting on the repository..."
+	@yamllint -c .yamllint.yaml . && echo "✅ All YAML files passed validation"
+
+# Only the OpenAPI 3.2.1 spec is linted; the three 3.0.3 specs are excluded
+# until they are migrated. Once migrated, use "docs/api/*/openapi.yaml".
+test-openapi:
+	@echo "Linting OpenAPI specifications with Redocly..."
+	@npx --yes @redocly/cli lint --extends=minimal docs/api/vacancies-market/openapi.yaml && echo "✅ OpenAPI spec passed validation"
 
 test-links:
 	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest \
     		--config /input/lychee.toml \
     		/input/docs /input/*.md
 
-test: test-md test-yaml test-links
+test: test-md test-yaml test-openapi test-links
 	@echo "All validations passed."
 
 help:
@@ -61,5 +67,6 @@ help:
 	@echo "Validations:"
 	@echo "  test-md      - Lint Markdown files"
 	@echo "  test-yaml    - Validate YAML files"
+	@echo "  test-openapi - Lint OpenAPI specifications (Redocly)"
 	@echo "  test-links   - Check links with Lychee (Docker)"
 	@echo "  test         - Run all validations"
