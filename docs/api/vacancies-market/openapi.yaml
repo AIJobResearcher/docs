@@ -1,19 +1,40 @@
-openapi: 3.1.0
+openapi: 3.2.1
 info:
   title: Vacancies Market Service API
+  summary: Vacancy catalogue read API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 8.1.0
+  version: 0.0.15
 servers:
   - url: https://api.aijobresearcher.com/api/v1
+    name: Production
     description: Production server
+tags:
+  - name: vacancies
+    summary: Vacancies
+    description: Searching and reading vacancies.
+    kind: nav
+  - name: jobs
+    summary: Jobs
+    description: Reading the job catalogue.
+    kind: nav
+  - name: job-categories
+    summary: Job categories
+    description: Job category and sub-category vocabulary.
+    kind: nav
+  - name: locations
+    summary: Locations
+    description: Country, region and city vocabulary.
+    kind: nav
 security:
   - BearerAuth: []
 paths:
   /vacancies:
-    post:
+    query:
+      operationId: getVacanciesByJobIds
       summary: Get vacancies by JobIds
       description: Search vacancies with filtering and pagination; criteria are
         sent in the request body.
+      tags: [vacancies]
       requestBody:
         required: true
         content:
@@ -25,9 +46,11 @@ paths:
                 job_id:
                   type: string
                   description: Id of the job the vacancy is assigned to
-                employer_id:
-                  type: string
-                  description: Filter by employer
+                employer_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: Filter by employers
                 location_ids:
                   type: array
                   items:
@@ -103,7 +126,9 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /vacancy/{id}:
     get:
+      operationId: getVacancyDetails
       summary: Get vacancy details
+      tags: [vacancies]
       parameters:
         - name: id
           in: path
@@ -128,10 +153,12 @@ paths:
         '429':
           $ref: '#/components/responses/TooManyRequests'
   /jobs:
-    post:
+    query:
+      operationId: getJobsByListIds
       summary: Get jobs by list ids
       description: Returns the job catalogue collection filtered by the given
         job ids.
+      tags: [jobs]
       requestBody:
         required: true
         content:
@@ -178,8 +205,10 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /job-categories:
     get:
+      operationId: listJobCategories
       summary: List job categories
       description: Vocabulary of job categories with their sub-categories.
+      tags: [job-categories]
       responses:
         '200':
           description: Successful response
@@ -199,8 +228,10 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /locations:
     get:
+      operationId: listLocations
       summary: List locations
       description: Location dictionary for employer and researcher location ids.
+      tags: [locations]
       responses:
         '200':
           description: Successful response
@@ -270,20 +301,29 @@ components:
           type: string
     VacancyPreview:
       type: object
-      required: [id, title, employer_id, employer_title, min_salary, employment_type, workplace, status]
+      required: [id, title, employer, min_salary, employment_type, workplace, status]
       properties:
         id:
           type: string
         title:
           type: string
-        employer_id:
-          type: string
-        employer_title:
-          type: string
+        employer:
+          type: object
+          required: [employer_id, employer_title]
+          properties:
+            employer_id:
+              type: string
+            employer_title:
+              type: string
         min_salary:
           type: integer
         max_salary:
           type: [integer, 'null']
+        researcher_location_ids:
+          type: array
+          description: Ids of the researcher's desired Locations.
+          items:
+            type: integer
         employment_type:
           $ref: '#/components/schemas/EmploymentType'
         workplace:
@@ -295,24 +335,23 @@ components:
       allOf:
         - $ref: '#/components/schemas/VacancyPreview'
         - type: object
-          required: [requirements, employer, created_at, updated_at, version]
+          required: [requirements, created_at, updated_at, version]
           properties:
             requirements:
               type: array
+              description: Requirements of the vacancy.
               items:
-                type: string
-            employer:
-              $ref: '#/components/schemas/Employer'
+                $ref: '#/components/schemas/Requirement'
             interviewers:
               type: array
               description: Interviewers of the vacancy's employer.
               items:
                 $ref: '#/components/schemas/Interviewer'
-            researcher_location_ids:
+            vacancy_sources:
               type: array
-              description: Ids of the researcher's desired Locations.
+              description: Sources this vacancy was imported from.
               items:
-                type: integer
+                $ref: '#/components/schemas/VacancySource'
             closed_at:
               type: [string, 'null']
               format: date-time
@@ -324,30 +363,27 @@ components:
               format: date-time
             version:
               type: integer
-    Employer:
+    VacancySource:
       type: object
-      required: [id, title]
+      required: [id]
+      properties:
+        id:
+          type: string
+        external_url:
+          type: string
+        description:
+          type: [string, 'null']
+        posted_at:
+          type: string
+          format: date-time
+    Requirement:
+      type: object
+      required: [id]
       properties:
         id:
           type: string
         title:
           type: string
-        description:
-          type: [string, 'null']
-        website:
-          type: [string, 'null']
-        email:
-          type: [string, 'null']
-        phone:
-          type: [string, 'null']
-        logo_url:
-          type: [string, 'null']
-          description: URL/path to the employer logo (server path now, S3 later)
-        location_ids:
-          type: array
-          description: Ids of the employer's Locations.
-          items:
-            type: integer
     Interviewer:
       type: object
       required: [id, full_name]

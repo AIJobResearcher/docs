@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.32
+**Version:** 1.36
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -46,40 +46,42 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
   link.
 - **3.2 Breadcrumbs** — `JobCategory` / `JobSubCategory` / `Parent JobTitle` /
   `JobTitle`, not links.
-- **3.3 Selected filters panel** — active filters shown as tags (`workplace`,
-  `employment_type`, location, salary); date fields are not displayed. Clicking
-  a tag removes it; "Clear all" appears when at least one is active (6.4). The
-  location options come from `GET /locations` (see 4.7).
+- **3.3 Selected filters panel** — active filters shown as tags (`workplaces`,
+  `employment_types`, `location_ids`, salary); date fields (`posted_from`,
+  `posted_to`) are not displayed. Clicking a tag removes it; "Clear all"
+  appears when at least one is active (6.4). The location options come from
+  `GET /locations` (see 4.7).
 - **3.4 ListVacancy Sidebar:**
   - **3.4.1 Header** — filtering accordion with main and advanced fields;
     vacancy count as small text; no "Based on your desired job:" label.
-  - **3.4.2 ListVacancy Card** — `VacancyPreview`: title, employer_title,
-    salary, workplace, employment_type; labels are plain text, the card carries
-    no filters; the selected card is highlighted.
+  - **3.4.2 ListVacancy Card** — `VacancyPreview`: `title`,
+    `employer.employer_title`, `min_salary`/`max_salary`, `employment_type`,
+    `workplace`, `status`; labels are plain text, the card carries no filters;
+    the selected card is highlighted.
 - **3.5 Vacancy Description Card** — the selected `Vacancy`; empty-selection
   placeholder when no vacancy is selected.
   - **3.5.1 Header** — vacancy title.
-  - **3.5.2 Vacancy Tags** — tags in a single row, without columns (workplace,
-    employment_type, salary).
-  - **3.5.3 About the company and Interviewers** — `title`, `logo_url`,
-    `website`, `email`, `phone`, description; `interviewers` (the employer's
-    interviewers, array): `full_name`, `position`, `profile_urls`, `avatar_url`
-    (embedded in `Vacancy`, moved to the header).
-  - **3.5.4 Vacancy Requirements** — `requirements` (array of requirement
-    titles), one per row; placed before the Vacancy Descriptions block (3.5.5);
-    hidden when empty (7.4).
-  - **3.5.5 Vacancy Descriptions** — description by source domain data: per
-    source, its `title` and `description`; the block wraps on the source links.
+  - **3.5.2 Vacancy Tags** — tags in a single row, without columns
+    (`workplace`, `employment_type`, `min_salary`/`max_salary`).
+  - **3.5.3 About the company and Interviewers** — `employer.employer_title`;
+    `interviewers` (the employer's interviewers, array): `full_name`,
+    `position`, `profile_urls`, `avatar_url` (embedded in `Vacancy`, moved to
+    the header).
+  - **3.5.4 Vacancy Requirements** — `requirements` (array of `Requirement`:
+    `id`, `title`), the `title` per row; placed before the Vacancy Descriptions
+    block (3.5.5); hidden when empty (7.4).
+  - **3.5.5 Vacancy Descriptions** — per `vacancy_sources` item: `description`
+    and `posted_at`; the block wraps on `external_url`.
 
 ## 4. API Operations
 
 - **4.1 Selected filters panel (3.3) and ListVacancy Sidebar (3.4), Vacancies
-  Market:** `POST /vacancies` — get vacancies by `jobIds`.
+  Market:** `QUERY /vacancies` — get vacancies by `jobIds`.
 - **4.2 Vacancy Description Card (3.5), Vacancies Market:** `GET /vacancy/{id}`
   — get vacancy details.
 - **4.3 Desired jobs (3.1), ResearcherCrm:** `GET /researchers/{id}` — receive
   the researcher's `jobIds`.
-- **4.4 Job catalogue (3.1), Vacancies Market:** `POST /jobs` with the job ids
+- **4.4 Job catalogue (3.1), Vacancies Market:** `QUERY /jobs` with the job ids
   from 4.3 — resolves the `Job` records (`title`, `category`, `sub_category`,
   `parent_job_title`).
 - **4.5 Auth:** OAuth2/JWT bearer (`BearerAuth`); the access token is kept in

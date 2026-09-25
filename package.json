@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "devDependencies": {
     "@cucumber/cucumber": "^13.2.1",
+    "@redocly/cli": "^2.54.3",
     "gherkin-lint": "^0.0.15",
     "markdownlint-cli2": "^0.22.1",
     "serve": "^14.2.0"

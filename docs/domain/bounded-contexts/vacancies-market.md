@@ -1,8 +1,8 @@
 # Bounded Context: Vacancy Management (Vacancies Market Service)
 
 **Status:** accepted
-**Date:** 2026-09-18
-**Version:** 1.15
+**Date:** 2026-09-25
+**Version:** 1.16
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -102,6 +102,15 @@
   changed.
 - **6.2.7** A Vacancy may be assigned to one, or multiple Jobs via
   `VacancyJobAssignment`.
+- **6.2.8** A Vacancy may reference many Requirements via
+  `VacancyRequirementAssignment`.
+- **6.2.9** On update, a supplied `requirements` key replaces the current set:
+  Requirements missing from it are unassigned. An absent `requirements` key
+  leaves the set unchanged.
+- **6.2.10** A merge unions the Requirement assignments of the merged source
+  vacancy into the surviving vacancy.
+- **6.2.11** A duplicate Requirement inside one command is skipped, not
+  rejected.
 
 ### 6.3 Salary
 

@@ -53,5 +53,6 @@ one file per page.
 Final self-check before you mark a documentation task done:
 
 - **4.1** After a review changes a file, update its metadata header: set
-  `**Date:**` to today and bump `**Version:**` by one tenth (e.g. `1.0` →
-  `1.1`).
+  `**Date:**` to today and bump only the last digit of `**Version:**`
+  (`1.15` → `1.16`, `8.1.0` → `8.1.1`); any other digit changes only on the
+  user's instruction.

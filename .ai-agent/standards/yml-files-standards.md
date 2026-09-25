@@ -41,16 +41,37 @@ service at `docs/api/<service>/openapi.yaml` and the AsyncAPI catalog at
 `docs/asyncapi/events.yaml`.
 
 - **2.1** Formatting follows section 1 and `.yamllint.yaml`; correctness is
-  given by the OpenAPI 3.0 / AsyncAPI 2.x specification.
-- **2.2** The `<service>` name in the path is the canonical name of the
+  given by the target specification.
+- **2.2** Use only the newest stable specification version: OpenAPI 3.2.1 and
+  AsyncAPI 3.0. PhpStorm reads only 2.0-3.1, so a 3.2 file opens as plain YAML:
+  validate it outside the IDE — `make test-openapi`.
+- **2.3** Bump only the last digit of `info.version` for the change you make
+  (`8.1.0` → `8.1.1`); any other digit changes only on the user's instruction.
+- **2.4** The `<service>` name in the path is the canonical name of the
   service described by the spec.
-- **2.3** Keep each spec file the single source of truth for its contract;
+- **2.5** Keep each spec file the single source of truth for its contract;
   never duplicate its content in other files.
-- **2.4** A spec change is a contract change: land it in the owning service's
+- **2.6** A spec change is a contract change: land it in the owning service's
   code before release and never leave spec and code diverged; the spec lives
   here, the code change lands in the service repository.
-- **2.5** A breaking contract change updates the spec, the client, and all
+- **2.7** A breaking contract change updates the spec, the client, and all
   consumers in the same change.
-- **2.6** Before altering a shared event schema, check producer–consumer
+- **2.8** Before altering a shared event schema, check producer–consumer
   compatibility; keep channel and message names consistent with existing
   event definitions instead of introducing near-duplicates.
+- **2.9** Routes are RESTful: resource-oriented plural-noun paths, the HTTP
+  method carries the action, no verbs or RPC-style names in paths
+  (`POST /jobs`, never `/getJobs`).
+- **2.10** A sub-resource of a resource is a nested object field in the payload,
+  never flattened into the parent (`employer` holding `employer_id` and
+  `employer_title`, not those keys at the top level); the sub-resource
+  references its parent as `<parent>_id`.
+- **2.11** Every resource schema requires exactly `id` (`required: [id]`); all
+  other properties are optional and state their nullability.
+- **2.12** Every operation declares a unique `operationId` (camelCase, verb plus
+  resource: `getVacancyDetails`, `listLocations`) — Redocly
+  `operation-operationId`.
+- **2.13** Every tag declared in `tags` carries `summary` and `description` —
+  Redocly `tag-description`.
+- **2.14** Delete every component no operation references — Redocly
+  `no-unused-components`.

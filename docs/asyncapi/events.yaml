@@ -1,7 +1,7 @@
 asyncapi: 2.6.0
 info:
   title: AIJobResearcher Domain Events
-  version: 3.0.0
+  version: 2.0.1
   description: Asynchronous domain events and integration messages published by AIJobResearcher microservices.
 
 channels:
