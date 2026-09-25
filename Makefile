@@ -36,8 +36,8 @@ test-md:
 	npx markdownlint-cli2 "docs/**/*.md" "AGENTS.md" ".ai-agent/standards/md-files-standards.md" --config .markdownlint.json
 
 test-yaml:
-	@echo "Running YAML linting on docs/..."
-	@yamllint -c .yamllint.yaml docs/ && echo "✅ All YAML files passed validation"
+	@echo "Running YAML linting on the repository..."
+	@yamllint -c .yamllint.yaml . && echo "✅ All YAML files passed validation"
 
 # Only the OpenAPI 3.2.1 spec is linted; the three 3.0.3 specs are excluded
 # until they are migrated. Once migrated, use "docs/api/*/openapi.yaml".
