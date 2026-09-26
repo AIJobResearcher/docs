@@ -1,36 +1,16 @@
 # Event Storming: Vacancy Market
 
-## Commands (triggers)
+## Aggregates and entities
 
-- **ApplyCatalogueChange** – atomically persist a parser-approved create,
-  update, merge or close command.
-
-`ApplyCatalogueChange` is an internal integration command. It does not start
-parsing, normalize data or select duplicate candidates.
-
-## Domain events
-
-| Event | Published by | Description |
-| --- | --- | --- |
-| `EmployerImported` | Vacancies Market | A new employer was added to the catalogue. |
-| `VacancyImported` | Vacancies Market | A new canonical vacancy was added to the catalogue. |
-| `VacancyUpdated` | Vacancies Market | A canonical vacancy changed or was reopened. |
-| `VacancyMerged` | Vacancies Market | Parser-selected duplicates were merged into a canonical vacancy. |
-| `VacancyClosed` | Vacancies Market | A canonical vacancy was closed after source data confirmed it. |
-
-Parser status events, including `ExternalPortalUnreachable` and `ParsingFailed`,
-are published by `Parsing&AIConnector`, not by this context.
-
-## Aggregates
-
-- `Employer` – root
-- `Vacancy` – separate root aggregate for catalogue and search
-- `Job` – root aggregate for the job catalogue
-- `Requirement` – shared reference entity
-- `Portal` – external portal reference entity
-- `Location` – country / region / city reference entity
-- `Interviewer` – entity belonging to an employer
-- `VacancySource` – source provenance for parser projections and audit
+- `Employer` – root aggregate
+- `Vacancy` – aggregate for catalogue and search, part of `Employer`
+- `Job` – reference entity (job catalogue)
+- `Requirement` – reference entity (shared dictionary)
+- `Portal` – reference entity (external portals)
+- `Location` – reference entity (country / region / city)
+- `Interviewer` – entity of `Employer`
+- `Source` – source provenance, part of `Vacancy`
+- `Content` – source content, part of `Source`
 
 ## Business rules (invariants)
 

@@ -3,7 +3,7 @@
 Standards for editing YML/YAML files in the repository: GitHub Actions
 workflows (`.github/workflows/*.yml`), Docker Compose files (`deploy/**/*.yml`),
 OpenAPI/AsyncAPI specifications (`docs/**/*.yaml`), and lint configs
-(`.yamllint.yaml`, `.coderabbit.yaml`). Formatting follows `.yamllint.yaml`;
+(`.yamllint.yaml`). Formatting follows `.yamllint.yaml`;
 correctness the target schema. Section 1 applies to every YML/YAML file;
 section 2 adds rules for API specifications.
 
