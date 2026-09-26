@@ -1,6 +1,6 @@
 # Domain Model for AIJobResearcher
 
-**Version:** 1.4
+**Version:** 1.5
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [Architecture Overview](../architecture-overview.md) |
@@ -36,7 +36,7 @@ summary:
 
 | Service | Owns (aggregates and entities) |
 | --------------------- | --- |
-| Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, Portal, Location, VacancySource |
+| Vacancies Market | Vacancy, Employer, Interviewer, Job, Requirement, Portal, Location, Source, Content |
 | ResearcherCrm | Researcher, Reply, Meet, Message, AIRecommendation |
 | Parsing&AIConnector | ParsingTask, VacancyCandidate, AIRecommendationTask, AIDevelopmentRecommendation, AINotesTask, AIModel |
 | KnowledgeCenter | LearningTrack, TrackItem, Progress, Skill, DevelopmentRecommendation |

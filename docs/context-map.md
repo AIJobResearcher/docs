@@ -31,7 +31,7 @@ The project defines four main bounded contexts. Their relationships
 - **Type:** Upstream (Publisher‑Subscriber)
 - **Protocol:** RabbitMQ (events)
 - **Events:** `EmployerImported`, `VacancyImported`, `VacancyUpdated`,
-  `VacancyMerged`, `VacancyClosed`
+  `VacancyMerged`, `VacancyClosed`, `RequirementDeleted`
 - **Purpose:** Provide CRM service with up‑to‑date vacancy and employer data
   for replies and meetings.
 

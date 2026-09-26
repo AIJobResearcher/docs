@@ -3,7 +3,7 @@ info:
   title: Vacancies Market Service API
   summary: Vacancy catalogue read API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 0.0.15
+  version: 0.0.18
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     name: Production
@@ -79,11 +79,11 @@ paths:
                 posted_from:
                   type: string
                   format: date-time
-                  description: Earliest VacancySource.posted_at (inclusive)
+                  description: Earliest Source.posted_at (inclusive)
                 posted_to:
                   type: string
                   format: date-time
-                  description: Latest VacancySource.posted_at (inclusive)
+                  description: Latest Source.posted_at (inclusive)
                 per_page:
                   type: integer
                   maximum: 100
@@ -301,7 +301,7 @@ components:
           type: string
     VacancyPreview:
       type: object
-      required: [id, title, employer, min_salary, employment_type, workplace, status]
+      required: [id, title, employer, min_salary, employment_types, workplaces, status]
       properties:
         id:
           type: string
@@ -324,10 +324,14 @@ components:
           description: Ids of the researcher's desired Locations.
           items:
             type: integer
-        employment_type:
-          $ref: '#/components/schemas/EmploymentType'
-        workplace:
-          $ref: '#/components/schemas/Workplace'
+        employment_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmploymentType'
+        workplaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workplace'
         status:
           type: string
           enum: [open, closed]
@@ -351,7 +355,7 @@ components:
               type: array
               description: Sources this vacancy was imported from.
               items:
-                $ref: '#/components/schemas/VacancySource'
+                $ref: '#/components/schemas/Source'
             closed_at:
               type: [string, 'null']
               format: date-time
@@ -363,7 +367,7 @@ components:
               format: date-time
             version:
               type: integer
-    VacancySource:
+    Source:
       type: object
       required: [id]
       properties:
@@ -439,12 +443,18 @@ components:
         name:
           type: string
         iso_name:
-          type: string
+          type: [string, 'null']
         parent_id:
           type: [integer, 'null']
         type:
           type: string
           enum: [country, city, unification-of-countries, region]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
     Workplace:
       type: string
       description: Workplace arrangement

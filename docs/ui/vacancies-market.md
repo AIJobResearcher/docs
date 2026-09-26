@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.36
+**Version:** 1.37
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -55,14 +55,14 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
   - **3.4.1 Header** — filtering accordion with main and advanced fields;
     vacancy count as small text; no "Based on your desired job:" label.
   - **3.4.2 ListVacancy Card** — `VacancyPreview`: `title`,
-    `employer.employer_title`, `min_salary`/`max_salary`, `employment_type`,
-    `workplace`, `status`; labels are plain text, the card carries no filters;
+    `employer.employer_title`, `min_salary`/`max_salary`, `employment_types`,
+    `workplaces`, `status`; labels are plain text, the card carries no filters;
     the selected card is highlighted.
 - **3.5 Vacancy Description Card** — the selected `Vacancy`; empty-selection
   placeholder when no vacancy is selected.
   - **3.5.1 Header** — vacancy title.
   - **3.5.2 Vacancy Tags** — tags in a single row, without columns
-    (`workplace`, `employment_type`, `min_salary`/`max_salary`).
+    (`workplaces`, `employment_types`, `min_salary`/`max_salary`).
   - **3.5.3 About the company and Interviewers** — `employer.employer_title`;
     `interviewers` (the employer's interviewers, array): `full_name`,
     `position`, `profile_urls`, `avatar_url` (embedded in `Vacancy`, moved to
