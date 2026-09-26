@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-18
-**Version:** 1.37
+**Version:** 1.38
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -65,13 +65,14 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
     (`workplaces`, `employment_types`, `min_salary`/`max_salary`).
   - **3.5.3 About the company and Interviewers** — `employer.employer_title`;
     `interviewers` (the employer's interviewers, array): `full_name`,
-    `position`, `profile_urls`, `avatar_url` (embedded in `Vacancy`, moved to
-    the header).
+    `position`, `contacts`, `avatar_url` (embedded in `Vacancy`, moved to the
+    header).
   - **3.5.4 Vacancy Requirements** — `requirements` (array of `Requirement`:
     `id`, `title`), the `title` per row; placed before the Vacancy Descriptions
     block (3.5.5); hidden when empty (7.4).
-  - **3.5.5 Vacancy Descriptions** — per `vacancy_sources` item: `description`
-    and `posted_at`; the block wraps on `external_url`.
+  - **3.5.5 Vacancy Descriptions** — per `vacancy_sources` item: `title`,
+    `contents` (`value` where `type` is `description`) and `posted_at`; the
+    block wraps on `external_url`.
 
 ## 4. API Operations
 

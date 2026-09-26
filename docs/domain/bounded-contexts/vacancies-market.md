@@ -2,12 +2,13 @@
 
 **Status:** accepted
 **Date:** 2026-09-25
-**Version:** 1.64
+**Version:** 1.65
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
 > [Domain Model](../domain-model.md) | [Context Map](../../context-map.md) |
 > [OpenAPI](../../api/vacancies-market/openapi.yaml) |
+> [UI Page](../../ui/vacancies-market.md) |
 > [AsyncAPI](../../asyncapi/events.yaml) |
 > [Technical Requirements](../../technical-requirements.md) |
 > [README](../../README.md)

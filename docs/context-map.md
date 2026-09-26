@@ -30,8 +30,6 @@ The project defines four main bounded contexts. Their relationships
 
 - **Type:** Upstream (Publisher‑Subscriber)
 - **Protocol:** RabbitMQ (events)
-- **Events:** `EmployerImported`, `VacancyImported`, `VacancyUpdated`,
-  `VacancyMerged`, `VacancyClosed`, `RequirementDeleted`
 - **Purpose:** Provide CRM service with up‑to‑date vacancy and employer data
   for replies and meetings.
 
@@ -103,8 +101,7 @@ between contexts.
 
 ## 6. Open Host Service / Published Language
 
-- **Vacancy Management** publishes domain events (`VacancyImported` etc.) in
-  AsyncAPI format.
+- **Vacancy Management** publishes its command contract in AsyncAPI format.
 - **Job Search & CRM** publishes events (`ReplyCreated`, `MeetScheduled`) for
   subscribers.
 - **Published Language:** JSON event schemas with `event_version` field (see

@@ -3,7 +3,7 @@ info:
   title: Vacancies Market Service API
   summary: Vacancy catalogue read API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 0.0.18
+  version: 0.0.19
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     name: Production
@@ -375,11 +375,35 @@ components:
           type: string
         external_url:
           type: string
-        description:
-          type: [string, 'null']
+        title:
+          type: string
         posted_at:
           type: string
           format: date-time
+        contents:
+          type: array
+          description: Descriptions of the source.
+          items:
+            $ref: '#/components/schemas/Content'
+    Content:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [description]
+        value:
+          type: string
+    Contact:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [website, profile_urls, phone, email]
+        value:
+          type: string
     Requirement:
       type: object
       required: [id]
@@ -398,10 +422,11 @@ components:
           type: string
         position:
           type: [string, 'null']
-        profile_urls:
-          type: [object, 'null']
-          additionalProperties:
-            type: string
+        contacts:
+          type: array
+          description: Interviewer contacts.
+          items:
+            $ref: '#/components/schemas/Contact'
         avatar_url:
           type: [string, 'null']
           description: URL/path to the interviewer photo (server path now, S3 later)
