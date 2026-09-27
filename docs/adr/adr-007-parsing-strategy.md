@@ -1,5 +1,8 @@
 # ADR-007: External Portal Parsing Strategy
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 Vacancies, employers, and interviewers are imported from external portals
@@ -26,7 +29,7 @@ Vacancies, employers, and interviewers are imported from external portals
 
 - Keeps data fresh with minimal load on external portals.
 - Configuration as code allows quick reaction to structure changes.
-- Automatic recovery reduces manual intervention by the administrator.
+- Automatic recovery keeps manual intervention by the team rare.
 
 ## Alternatives
 
@@ -37,11 +40,11 @@ Vacancies, employers, and interviewers are imported from external portals
 
 - Monitor metrics `parsing_success_rate`, `parsing_validation_errors`. Alert
   when `success_rate < 0.8` for 5 minutes.
-- On parsing failure, administrator fixes YAML and creates a PR; CI runs tests.
+- On parsing failure, an engineer fixes the YAML and opens a PR; CI runs tests.
 - Production requires a pool of proxy servers (configured via environment
   variables).
 
 ## Related artifacts
 
 - ADR-006 (AI models) – part of parsing is used for AI recommendations.
-- Section "External portal parsing" in `ai-rag-pipeline.md`.
+- Parsing context: `docs/domain/bounded-contexts/parsing-ai-connector.md`.

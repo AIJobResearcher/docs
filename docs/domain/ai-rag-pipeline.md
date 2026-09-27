@@ -1,75 +1,36 @@
 # AI & RAG Pipeline for AIJobResearcher
 
-**Version:** 1.0
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.1
 
 > **Related documentation:** [Glossary](../glossary.md) |
-> [Architecture Overview](../architecture-overview.md) |
+> [Parsing&AIConnector](./bounded-contexts/parsing-ai-connector.md) |
+> [ADR‑006](../adr/adr-006-ai-integration.md) |
+> [ADR‑007](../adr/adr-007-parsing-strategy.md) |
+> [ADR‑010](../adr/adr-010-qdrant-rag.md) |
 > [Technical Requirements](../technical-requirements.md) |
-> [Domain Model](domain-model.md) | [README](../README.md)
+> [Architecture Overview](../architecture-overview.md) | [README](../README.md)
 
 ## 1. Introduction
 
-This document describes the technical details of AI recommendations and external
-portal parsing in the `Parsing&AIConnector` service. Business scenarios and
-domain events related to AI and parsing are in
-[Domain Model (section 1.3)](domain-model.md). Architectural decisions (broker
-choice, ACL, event versioning) are in
-[Architecture Overview](../architecture-overview.md).
+This document describes the flow of the Retrieval‑Augmented Generation (RAG)
+pipeline of the `Parsing&AIConnector` service: how documents are prepared,
+indexed, retrieved and assembled into a prompt.
 
-## 2. AI model integration strategy (ADR‑006)
+The decisions behind the pipeline are recorded separately, and their parameters
+are not repeated here:
 
-**Interface:** `AIProviderInterface` with method
-`generateRecommendations(prompt)`.
+- AI model providers, caching and budget fallback – ADR‑006.
+- External portal parsing (modes, ethics, limits, broken structure detector) –
+  ADR‑007.
+- Vector database, embedding models, chunk sizes, search parameters and context
+  limits – ADR‑010.
+- Metrics, alerts and SLO – Technical Requirements §5.3.
 
-**Implementations:**
+## 2. RAG Pipeline
 
-- `OllamaAIProvider` – local model `llama3.2` (free, for development and demo).
-- `OpenAIProvider` – `gpt-3.5-turbo` (paid, requires API key).
-
-**Budget management:** `OpenAIProvider` has monthly token limits. When exceeded
-– automatically switch to `OllamaAIProvider` (if available) or return an error
-message.
-
-**Caching:** all AI requests are cached in Redis for 24 hours (for
-recommendations) and 7 days (for learning plans). Cache key is prompt hash.
-Cache invalidated by `VacancyUpdated` event.
-
-**Asynchrony:** user request is placed in a RabbitMQ queue, processed by a
-Celery worker, result returned via polling or WebSocket.
-
-## 3. External portal parsing (ADR‑007)
-
-**Modes:**
-
-- Full scan – once per day.
-- Incremental – once per hour (only vacancies updated in the last 24 hours).
-
-**Ethics and limits:**
-
-- Read `robots.txt`, respect `Crawl‑delay`.
-- User‑Agent: `AIJobResearcher/1.0 (contact@example.com)`.
-- Proxy rotation on 403/429 errors, exponential backoff (1s, 2s, 4s, max 60s).
-- Max 2 simultaneous connections to one host.
-
-**Demo mode:** `ParsingMockClient` with fixtures (switch by
-`PARSER_MODE=live`).
-
-**Parsing configuration as code:** selectors and rules in YAML
-(`docs/configs/parsers/`). Changes via PR, automatic smoke tests in CI.
-
-**Broken structure detector:** before parsing, a test request; if the number of
-found elements differs from the expected by more than N%, parsing aborts with a
-notification.
-
-**Monitoring:** metrics `parsing_success_rate`, `parsing_validation_errors`.
-Alert when `success_rate < 0.8` for 5 minutes.
-
-## 4. RAG Pipeline (Retrieval‑Augmented Generation)
-
-RAG is used to generate recommendations for vacancies, resume improvement,
-interview preparation, and summaries.
-
-### 4.1 Document Processing
+### 2.1 Document processing
 
 Source documents (vacancies, job seeker profiles, articles, interview logs)
 undergo:
@@ -79,40 +40,33 @@ undergo:
 - Optional case folding.
 - Stop word filtering.
 
-### 4.2 Chunking Strategy
+### 2.2 Chunking
 
-- **Chunk size:** 500 tokens (approx 350–400 words).
-- **Overlap:** 50 tokens.
-- **Strategy:** by paragraphs, with sentence boundaries (NLTK/spaCy).
-- Short documents – one chunk.
+- Strategy: by paragraphs, with sentence boundaries (NLTK/spaCy).
+- Short documents form a single chunk.
+- Chunk size and overlap – ADR‑010.
 
-### 4.3 Embeddings
+### 2.3 Embeddings
 
-- **For development:** `all-MiniLM-L6-v2` (384 dim).
-- **For production:** `intfloat/e5-large-v2` (1024 dim).
-- Embeddings generated asynchronously when document is added/updated.
+- Generated asynchronously when a document is added or updated.
+- Models for development and production – ADR‑010.
 
-### 4.4 Vector Database
+### 2.4 Vector database
 
-**Chosen: Qdrant (self‑hosted).**
+- **Qdrant (self‑hosted)** – rationale and deployment – ADR‑010.
+- Each chunk is stored with its vector and metadata: `document_id`, `type`,
+  `vacancy_id`, `researcher_id`.
 
-Reasons: easy deployment, high CPU search performance, metadata filtering,
-official Python client.
-
-**Indexing:** each chunk stored with vector and metadata (`document_id`,
-`type`, `vacancy_id`, `researcher_id`).
-
-### 4.5 Retrieval
+### 2.5 Retrieval
 
 - User query → embedding.
-- Search for `k` nearest neighbours (k=5 for recommendations, k=10 for complex
-  queries).
-- Filter by metadata (e.g., `researcher_id`).
-- Distance – cosine, relevance threshold ≥ 0.75.
+- k‑nearest neighbours search with metadata filtering (e.g. by
+  `researcher_id`).
+- Distance, k values and relevance threshold – ADR‑010.
 
-### 4.6 Prompt Templates
+### 2.6 Prompt templates
 
-Templates stored in YAML files (`docs/prompts/`). Example for resume
+Templates are stored as YAML files in the service repository. Example for resume
 improvement:
 
 ```text
@@ -130,51 +84,8 @@ should be structured: a list of concrete actions.
 --- Recommendations ---
 ```
 
-### 4.7 Context Assembly
+### 2.7 Context assembly
 
-- Chunks sorted by score.
-- Context length limit: 3000 tokens (for `gpt-3.5-turbo`) or 8000 tokens (for
-  `llama3.2`).
-- If exceeded – drop least relevant chunks.
-- Add `timestamp` and `session_id` for debugging.
-
-### 4.8 Integration with domains
-
-- On `VacancyImported` event – vacancy text indexed in Qdrant.
-- On `ResearcherUpdated` event – resume indexed.
-- `KnowledgeCenter` can request summary generation via Parsing&AIConnector
-  (sync or async).
-- All AI requests from Researcher CRM go through RAG for context augmentation.
-
-## 5. Monitoring and alerts
-
-**Metrics (Prometheus):**
-
-- `rag_search_latency_seconds` – Qdrant search latency.
-- `rag_chunks_retrieved` – number of retrieved chunks.
-- `rag_context_length_tokens` – assembled context length.
-- `ai_provider_requests_total` – requests to OpenAI/Ollama.
-- `ai_provider_errors_total` – AI errors.
-- `parsing_success_rate`, `parsing_validation_errors`.
-
-**Alerts:**
-
-- Average chunks retrieved < 2 for 10 minutes → vectorisation problem.
-- `ai_provider_errors_total` > 5% for 5 minutes → critical.
-- `parsing_success_rate` < 0.8 for 5 minutes → warning.
-
-## 6. Fallback and fault tolerance
-
-- If Qdrant unavailable – search disabled, prompt used without context.
-- On OpenAI error – automatic retry (3 attempts), then fallback to Ollama or
-  user message.
-- On OpenAI budget exceeded – switch to Ollama + notify administrator.
-
-## 7. Related ADRs
-
-- [ADR‑006: AI model integration strategy](../adr/adr-006-ai-integration.md)
-- [ADR‑007: External portal parsing strategy](../adr/adr-007-parsing-strategy.md)
-- [ADR‑010: Qdrant choice and RAG strategy](../adr/adr-010-qdrant-rag.md)
-
-*Implementation details not described here can be found in the code of the
-`Parsing&AIConnector` service and its CI configurations.*
+- Chunks are sorted by score; the least relevant chunks are dropped when the
+  context limit is exceeded (limit – ADR‑010).
+- `timestamp` and `session_id` are added for debugging.

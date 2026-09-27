@@ -1,5 +1,8 @@
 # ADR-001: Choosing Microservices Architecture
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The system must scale to 50,000 concurrent users, support independent
@@ -38,4 +41,5 @@ service has its own database, codebase, CI/CD pipeline, and lifecycle.
 
 - ADR-005 (RabbitMQ).
 - ADR-008 (deployment and migrations).
-- Section "Platform architecture" in `architecture-overview.md`.
+- Section "Platform architecture (services, stacks, implementation order)" in
+  `docs/architecture-overview.md`.

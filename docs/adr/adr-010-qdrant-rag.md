@@ -1,5 +1,8 @@
 # ADR-010: Choosing Qdrant and the RAG Strategy for AI Recommendations
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 To generate high‑quality AI recommendations (for vacancies, resume improvement,
@@ -19,7 +22,7 @@ components:
 - **Prompt templates** in YAML, **context assembly** truncating to 3000 tokens
   (for `gpt-3.5-turbo`).
 
-Why Qdrant:
+## Why this decision
 
 - Simple deployment (single Docker container, no external dependencies).
 - High performance for vector search on CPU (enough for 20k RPS).
@@ -28,10 +31,10 @@ Why Qdrant:
 - Official Python client (Parsing&AIConnector is written in Python).
 - Free, open source.
 
-## Why not other solutions
+## Alternatives
 
-- **Elasticsearch with vectors** – supports dense vectors but requires extra setup
-  and plugins; CPU search performance is lower.
+- **Elasticsearch with vectors** – supports dense vectors but requires extra
+  setup and plugins; CPU search performance is lower.
 - **Pinecone** – paid, vendor lock‑in.
 - **Milvus** – powerful but complex to install (needs etcd, MinIO).
 - **FAISS** – library only, no network API or real‑time index update mechanism.
@@ -45,6 +48,6 @@ Why Qdrant:
 
 ## Related artifacts
 
-- Section "RAG Pipeline" in `ai-rag-pipeline.md`.
+- Section "RAG Pipeline" in `docs/domain/ai-rag-pipeline.md`.
 - ADR-006 (AI models).
 - Qdrant configuration in Docker Compose and Kubernetes manifests.

@@ -1,8 +1,12 @@
 # ADR-009: Capacity Planning
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
-The system is designed for 50,000 concurrent active users and a peak RPS of up to
+The system is designed for 50,000 concurrent active users and a peak RPS of up
+to
 20,000. Without pre‑calculating resources (CPU, RAM, disk, network), we cannot
 guarantee meeting SLOs for latency and availability.
 
@@ -15,16 +19,20 @@ Planning" section of `technical-requirements.md`). Main parameters:
   calculated average load.
 - Resources per replica (CPU / RAM) based on prototype testing and expert
   assessment.
-- Storage capacity (PostgreSQL, RabbitMQ, OpenSearch, Redis) for 1 year of growth.
+- Storage capacity (PostgreSQL, RabbitMQ, OpenSearch, Redis) for 1 year of
+  growth.
 - Network requirements (throughput, latency ≤ 1 ms inside the data centre).
 
 ## Why this decision
 
-- Balance between cost and performance: PHP services use 2 vCPU / 2 GB RAM (typical
+- Balance between cost and performance: PHP services use 2 vCPU / 2 GB RAM
+  (typical
   for Laravel/Symfony with opcache).
-- Go service KnowledgeCenter is lightweight (1 vCPU / 1 GB) due to efficient memory
+- Go service KnowledgeCenter is lightweight (1 vCPU / 1 GB) due to efficient
+  memory
   usage.
-- Python service is given more resources (4 vCPU / 8 GB) because of heavy AI tasks
+- Python service is given more resources (4 vCPU / 8 GB) because of heavy AI
+  tasks
   and parsing.
 - Databases get dedicated instances with SSDs and replicas for fault tolerance.
 - 30% buffer allows handling sudden spikes without immediate scaling.
@@ -38,7 +46,8 @@ Planning" section of `technical-requirements.md`). Main parameters:
 ## Consequences
 
 - Infrastructure costs are fixed and predictable.
-- Horizontal scaling via HPA (CPU 70% / RabbitMQ queue depth) complements the base
+- Horizontal scaling via HPA (CPU 70% / RabbitMQ queue depth) complements the
+  base
   planning.
 - If functionality changes (e.g., a new feature that increases data volume),
   capacity must be recalculated.
@@ -46,6 +55,6 @@ Planning" section of `technical-requirements.md`). Main parameters:
 
 ## Related artifacts
 
-- Section "Capacity Planning" in `technical-requirements.md`.
+- Section "Capacity Planning" in `docs/technical-requirements.md`.
 - ADR-005 (scaling via HPA).
 - Load testing results (section "Performance Testing Plan").

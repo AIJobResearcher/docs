@@ -1,5 +1,8 @@
 # ADR-004: Using Go for the KnowledgeCenter Service
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The KnowledgeCenter service manages long-term learning plans, tracks, and
@@ -34,4 +37,5 @@ Data is stored in PostgreSQL.
 ## Related artifacts
 
 - ADR-009 (Capacity Planning) – minimal resources (1 vCPU / 1 GB).
-- Section "Platform architecture" in `architecture-overview.md`.
+- Section "Platform architecture (services, stacks, implementation order)" in
+  `docs/architecture-overview.md`.

@@ -1,14 +1,14 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Researcher CRM Service Components
+title ResearcherCrm Service Components
 
-Container(researcher_crm, "Researcher CRM", "PHP/Symfony")
+Container(researcher_crm, "ResearcherCrm", "PHP 8.5, Symfony 7.1")
 
-Boundary(researcher_boundary, "Researcher CRM") {
+Boundary(researcher_boundary, "Job Search & CRM") {
     Component(presentation, "Presentation Layer", "Controllers", "REST API")
-    Component(application, "Application Layer", "Commands/Queries", "Registration, replies, meetings")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "Researcher, Reply, Meet, Message")
+    Component(application, "Application Layer", "Commands/Queries", "Profile, desired jobs, replies, meetings, analytics")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Researcher (root), Reply, Meet, Message, AIRecommendation, Desired Job")
     Component(infrastructure, "Infrastructure Layer", "Doctrine, Event bus", "PostgreSQL, Redis, RabbitMQ")
     Component(audit, "Audit Logger", "Listens to events", "Append-only store")
 
@@ -19,11 +19,11 @@ Boundary(researcher_boundary, "Researcher CRM") {
 }
 
 ContainerDb(postgres, "PostgreSQL", "Researcher DB")
-Container(rabbitmq, "RabbitMQ", "Events")
+Container(rabbitmq, "RabbitMQ", "Messages")
 Container(redis, "Redis", "Cache, sessions")
 
 Rel(researcher_crm, postgres, "Reads / writes")
-Rel(researcher_crm, rabbitmq, "Publishes")
+Rel(researcher_crm, rabbitmq, "Publishes and consumes")
 Rel(researcher_crm, redis, "Caches")
 
 @enduml

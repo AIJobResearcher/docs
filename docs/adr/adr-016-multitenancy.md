@@ -1,5 +1,8 @@
 # ADR-016: Logical Data Isolation for Job Seekers (Multi‑Tenancy for B2C)
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The system is cloud‑based and serves only individual job seekers (B2C).
@@ -39,6 +42,6 @@ We use **logical isolation via `researcher_id`**:
 
 ## Related artifacts
 
-- Section "Multi‑Tenancy (Logical Data Isolation for Job Seekers)" in
-  `technical-requirements.md`.
+- Section "Multi‑Tenancy (Logical data isolation for jobseekers)" in
+  `docs/technical-requirements.md`.
 - JWT token contains the claim `researcher_id`.

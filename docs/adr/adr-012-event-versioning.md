@@ -1,5 +1,8 @@
 # ADR-012: Event Versioning Policy
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 Domain events evolve over time: fields are added, types change. Event consumers
@@ -28,7 +31,7 @@ Each event contains an `event_version` field (integer, starting at 1).
 ## Alternatives
 
 - Separate queues/topics for each version – overkill.
-- Prefix in `event_type` (e.g., `ReplyCreated_v2`) – less flexible.
+- Prefix in `event_type` (e.g., `<EventName>_v2`) – less flexible.
 
 ## Consequences
 
@@ -39,5 +42,5 @@ Each event contains an `event_version` field (integer, starting at 1).
 
 ## Related artifacts
 
-- Section "Event Versioning Policy" in `architecture-overview.md`.
+- Section "Event Versioning" in `docs/architecture-overview.md`.
 - AsyncAPI specification (the `event_version` field).

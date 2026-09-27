@@ -86,4 +86,4 @@ is defined in [ADR-019](adr-019-frontend-architecture.md).
 - `docs/technical-requirements.md` (1.5 Accessibility and localisation, 2.1
   Capacity).
 - `docs/c4/containers.puml`, `docs/c4/components-frontend.puml`.
-- `docs/architecture-overview.md` (3).
+- `docs/architecture-overview.md` §1 (services and stacks).

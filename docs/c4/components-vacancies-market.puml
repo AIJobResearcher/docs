@@ -1,15 +1,15 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Vacancies Market Service Components
+title Vacancy Management Service Components
 
-Container(vacancies, "Vacancies Market Service", "PHP/Laravel")
+Container(vacancies, "Vacancies Market", "PHP 8.5, Laravel 13")
 
-Boundary(vacancies_boundary, "Vacancies") {
+Boundary(vacancies_boundary, "Vacancy Management") {
     Component(presentation, "Presentation Layer", "Controllers", "Handles HTTP requests")
     Component(application, "Application Layer", "Commands/Queries", "Orchestrates use cases")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "Employer, Vacancy, Interviewer")
-    Component(infrastructure, "Infrastructure Layer", "Repositories, Event publishers", "PostgreSQL, Redis, RabbitMQ")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Employer (root), Vacancy, Interviewer, Job, Requirement, Portal, Location, Source, Content")
+    Component(infrastructure, "Infrastructure Layer", "Repositories, Event publishers", "PostgreSQL, Redis, RabbitMQ, OpenSearch")
 
     Rel(presentation, application, "Calls")
     Rel(application, domain, "Uses")
@@ -17,11 +17,13 @@ Boundary(vacancies_boundary, "Vacancies") {
 }
 
 ContainerDb(postgres, "PostgreSQL", "Vacancies DB")
-Container(rabbitmq, "RabbitMQ", "Events")
+Container(rabbitmq, "RabbitMQ", "Messages")
 Container(redis, "Redis", "Cache")
+Container(opensearch, "OpenSearch", "Search index")
 
 Rel(vacancies, postgres, "Reads / writes")
-Rel(vacancies, rabbitmq, "Publishes")
+Rel(vacancies, rabbitmq, "Publishes and consumes")
 Rel(vacancies, redis, "Caches")
+Rel(vacancies, opensearch, "Indexes")
 
 @enduml

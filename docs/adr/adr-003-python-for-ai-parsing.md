@@ -1,9 +1,13 @@
 # ADR-003: Using Python for the Parsing & AI Service
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The Parsing&AIConnector service is responsible for parsing external portals,
-integrating with AI models (OpenAI, Ollama), and building the RAG pipeline. We need
+integrating with AI models (OpenAI, Ollama), and building the RAG pipeline. We
+need
 a language with a rich ecosystem for these tasks.
 
 ## Decision
@@ -37,4 +41,4 @@ client).
 - ADR-006 (AI models).
 - ADR-007 (parsing).
 - ADR-010 (Qdrant and RAG).
-- Section "AI-RAG-Pipeline.md".
+- Section "RAG Pipeline" in `docs/domain/ai-rag-pipeline.md`.

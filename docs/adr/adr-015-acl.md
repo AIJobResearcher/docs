@@ -1,5 +1,8 @@
 # ADR-015: Using an Anti‑Corruption Layer (ACL) for External Systems
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The platform integrates with external portals (LinkedIn, Djinni), AI providers
@@ -41,6 +44,5 @@ The ACL performs:
 
 ## Related artifacts
 
-- Section "External Integrations. Anti‑Corruption Layer" in
-  `architecture-overview.md`.
+- External integrations view: `docs/context-map.md`.
 - ACL code in the respective services.

@@ -1,8 +1,8 @@
 # UI Layout Specification: Page Header
 
 **Status:** accepted
-**Date:** 2026-09-18
-**Version:** 1.2
+**Date:** 2026-09-27
+**Version:** 1.4
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -22,15 +22,10 @@ every page. Audience: frontend engineers, QA and analytics.
 
 ## 2. Header
 
-- **2.1 Contents:** the logo and the Main menu (one link to Vacancies Market page).
+- **2.1 Contents:** the logo and the Main menu (one link to Vacancies Market
+  page).
 - **2.2 Logo:** links to the home page; `alt` text required.
 - **2.3 Placement:** above the page content and outside its scrolling panes.
-- **2.4 Accessibility:** keyboard access, visible focus, contrast 4.5:1.
-- **2.5 Localisation:** English UI; strings kept as keys for future locales.
-
-## 3. Related Documents
-
-- [UI Pages](./pages.md)
-- [Vacancies Market](./vacancies-market.md)
-- [UI Flows](./flows.md)
-- [Glossary](../glossary.md)
+- **2.4 Accessibility:** WCAG 2.1 AA – `.ai-agent/standards/react-standards.md`
+  §8.2.
+- **2.5 Localisation:** English UI, strings as keys – the same standard, §8.3.

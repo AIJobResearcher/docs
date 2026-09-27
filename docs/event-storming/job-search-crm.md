@@ -1,44 +1,18 @@
 # Event Storming: Job Search & CRM
 
-## Commands (triggers)
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.1
 
-- **RegisterResearcher** – job seeker registration
-- **UpdateProfile** – update profile
-- **AddDesiredJob** – add desired job
-- **ApplyForVacancy** – apply to vacancy
-- **WithdrawReply** – withdraw application
-- **ScheduleMeet** – schedule meeting
-- **CancelMeet** – cancel meeting
-- **SendMessage** – send message
-- **ExportData** – export data (GDPR)
-- **DeleteAccount** – delete account (GDPR)
+> **Related documentation:** [Glossary](../glossary.md) |
+> [Context Map](../context-map.md) |
+> [Architecture Overview](../architecture-overview.md) |
+> [AsyncAPI](../asyncapi/events.yaml) | [README](../README.md)
 
-## Domain events
+The command/event flow of this context is not designed yet. Aggregates, entities
+and business rules are canonical in the bounded context file
+[Job Search & CRM](../domain/bounded-contexts/researcher-crm.md) §4-§5;
+context relationships are fixed in the [Context Map](../context-map.md).
 
-| Event | Published by | Description |
-| --- | --- | --- |
-| `ResearcherRegistered` | ResearcherCrm | New job seeker |
-| `JobPreferencesUpdated` | ResearcherCrm | List of desired jobs updated |
-| `ReplyCreated` | ResearcherCrm | Application created |
-| `ReplyWithdrawn` | ResearcherCrm | Application withdrawn |
-| `MeetScheduled` | ResearcherCrm | Meeting scheduled |
-| `MeetCompleted` | ResearcherCrm | Meeting completed |
-| `MeetCancelled` | ResearcherCrm | Meeting cancelled |
-| `MessageSent` | ResearcherCrm | Message sent |
-| `AccountDeleted` | ResearcherCrm | Account deleted (GDPR) |
-| `DataExported` | ResearcherCrm | Data exported (GDPR) |
-
-## Aggregates
-
-- `Researcher` – root
-- `Reply` – application
-- `Meet` – meeting
-- `Message` – message
-- `AIRecommendation` – AI result
-
-## Business rules (invariants)
-
-- One application per vacancy.
-- Withdraw only in `pending` status.
-- Meeting possible only after `approved` application.
-- Application immutable after `rejected`, `approved`, `withdrawn`.
+When the flow is designed, this file documents it: `Commands`, `Domain events`,
+`Integration messages` (in/out), `Aggregates` and `Business rules`.

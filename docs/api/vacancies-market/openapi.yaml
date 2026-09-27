@@ -3,7 +3,7 @@ info:
   title: Vacancies Market Service API
   summary: Vacancy catalogue read API
   description: 'Read API for the vacancy catalogue: vacancy search and details.'
-  version: 0.0.19
+  version: 0.0.20
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     name: Production
@@ -16,10 +16,6 @@ tags:
   - name: jobs
     summary: Jobs
     description: Reading the job catalogue.
-    kind: nav
-  - name: job-categories
-    summary: Job categories
-    description: Job category and sub-category vocabulary.
     kind: nav
   - name: locations
     summary: Locations
@@ -201,29 +197,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '422':
           $ref: '#/components/responses/ValidationFailed'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-  /job-categories:
-    get:
-      operationId: listJobCategories
-      summary: List job categories
-      description: Vocabulary of job categories with their sub-categories.
-      tags: [job-categories]
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [data]
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/JobCategory'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '429':
           $ref: '#/components/responses/TooManyRequests'
   /locations:
@@ -449,16 +422,6 @@ components:
         parent_job_title:
           type: [string, 'null']
           description: Title of the parent job; null for a root job
-    JobCategory:
-      type: object
-      required: [category]
-      properties:
-        category:
-          type: string
-        sub_categories:
-          type: array
-          items:
-            type: string
     Location:
       type: object
       required: [id, name, type]

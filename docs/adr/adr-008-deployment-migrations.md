@@ -1,5 +1,8 @@
 # ADR-008: Deployment and Migrations Strategy
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 Service updates must happen without downtime (zero‑downtime). Database schema
@@ -31,7 +34,8 @@ case of problems.
 
 ## Alternatives
 
-- Rolling update (Kubernetes) – slower rollback, risk of partial incompatibility.
+- Rolling update (Kubernetes) – slower rollback, risk of partial
+  incompatibility.
 - Locking migrations (plain `ALTER TABLE`) – leads to downtime.
 
 ## Consequences
@@ -45,7 +49,8 @@ case of problems.
 
 ## Related artifacts
 
-- ADR-005 (RabbitMQ) – not directly affected, but deployment of services accounts
+- ADR-005 (RabbitMQ) – not directly affected, but deployment of services
+  accounts
   for queues.
-- Section "CI/CD" in `architecture-overview.md`.
+- Section "CI/CD and contract publication" in `docs/architecture-overview.md`.
 - Blue‑Green manifests in `deploy/k8s/`.

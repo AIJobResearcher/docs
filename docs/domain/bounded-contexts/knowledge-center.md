@@ -1,108 +1,103 @@
 # Bounded Context: Learning Management (KnowledgeCenter Service)
 
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.3
+
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
-> [Domain Model](../domain-model.md) | [README](../../README.md)
+> [Domain Model](../domain-model.md) | [Context Map](../../context-map.md) |
+> [OpenAPI](../../api/knowledge-center/openapi.yaml) |
+> [AsyncAPI](../../asyncapi/events.yaml) |
+> [Technical Requirements](../../technical-requirements.md) |
+> [README](../../README.md)
+>
+> **Related ADRs:** [ADR‑004: Using Go for the KnowledgeCenter
+> Service](../../adr/adr-004-go-for-knowledge.md) |
+> [ADR‑006: AI Model Integration
+> Strategy](../../adr/adr-006-ai-integration.md) |
+> [ADR‑011: Outbox Pattern](../../adr/adr-011-outbox-pattern.md) |
+> [ADR‑013: Idempotency](../../adr/adr-013-idempotency.md)
 
-## Responsibility
+## 1. Responsibility
 
-Form individual learning plans (tracks), track progress, skill development
-recommendations, online help during interviews.
+- **1.1** Form individual learning plans (tracks), track progress and produce
+  development recommendations.
+- **1.2** Provide online help during interviews and AI summaries on request,
+  delegating generation to AI & Parsing.
 
-## Key NFRs
+## 2. Business processes and context boundary
 
-- Learning plan retrieval latency p95 ≤ 500 ms
-- Availability 99.5%
-- Integration with AI for summary generation
+- **2.1** Create a long‑term learning plan (track).
+- **2.2** Manage track items (courses, articles, practice).
+- **2.3** Track progress.
+- **2.4** Generate development recommendations from interview results and
+  vacancy requirements.
+- **2.5** Online help during a technical interview (answers to questions).
+- **2.6** Boundary: tracks, items, progress and skills are owned here; AI
+  generation itself belongs to AI & Parsing.
 
-## Business processes
+## 3. User stories
 
-- Create long‑term learning plan (track)
-- Manage track items (courses, articles, practice)
-- Track progress
-- Generate development recommendations based on interview results and vacancy
-  analysis
-- Online help during technical interview (providing answers to questions)
+- **3.1 Create learning plan:** a job seeker gets a long‑term track based on
+  current skills and the requirements of the desired job, to fill gaps; the plan
+  is generated automatically when the desired job changes or on request.
+- **3.2 Manage track:** a job seeker views the topics/courses of the track,
+  marks them as completed and sees progress as a percentage.
+- **3.3 Receive development recommendations:** a job seeker receives new
+  recommendations (books, courses) based on interview results and the
+  requirements of current vacancies.
+- **3.4 AI summaries on request:** a job seeker requests an AI summary on a
+  specific topic (e.g. “SOLID principles”) from the learning interface.
+- **3.5 Online help on interview:** a job seeker receives hints and answers to
+  questions in real time during a technical interview (text chat or voice).
 
-## User stories
+## 4. Business invariants
 
-1. **Create learning plan**
+### 4.1 General
 
-   - As a job seeker, I want to get a long‑term learning plan (track) based on my
-     current skills and the requirements of my desired job, to fill gaps and
-     increase my chances of employment.
-   - The plan is generated automatically when the desired job changes or on user
-     request.
+- **4.1.1** A track is always linked to a specific desired job (`Job`).
+- **4.1.2** Track progress is calculated as completed items / total items.
 
-2. **Manage track**
+### 4.2 TrackItem
 
-   - As a job seeker, I want to view the list of topics/courses in my track, mark
-     them as completed, see progress as a percentage.
+- **4.2.1** An item cannot be marked completed unless all previous items are
+  completed (linear order).
+- **4.2.2** Skipping is allowed only for optional items (`is_optional`).
 
-3. **Receive development recommendations**
+## 5. Aggregates and entities
 
-   - As a job seeker, I want to receive new development recommendations (e.g.,
-     which books to read, which courses to take) based on analysis of my interview
-     results (from Researcher CRM) and requirements of current vacancies.
+### 5.1 LearningTrack (root aggregate)
 
-4. **AI summaries on request**
+- **5.1.1 Fields:** `id`, `researcher_id`, `goal_job_id`, `created_at`, `status`
+  (active/completed), `progress_percent` (derived).
+- **5.1.2 Relationships:** belongs to a `Researcher` of ResearcherCrm;
+  references the desired `Job`; has many `TrackItem` and, through them,
+  `Progress`.
+- **5.1.3 Behaviour:** `addItem()`, `markItemComplete()`, `completeTrack()`.
 
-   - As a job seeker, I want to request an AI summary on a specific topic (e.g.,
-     “SOLID principles”) directly from the learning interface, to quickly review
-     material before an interview.
+### 5.2 TrackItem
 
-5. **Online help on interview**
-
-   - As a job seeker, I want to receive hints and answers to questions in real time
-     during a technical interview (via text chat or voice) to increase my chances
-     of success.
-
-## Business invariants
-
-- A track is always linked to a specific desired job (Job).
-- A track item cannot be marked “completed” unless all previous items are completed
-  (linear order). Skipping items (e.g., “optional”) is allowed if permitted by
-  track settings.
-- Track progress is calculated as completed items / total items.
-
-## Domain events
-
-- `LearningTrackCreated`, `LearningTrackCompleted`
-- `ProgressUpdated`
-- `DevelopmentRecommendationGenerated`
-- `AIConspectGenerated` – for summaries on request
-
-## Aggregates and entities
-
-### LearningTrack (root)
-
-- Fields: `id`, `researcher_id`, `goal_job_id`, `created_at`, `status`
-  (active/completed), `progress_percent` (derived)
-- Behaviour: `addItem()`, `markItemComplete()`, `completeTrack()`
-
-### TrackItem
-
-- Fields: `id`, `track_id`, `type` (course/article/practice), `title`,
+- **5.2.1 Fields:** `id`, `track_id`, `type` (course/article/practice), `title`,
   `resource_link`, `order_number`, `is_optional`, `status`
-  (not_started/in_progress/done), `score`
-- Behaviour: `start()`, `complete()`, `skip()` (only if is_optional)
+  (not_started/in_progress/done), `score`.
+- **5.2.2 Relationships:** part of `LearningTrack`; has one `Progress`.
+- **5.2.3 Behaviour:** `start()`, `complete()`, `skip()` (only if
+  `is_optional`).
 
-### Progress
+### 5.3 Progress
 
-- Fields: `id`, `track_item_id`, `status`, `score`, `completed_at`
-- Behaviour: `updateScore()`, `markDone()`
+- **5.3.1 Fields:** `id`, `track_item_id`, `status`, `score`, `completed_at`.
+- **5.3.2 Relationships:** part of `TrackItem`.
+- **5.3.3 Behaviour:** `updateScore()`, `markDone()`.
 
-### Skill (lookup)
+### 5.4 Skill (lookup)
 
-- Fields: `id`, `name`, `category`, `aliases` (list)
+- **5.4.1 Fields:** `id`, `name`, `category`, `aliases` (list).
+- **5.4.2 Relationships:** lookup entity of this context; referenced by id.
+- **5.4.3 Behaviour:** none — lookup entity.
 
-## Interaction with other contexts
+## 6. Interaction with other contexts
 
-- **Upstream:** Researcher CRM (reply and meeting events)
-- **Upstream:** Parsing&AIConnector (AI summaries)
-- **Downstream:** Researcher CRM (learning recommendations)
-
-## Implementation
-
-- Service: `KnowledgeCenter`
-- Technologies: Go 1.22, Gin, PostgreSQL 16, RabbitMQ
+All inbound and outbound relationships (types, protocols, messages, purposes):
+[Context Map](../../context-map.md) §2.

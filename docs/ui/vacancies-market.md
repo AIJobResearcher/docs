@@ -1,8 +1,8 @@
 # UI Page Specification: Vacancies Market
 
 **Status:** accepted
-**Date:** 2026-09-18
-**Version:** 1.38
+**Date:** 2026-09-27
+**Version:** 1.41
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) | [UI Flows](./flows.md) |
@@ -19,9 +19,11 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
 
 ## 1. Scope
 
-- **1.1 Context:** [Vacancy Management](../domain/bounded-contexts/vacancies-market.md)
+- **1.1 Context:** [Vacancy
+  Management](../domain/bounded-contexts/vacancies-market.md)
   (Vacancies Market service) — read-only vacancy catalogue for the UI.
-- **1.2 Source of truth:** [Vacancies Market API](../api/vacancies-market/openapi.yaml);
+- **1.2 Source of truth:** [Vacancies Market
+  API](../api/vacancies-market/openapi.yaml);
   this document does not restate schemas.
 - **1.3 Analytics:** deferred; no events are specified for now.
 
@@ -35,9 +37,10 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
   Description Card) that scroll independently; mobile — one column, the
   sidebar → card with a back action.
 - **2.6 Header:** the shared page header — see [Layout](./layout.md#2-header).
-- **2.7 Accessibility:** WCAG 2.1 AA — keyboard access, visible focus, contrast
-  4.5:1, labels/ARIA, `alt` for logo and avatar.
-- **2.8 Localisation:** English UI; strings kept as keys for future locales.
+- **2.7 Accessibility:** WCAG 2.1 AA for all page blocks; criteria —
+  `.ai-agent/standards/react-standards.md` §8.2.
+- **2.8 Localisation:** English UI, strings as keys –
+  `.ai-agent/standards/react-standards.md` §8.3.
 
 ## 3. Blocks
 
@@ -77,11 +80,12 @@ Vacancy Description Card (3.5) with the company and interviewers blocks
 ## 4. API Operations
 
 - **4.1 Selected filters panel (3.3) and ListVacancy Sidebar (3.4), Vacancies
-  Market:** `QUERY /vacancies` — get vacancies by `jobIds`.
+  Market:** `QUERY /vacancies` — get vacancies by `job_id`.
 - **4.2 Vacancy Description Card (3.5), Vacancies Market:** `GET /vacancy/{id}`
   — get vacancy details.
-- **4.3 Desired jobs (3.1), ResearcherCrm:** `GET /researchers/{id}` — receive
-  the researcher's `jobIds`.
+- **4.3 Desired jobs (3.1), ResearcherCrm:** gap — the desired-jobs list has no
+  read operation in the current contract (`POST /jobs` only adds an entry);
+  until it exists the bar renders from `Researcher.desired_job_ids`.
 - **4.4 Job catalogue (3.1), Vacancies Market:** `QUERY /jobs` with the job ids
   from 4.3 — resolves the `Job` records (`title`, `category`, `sub_category`,
   `parent_job_title`).
@@ -153,3 +157,17 @@ stateDiagram-v2
   one tag is active.
 - **7.6** Desired jobs (3.1) fail: the page is blocked with an error and a
   Retry action; the list is not loaded.
+
+## 8. Related Documents
+
+- [UI Pages](./pages.md) — page index; [UI Flows](./flows.md) — cross-page
+  scenarios; [UI Layout](./layout.md) — shared page header.
+- [Vacancy Management](../domain/bounded-contexts/vacancies-market.md) —
+  bounded context of the catalogue.
+- [Vacancies Market API](../api/vacancies-market/openapi.yaml) — contract of the
+  endpoints used in §4.
+- [Technical Requirements](../technical-requirements.md) — SLO, availability,
+  accessibility.
+- [Glossary](../glossary.md) — domain terms used in this specification.
+- [ADR-019 Frontend Architecture](../adr/adr-019-frontend-architecture.md) —
+  rendering, state and data-fetching rules.

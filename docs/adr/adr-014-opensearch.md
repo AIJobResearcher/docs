@@ -1,5 +1,8 @@
 # ADR-014: Choosing OpenSearch / Elasticsearch for Full‑Text Search
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 With a load of 50k concurrent users and 20k RPS, direct full‑text queries to
@@ -10,14 +13,18 @@ search engine.
 
 We use **OpenSearch** (or Elasticsearch). Main search areas:
 
-- Vacancies (full‑text, filters, sorting)
-- Employers
-- Skills
+- **Vacancies** – full‑text search, filters (employer, salary, location,
+  status), sorting.
+- **Employers** – by name, website, active vacancies.
+- **Skills** – autocomplete for the desired job.
 
-Indexing is asynchronous via RabbitMQ events (`VacancyImported`, `VacancyUpdated`,
-etc.). Cluster of ≥3 nodes, daily index backup.
+Indexing is asynchronous via RabbitMQ events. Cluster of ≥3 nodes, daily index
+backup.
 
-## Why OpenSearch
+Direct full‑text queries to PostgreSQL are forbidden: the search index is the
+only full‑text path, and PostgreSQL keeps the write model only.
+
+## Why this decision
 
 - Performance at large volumes (millions of documents).
 - Rich filtering and aggregation capabilities.
@@ -39,5 +46,4 @@ etc.). Cluster of ≥3 nodes, daily index backup.
 
 ## Related artifacts
 
-- Section "Search Architecture" in `architecture-overview.md`.
 - ADR-009 (Capacity Planning).

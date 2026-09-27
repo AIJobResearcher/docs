@@ -1,154 +1,130 @@
 # Bounded Context: AI & Parsing (Parsing&AIConnector Service)
 
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.4
+
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
-> [Domain Model](../domain-model.md) | [README](../../README.md)
+> [Domain Model](../domain-model.md) | [Context Map](../../context-map.md) |
+> [OpenAPI](../../api/parsing-ai-connector/openapi.yaml) |
+> [AI & RAG Pipeline](../ai-rag-pipeline.md) |
+> [AsyncAPI](../../asyncapi/events.yaml) |
+> [Technical Requirements](../../technical-requirements.md) |
+> [README](../../README.md)
+>
+> **Related ADRs:** [ADR‑003: Using Python for the Parsing & AI
+> Service](../../adr/adr-003-python-for-ai-parsing.md) |
+> [ADR‑006: AI Model Integration
+> Strategy](../../adr/adr-006-ai-integration.md) |
+> [ADR‑007: External Portal Parsing
+> Strategy](../../adr/adr-007-parsing-strategy.md) |
+> [ADR‑010: Choosing Qdrant and the RAG
+> Strategy](../../adr/adr-010-qdrant-rag.md) |
+> [ADR‑015: Anti‑Corruption Layer](../../adr/adr-015-acl.md)
 
-## Responsibility
+## 1. Responsibility
 
-Integration with AI models to generate recommendations, parse external portals,
-enrich and deduplicate vacancy data, cache results, RAG pipeline.
+- **1.1** Integrate with AI models to generate recommendations and summaries.
+- **1.2** Parse external portals, enrich and deduplicate vacancy data; own
+  requirement normalization and source matching.
+- **1.3** Cache AI results and run the RAG pipeline.
 
-## Key NFRs
+## 2. Business processes and context boundary
 
-- Asynchronous AI request processing (p95 ≤ 2 s)
-- Caching (24h for recommendations, 7 days for learning plans)
-- Fault tolerance during portal parsing blockages
+- **2.1** Generate vacancy recommendations (synchronous on request and
+  asynchronous push notifications).
+- **2.2** Generate resume improvement recommendations.
+- **2.3** Generate search strategy recommendations.
+- **2.4** Generate interview preparation recommendations.
+- **2.5** Generate AI summaries for learning (on KnowledgeCenter request).
+- **2.6** Parse portals with automatic recovery.
+- **2.7** Normalize source data and use AI‑assisted matching to decide catalogue
+  creates, updates, merges and closures.
+- **2.8** Boundary: the vacancy catalogue itself and the job seeker's data
+  belong to other contexts; this context supplies AI results and approved
+  catalogue decisions.
 
-## Business processes
+## 3. User stories
 
-- Generate vacancy recommendations (sync on request and async push notifications)
-- Generate resume improvement recommendations
-- Generate search strategy recommendations
-- Generate interview preparation recommendations
-- Generate AI summaries for learning (on KnowledgeCenter request)
-- Parse portals with automatic recovery
-- Normalize source data and use AI-assisted matching to decide catalogue
-  creates, updates, merges and closures
+- **3.1 Vacancy recommendations:** a job seeker receives AI recommendations for
+  vacancies that match the profile and desired jobs.
+- **3.2 Resume recommendations:** a job seeker receives recommendations for
+  improving the resume, based on target vacancy requirements and past
+  experience.
+- **3.3 Search strategy recommendations:** the system gives AI recommendations
+  on search strategy (priority vacancies, how to apply, how to communicate with
+  interviewers).
+- **3.4 Interview preparation:** a job seeker receives recommendations for
+  preparing for a specific interview (typical questions, topics to review).
+- **3.5 Summaries for learning:** KnowledgeCenter requests a short summary on a
+  specific topic to include in the learning plan.
+- **3.6 Parse portals:** the system parses external job portals on a schedule,
+  respecting `robots.txt` and frequency limits, and suspends parsing for a set
+  interval when the success rate drops below the threshold.
 
-## User stories
+## 4. Business invariants
 
-1. **Vacancy recommendations**
+### 4.1 AI requests
 
-   - As a job seeker, I want to receive AI recommendations for vacancies that best
-     match my profile and desired jobs, so I don’t waste time on manual search.
+- **4.1.1** All AI requests are cached in Redis for 24 hours (recommendations)
+  and 7 days (learning plans) for the same prompt.
+- **4.1.2** If an external AI provider is unavailable or its budget is exceeded,
+  the system returns “AI temporarily unavailable, please try later” and logs the
+  error.
 
-2. **Resume recommendations**
+### 4.2 Parsing
 
-   - As a job seeker, I want to receive AI recommendations for improving my resume
-     based on analysis of target vacancy requirements and my past experience.
-
-3. **Search strategy recommendations**
-
-   - As a system, I want to provide the job seeker with AI recommendations for job
-     search strategy (e.g., which vacancies are more priority, how to apply, how
-     to communicate with interviewers).
-
-4. **Interview preparation**
-
-   - As a job seeker, I want to receive AI recommendations for preparing for a
-     specific interview (typical questions, topics to review).
-
-5. **Generate summaries for learning**
-
-   - As KnowledgeCenter, I request generation of a short summary on a specific
-     topic (set of questions) to include in the learning plan.
-
-6. **Parse portals**
-
-   - As a system, I want to automatically (on schedule) parse external job
-     portals,
-     respecting `robots.txt` and frequency limits,
-     to keep the Vacancies Market service filled with fresh data.
-   - As a system, I want to automatically monitor parsing success and when it drops
-     below the threshold (80%) – suspend activity for a set interval (30 minutes),
-     then resume, to avoid blocks and reduce load on the problematic portal.
-
-## Business invariants
-
-- All AI requests are cached in Redis for 24 hours (for recommendations) and 7 days
-  (for learning plans) for the same prompt.
-- If an external AI provider is unavailable or budget exceeded, the system returns
-  the message “AI temporarily unavailable, please try later” and logs the error.
-- Parsing must respect ethical norms: honour `robots.txt`, `Crawl‑delay`, use an
+- **4.2.1** Parsing respects ethical norms: `robots.txt`, `Crawl‑delay` and an
   identifiable User‑Agent.
-- When parsing success rate is below 80% in the last 5 minutes, the system pauses
-  parsing for 30 minutes, then automatically resumes. If the success rate again
-  drops below 80% after resumption – a critical alert is generated, parsing
-  continues with increased delay between requests.
-- This context is the sole owner of requirement normalization, source matching
-  and duplicate/merge decisions. It must include the decision, confidence and
-  source provenance in each `CatalogueChangeRequested` command.
+- **4.2.2** When the parsing success rate is below 80% in the last 5 minutes,
+  parsing pauses for 30 minutes and then resumes automatically; a repeated drop
+  raises a critical alert and parsing continues with a longer delay.
 
-## Domain events
+### 4.3 Catalogue decisions
 
-- `RecommendationGenerated` – for KnowledgeCenter
-- `ParsingFailed` – alert
-- `ExternalPortalUnreachable` – portal is unavailable during parsing
-- `AITokenBudgetExceeded` – warning
-- `ParsingSuspended` – on automatic suspension
+- **4.3.1** This context is the sole owner of requirement normalization, source
+  matching and duplicate/merge decisions.
 
-## Integration command for Vacancy Management
+## 5. Aggregates and entities
 
-After parsing, normalization and AI-assisted duplicate resolution, this context
-publishes a `CatalogueChangeRequested` command over RabbitMQ for
-`Vacancies Market`. The command contains one selected mutation:
-`create`, `update`, `merge` or `close`.
+### 5.1 ParsingTask
 
-It includes the target vacancy ID and expected version where applicable, the
-complete canonical data, source provenance, duplicate IDs to merge, confidence
-and the decision rationale. `Vacancies Market` validates and persists this
-decision atomically; it does not repeat matching or merge selection.
+- **5.1.1 Fields:** `id`, `portal_id`, `type` (vacancy/employer/interviewer),
+  `last_run_at`, `status` (pending/running/completed/failed), `error_log`,
+  `retry_count`.
+- **5.1.2 Relationships:** references a `Portal` of Vacancy Management.
+- **5.1.3 Behaviour:** scheduled runs with retry on failure.
 
-To make decisions without accessing another service's database,
-`Parsing&AIConnector` maintains a local catalogue projection by consuming
-`Vacancies Market` events such as `VacancyImported`, `VacancyUpdated`,
-`VacancyMerged` and `VacancyClosed`.
+### 5.2 AIRecommendationTask
 
-## RAG Pipeline (short)
+- **5.2.1 Fields:** `id`, `type`, `input_prompt`, `response` (JSON), `status`,
+  `created_at`, `completed_at`.
+- **5.2.2 Relationships:** independent task aggregate; the resulting
+  recommendation is stored by the requesting context (ResearcherCrm).
+- **5.2.3 Behaviour:** asynchronous execution through the queue.
 
-- Document Processing (extract text from vacancies, resumes, articles)
-- Chunking: 500 tokens, overlap 50
-- Embeddings: `all-MiniLM-L6-v2` (dev) / `intfloat/e5-large-v2` (prod)
-- Vector DB: Qdrant (self‑hosted)
-- Retrieval: k=5–10, cosine distance, threshold 0.75
-- Prompt templates in YAML
-- Context Assembly (up to 3000 tokens for gpt-3.5-turbo)
+### 5.3 VacancyCandidate (internal entity)
 
-## Aggregates and entities
+- **5.3.1 Fields:** `id`, `source_key`, `external_vacancy_id`, `raw_payload`,
+  `normalized_payload`, `candidate_vacancy_ids`, `similarity_scores`, `decision`
+  (create/update/merge/close), `decision_rationale`, `status`, `created_at`,
+  `decided_at`.
+- **5.3.2 Relationships:** internal entity of this context; carries the
+  normalized source record, duplicate candidates and the selected mutation.
+- **5.3.3 Behaviour:** `normalize()`, `findDuplicateCandidates()`,
+  `selectMutation()`, `requestCatalogueChange()`.
 
-### ParsingTask
+### 5.4 AIModel (lookup)
 
-- Fields: `id`, `portal_id`, `type` (vacancy/employer/interviewer), `last_run_at`,
-  `status` (pending/running/completed/failed), `error_log`, `retry_count`
+- **5.4.1 Fields:** `id`, `name`, `version`, `endpoint`, `input_schema`,
+  `output_schema`, `prompt_preconditions`, `is_default`.
+- **5.4.2 Relationships:** lookup entity of this context; AI tasks resolve the
+  model through it.
+- **5.4.3 Behaviour:** none — lookup entity.
 
-### AIRecommendationTask
+## 6. Interaction with other contexts
 
-- Fields: `id`, `type`, `input_prompt`, `response` (JSON), `status`, `created_at`,
-  `completed_at`
-
-### VacancyCandidate (internal entity)
-
-- Fields: `id`, `source_key`, `external_vacancy_id`, `raw_payload`,
-  `normalized_payload`, `candidate_vacancy_ids`, `similarity_scores`,
-  `decision` (create/update/merge/close), `decision_rationale`, `status`,
-  `created_at`, `decided_at`
-- Behaviour: `normalize()`, `findDuplicateCandidates()`, `selectMutation()`,
-  `requestCatalogueChange()`
-
-### AIModel (lookup)
-
-- Fields: `id`, `name`, `version`, `endpoint`, `input_schema`, `output_schema`,
-  `prompt_preconditions`, `is_default`
-
-## Interaction with other contexts
-
-- **Downstream:** Vacancies Market (supplies approved catalogue-change commands)
-- **Downstream:** Researcher CRM (AI recommendations)
-- **Downstream:** KnowledgeCenter (generate summaries)
-- **Upstream:** External portals (LinkedIn, Djinni) and AI providers (OpenAI, Ollama)
-
-## Implementation
-
-- Service: `Parsing&AIConnector`
-- Technologies: Python 3.12, FastAPI, Celery, RabbitMQ
+All inbound and outbound relationships (types, protocols, messages, purposes):
+[Context Map](../../context-map.md) §2; external systems (portals, AI providers)
+– [ADR-015](../../adr/adr-015-acl.md).

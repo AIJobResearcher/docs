@@ -1,5 +1,9 @@
 # ADR Index
 
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.0
+
 Architecture Decision Records capture the platform's architectural choices
 and their rationale — one file per decision.
 

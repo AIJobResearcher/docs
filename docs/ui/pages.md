@@ -1,8 +1,8 @@
 # UI Pages
 
 **Status:** accepted
-**Date:** 2026-09-18
-**Version:** 1.2
+**Date:** 2026-09-27
+**Version:** 1.3
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Flows](./flows.md) | [UI Layout](./layout.md) |
@@ -27,11 +27,3 @@ Audience: frontend engineers, QA and analytics.
   authenticated [Researcher](../glossary.md) unless its specification says
   otherwise.
 - **2.5** The shared page header is specified in [layout.md](./layout.md).
-
-## 3. Related Documents
-
-- [Vacancies Market](./vacancies-market.md)
-- [UI Layout](./layout.md)
-- [UI Flows](./flows.md)
-- [ADR-019 Frontend Architecture](../adr/adr-019-frontend-architecture.md)
-- [Glossary](../glossary.md)

@@ -62,6 +62,8 @@ not restate them.
 
 - **7.1** If tests are requested, follow the existing `tests/` patterns
   (`*Test.php`, PHPUnit) — introduce no new framework.
+- **7.2** Test levels and priority (Domain → Application → Integration →
+  Acceptance) — `testing-standards.md`.
 
 ## 8. Comments
 

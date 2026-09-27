@@ -1,5 +1,8 @@
 # ADR-002: Placing the Job Seeker (Researcher) in the ResearcherCrm Service
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The job seeker is a central concept for the job search process and also
@@ -16,7 +19,8 @@ References to `researcher_id` in other services (KnowledgeCenter) are weak
 
 ## Why this decision
 
-- `Researcher` is the root of the "Job Search & CRM" domain, where profile changes,
+- `Researcher` is the root of the "Job Search & CRM" domain, where profile
+  changes,
   applications, and meetings occur.
 - Separation from the vacancy market isolates changes in vacancies (import,
   updates) from user logic.
@@ -24,7 +28,8 @@ References to `researcher_id` in other services (KnowledgeCenter) are weak
 
 ## Alternatives
 
-- Place `Researcher` in a separate service (e.g., User Management) – would require
+- Place `Researcher` in a separate service (e.g., User Management) – would
+  require
   many inter-service calls for each job seeker action.
 - Duplicate job seeker data across several services – leads to inconsistency.
 
@@ -37,5 +42,5 @@ References to `researcher_id` in other services (KnowledgeCenter) are weak
 
 ## Related artifacts
 
-- Section "Data Ownership" in `domain-model.md`.
+- Section "Aggregates and Entities" in `docs/domain/domain-model.md`.
 - ADR-016 (logical isolation via `researcher_id`).

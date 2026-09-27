@@ -14,16 +14,16 @@ No rendering, state, data-fetching or BFF decision was recorded, and
 `Fetch/Axios`).
 
 The OpenAPI specifications are the source of truth for payloads
-(`.ai-agent/standards/react-standards.md` 4.1), and the page spec expects the
-access token in memory with a refresh token in an httpOnly cookie
-(`docs/ui/vacancies-market.md` 4.3).
+(`.ai-agent/standards/react-standards.md` §1.1, §5.2), and the page spec keeps
+the access token in memory with a refresh token in an httpOnly cookie
+(`docs/ui/vacancies-market.md` §4.5).
 
 ## Decision
 
-- **Rendering:** Next.js 16.3 App Router. Public pages are rendered on the server
-  (SSR/SSG/ISR) for SEO and Core Web Vitals; authenticated app pages render the
-  shell on the server and fetch their data on the client, because they are
-  interactive and not indexed.
+- **Rendering:** Next.js 16.3 App Router. Public pages are rendered on the
+  server (SSR/SSG/ISR) for SEO and Core Web Vitals; authenticated app pages
+  render the shell on the server and fetch their data on the client, because
+  they are interactive and not indexed.
 - **State:** server state lives in a caching data-fetching library
   (TanStack Query); local UI state lives in React hooks. No global Redux or
   Context store.
@@ -76,9 +76,11 @@ access token in memory with a refresh token in an httpOnly cookie
 
 ## Related artifacts
 
-- `docs/adr/adr-020-frontend-stack-selection.md` (stack choice this ADR builds on).
+- `docs/adr/adr-020-frontend-stack-selection.md` (stack choice this ADR builds
+  on).
 - `docs/ui/vacancies-market.md`, `docs/ui/pages.md`, `docs/ui/flows.md`.
-- `docs/api/vacancies-market/openapi.yaml`, `docs/api/researcher-crm/openapi.yaml`.
+- `docs/api/vacancies-market/openapi.yaml`,
+  `docs/api/researcher-crm/openapi.yaml`.
 - `docs/technical-requirements.md` (1.5 Accessibility and localisation).
 - `docs/c4/components-frontend.puml`, `docs/c4/containers.puml`.
 - `.ai-agent/standards/react-standards.md`.
