@@ -1,9 +1,9 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title ResearcherCrm Service Components
+title ResearcherCrm Service Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(researcher_crm, "ResearcherCrm", "PHP 8.5, Symfony 7.1")
+Container(researcher_crm, "ResearcherCrm", "PHP, Symfony")
 
 Boundary(researcher_boundary, "Job Search & CRM") {
     Component(presentation, "Presentation Layer", "Controllers", "REST API")

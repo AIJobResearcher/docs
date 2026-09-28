@@ -1,9 +1,9 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Parsing&AIConnector Service Components
+title Parsing&AIConnector Service Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(parsing_ai, "Parsing&AIConnector", "Python 3.12, FastAPI, Celery")
+Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery")
 
 Boundary(parsing_ai_boundary, "AI & Parsing") {
     Component(presentation, "Presentation Layer", "FastAPI routes", "Accepts commands and requests")

@@ -28,12 +28,12 @@
 Paths are relative to the API base URL
 (`https://api.aijobresearcher.com/api/v1`).
 
-| Service             | Operation                   | p95     | p99     | Note                                                                                             |
-|---------------------|-----------------------------|---------|---------|--------------------------------------------------------------------------------------------------|
-| Vacancies Market    | `QUERY /vacancies`          | 300 ms  | 600 ms  | full‑text search with filters; Redis caching                                                      |
-| ResearcherCrm       | `POST /interviews/schedule` | 400 ms  | 800 ms  | interviewer availability check, aggregate save, event publish; Google Calendar – async            |
-| Parsing&AIConnector | `POST /ai/recommendations`  | 2000 ms | 4000 ms | external AI providers                                                                             |
-| KnowledgeCenter     | `GET /knowledge/plan`       | 500 ms  | 1000 ms | learning plan based on aggregated data                                                            |
+| Service             | Operation                   | p95     | p99     | Note                                                                                   |
+|---------------------|-----------------------------|---------|---------|----------------------------------------------------------------------------------------|
+| Vacancies Market    | `QUERY /vacancies`          | 300 ms  | 600 ms  | full‑text search with filters; Redis caching                                           |
+| ResearcherCrm       | `POST /interviews/schedule` | 400 ms  | 800 ms  | interviewer availability check, aggregate save, event publish; Google Calendar – async |
+| Parsing&AIConnector | `POST /ai/recommendations`  | 2000 ms | 4000 ms | external AI providers                                                                  |
+| KnowledgeCenter     | `GET /knowledge/plan`       | 500 ms  | 1000 ms | learning plan based on aggregated data                                                 |
 
 - **Alerting:** p99 above target by 50% for 5 minutes – warning, by 100% –
   critical; Prometheus histograms with buckets covering these thresholds.

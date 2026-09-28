@@ -1,9 +1,9 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title KnowledgeCenter Service Components
+title KnowledgeCenter Service Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(knowledge, "KnowledgeCenter", "Go 1.22, Gin")
+Container(knowledge, "KnowledgeCenter", "Go, Gin")
 
 Boundary(knowledge_boundary, "Learning Management") {
     Component(presentation, "Presentation Layer", "Gin handlers", "REST API")

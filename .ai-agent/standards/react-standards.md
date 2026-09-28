@@ -1,6 +1,7 @@
 # React Code Standards
 
-React 19.2, Next.js 16.3 App Router, TypeScript 7 (ADR-020).
+React, Next.js App Router, TypeScript (ADR-020); versions are pinned in
+[Architecture Overview §1](../../docs/architecture-overview.md).
 
 ## 1. Types
 

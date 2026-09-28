@@ -45,7 +45,7 @@ test-openapi:
 	@npx --yes @redocly/cli lint --extends=minimal docs/api/*/openapi.yaml && echo "✅ OpenAPI specs passed validation"
 
 test-links:
-	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest \
+	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest --format compact \
     		--config /input/lychee.toml \
     		/input/docs /input/*.md
 

@@ -1,11 +1,11 @@
 # ADR-019: Frontend Architecture
 
 **Status:** accepted
-**Date:** 2026-09-18
+**Date:** 2026-09-28
 
 ## Context
 
-The Frontend service (React 19.2, Next.js 16.3 App Router, TypeScript 7) renders
+The Frontend service (React, Next.js App Router, TypeScript) renders
 the user interface over the backend APIs. The page specifications in `docs/ui/`
 define authenticated, highly interactive pages (vacancy list with tags and
 infinite scroll, details, desired-jobs bar); public pages with SEO are planned.
@@ -18,9 +18,12 @@ The OpenAPI specifications are the source of truth for payloads
 the access token in memory with a refresh token in an httpOnly cookie
 (`docs/ui/vacancies-market.md` §4.5).
 
+Supported versions are pinned in
+[Architecture Overview §1](../architecture-overview.md).
+
 ## Decision
 
-- **Rendering:** Next.js 16.3 App Router. Public pages are rendered on the
+- **Rendering:** Next.js App Router. Public pages are rendered on the
   server (SSR/SSG/ISR) for SEO and Core Web Vitals; authenticated app pages
   render the shell on the server and fetch their data on the client, because
   they are interactive and not indexed.

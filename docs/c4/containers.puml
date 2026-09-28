@@ -1,16 +1,16 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title AIJobResearcher Container Diagram
+title AIJobResearcher Container Diagram\n(runtime versions: docs/architecture-overview.md §1)
 
 Person(seeker, "Job seeker")
 
 System_Boundary(platform, "AIJobResearcher") {
-    Container(frontend, "Frontend", "React 19.2, Next.js 16.3", "User interface")
-    Container(vacancies, "Vacancies Market", "PHP 8.5, Laravel 13", "Vacancy catalogue: employers, vacancies, jobs, interviewers, locations")
-    Container(researcher_crm, "ResearcherCrm", "PHP 8.5, Symfony 7.1", "Job seeker profile, desired jobs, replies, meetings, messages, analytics")
-    Container(parsing_ai, "Parsing&AIConnector", "Python 3.12, FastAPI, Celery", "Portal parsing, AI recommendations, RAG")
-    Container(knowledge, "KnowledgeCenter", "Go 1.22, Gin", "Learning tracks, progress, development recommendations")
+    Container(frontend, "Frontend", "React, Next.js", "User interface")
+    Container(vacancies, "Vacancies Market", "PHP, Laravel", "Vacancy catalogue: employers, vacancies, jobs, interviewers, locations")
+    Container(researcher_crm, "ResearcherCrm", "PHP, Symfony", "Job seeker profile, desired jobs, replies, meetings, messages, analytics")
+    Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery", "Portal parsing, AI recommendations, RAG")
+    Container(knowledge, "KnowledgeCenter", "Go, Gin", "Learning tracks, progress, development recommendations")
 
     ContainerDb(postgres_v, "PostgreSQL", "Vacancies DB")
     ContainerDb(postgres_r, "PostgreSQL", "Researcher DB")

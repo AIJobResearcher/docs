@@ -1,7 +1,7 @@
 # ADR-003: Using Python for the Parsing & AI Service
 
 **Status:** accepted
-**Date:** 2026-09-27
+**Date:** 2026-09-28
 
 ## Context
 
@@ -12,10 +12,13 @@ a language with a rich ecosystem for these tasks.
 
 ## Decision
 
-We chose **Python 3.12** with FastAPI (synchronous endpoints) and Celery
+We chose **Python** with FastAPI (synchronous endpoints) and Celery
 (asynchronous tasks). Key libraries: BeautifulSoup, tika‑python (parsing),
 sentence‑transformers (embeddings), Qdrant‑client (vector DB), openai (OpenAI
 client).
+
+Supported versions are pinned in
+[Architecture Overview §1](../architecture-overview.md).
 
 ## Why this decision
 

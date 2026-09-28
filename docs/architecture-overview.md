@@ -1,8 +1,8 @@
 # Architecture Overview for AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.10
+**Date:** 2026-09-28
+**Version:** 1.12
 
 > **Related documentation:** [Glossary](glossary.md) |
 > [Context Map](context-map.md) | [Domain Vision](domain/domain-vision.md) |
@@ -16,14 +16,19 @@ principles and the delivery pipeline of the platform. Requirements and capacity:
 
 ## 1. Platform architecture (services, stacks, implementation order)
 
-| # | Service             | Stack                                                  |
-| --- | ------------------- | ------------------------------------------------------ |
-| 1 | Deploy & Docs       | Docker Compose, Kubernetes, GitHub Actions             |
-| 2 | Vacancies Market    | PHP 8.5, Laravel 13, PostgreSQL 16, Redis              |
-| 3 | ResearcherCrm       | PHP 8.5, Symfony 7.1, Doctrine ORM, PostgreSQL 16, Redis |
-| 4 | Parsing&AIConnector | Python 3.12, FastAPI, Celery, RabbitMQ                 |
-| 5 | Frontend            | React 19.2, Next.js 16.3 (App Router), TypeScript 7    |
-| 6 | KnowledgeCenter     | Go 1.22, Gin, PostgreSQL 16, RabbitMQ                  |
+| # | Service             | Stack                                                    |
+|---|---------------------|----------------------------------------------------------|
+| 1 | Deploy & Docs       | Docker Compose, Kubernetes, GitHub Actions               |
+| 2 | Vacancies Market    | PHP 8.5, Laravel 13, PostgreSQL 18, Redis                |
+| 3 | ResearcherCrm       | PHP 8.5, Symfony 8.1, Doctrine ORM, PostgreSQL 18, Redis |
+| 4 | Parsing&AIConnector | Python 3.14, FastAPI, Celery, RabbitMQ                   |
+| 5 | Frontend            | React 19.3, Next.js 16.3 (App Router), TypeScript 7      |
+| 6 | KnowledgeCenter     | Go 1.27, Gin, PostgreSQL 18, RabbitMQ                    |
+
+**Runtime versions** are declared in this table only: C4 diagrams, ADRs and
+other documents reference this section instead of repeating version numbers.
+Only releases still supported upstream are listed — Symfony 8.1 (supported
+until 2027-01-31) and Go 1.27 (the two newest Go majors are supported).
 
 Service responsibilities – in the bounded context files; context ↔ service
 mapping – [Context Map](context-map.md) §1.

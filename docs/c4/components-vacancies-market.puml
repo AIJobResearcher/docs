@@ -1,9 +1,9 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Vacancy Management Service Components
+title Vacancy Management Service Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(vacancies, "Vacancies Market", "PHP 8.5, Laravel 13")
+Container(vacancies, "Vacancies Market", "PHP, Laravel")
 
 Boundary(vacancies_boundary, "Vacancy Management") {
     Component(presentation, "Presentation Layer", "Controllers", "Handles HTTP requests")
