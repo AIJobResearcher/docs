@@ -1,5 +1,5 @@
 # Verbose program output (log level)
-verbose = "info"
+verbose = "warn"
 
 # Don't show interactive progress bar
 no_progress = true

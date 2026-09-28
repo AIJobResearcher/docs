@@ -1,14 +1,14 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Frontend Components
+title Frontend Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(frontend, "Frontend", "React 19.2 / Next.js 16.3")
+Container(frontend, "Frontend", "React, Next.js, TypeScript")
 
 Boundary(frontend_boundary, "Frontend") {
-    Component(pages, "Pages & Routes", "Next.js 16.3 App Router", "Routing, layout and auth guard")
+    Component(pages, "Pages & Routes", "Next.js App Router", "Routing, layout and auth guard")
     Component(components, "UI Components", "React", "Buttons, forms, cards")
-    Component(server_state, "Server-state Cache", "Data fetching", "Vacancies and desired jobs")
+    Component(server_state, "Server-state Cache", "TanStack Query", "Vacancies and desired jobs")
     Component(api_client, "API Client", "Generated from OpenAPI", "Typed backend calls")
 
     Rel(pages, components, "Uses")

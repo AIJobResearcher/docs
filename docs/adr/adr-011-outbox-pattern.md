@@ -1,11 +1,14 @@
 # ADR-011: Outbox Pattern for Reliable Event Publication
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
-When saving an aggregate (e.g., an application) and then publishing the
-`ReplyCreated` event to RabbitMQ, a failure can occur: the event is not sent, but
-the aggregate is saved. Direct publication inside a database transaction is
-impossible because RabbitMQ does not support two‑phase commit (XA).
+When saving an aggregate (e.g., an application) and then publishing its domain
+event to RabbitMQ, a failure can occur: the event is not sent, but the aggregate
+is saved. Direct publication inside a database transaction is impossible because
+RabbitMQ does not support two‑phase commit (XA).
 
 ## Decision
 
@@ -32,7 +35,8 @@ releaser (at-least-once delivery, see ADR-013) correct.
 - Does not require XA transactions or two‑phase commit.
 - Allows recovery after failures (outbox records are not lost).
 - Works with all used databases (PostgreSQL).
-- Simpler to implement than CDC solutions (Debezium) and adds no extra components.
+- Simpler to implement than CDC solutions (Debezium) and adds no extra
+  components.
 
 ## Alternatives
 
@@ -56,4 +60,4 @@ releaser (at-least-once delivery, see ADR-013) correct.
 
 - ADR-013 (Idempotency Strategy).
 - ADR-005 (RabbitMQ choice).
-- Section "Outbox Pattern" in `architecture-overview.md`.
+- Section "Outbox" in `docs/architecture-overview.md`.

@@ -1,16 +1,16 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-title AIJobResearcher Container Diagram
+title AIJobResearcher Container Diagram\n(runtime versions: docs/architecture-overview.md §1)
 
 Person(seeker, "Job seeker")
 
 System_Boundary(platform, "AIJobResearcher") {
-    Container(frontend, "Frontend", "React 19.2, Next.js 16.3", "User interface")
-    Container(vacancies, "Vacancies", "PHP/Laravel", "Manage vacancies, employers, interviewers")
-    Container(researcher_crm, "Researcher CRM", "PHP/Symfony", "Job seeker profile, replies, meetings, messages")
-    Container(parsing_ai, "Parsing & AI Connector", "Python/FastAPI", "Portal parsing, AI recommendations, RAG")
-    Container(knowledge, "Knowledge Center", "Go/Gin", "Learning plans, tracks, progress")
+    Container(frontend, "Frontend", "React, Next.js", "User interface")
+    Container(vacancies, "Vacancies Market", "PHP, Laravel", "Vacancy catalogue: employers, vacancies, jobs, interviewers, locations")
+    Container(researcher_crm, "ResearcherCrm", "PHP, Symfony", "Job seeker profile, desired jobs, replies, meetings, messages, analytics")
+    Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery", "Portal parsing, AI recommendations, RAG")
+    Container(knowledge, "KnowledgeCenter", "Go, Gin", "Learning tracks, progress, development recommendations")
 
     ContainerDb(postgres_v, "PostgreSQL", "Vacancies DB")
     ContainerDb(postgres_r, "PostgreSQL", "Researcher DB")
@@ -23,7 +23,7 @@ System_Boundary(platform, "AIJobResearcher") {
 
 System_Ext(portal, "External portals (LinkedIn, Djinni)")
 System_Ext(ai_provider, "AI providers (OpenAI, Ollama)")
-System_Ext(calendar, "Google Calendar")
+System_Ext(google_calendar, "Google Calendar")
 
 Rel(seeker, frontend, "Uses", "REST")
 Rel(frontend, vacancies, "Requests", "REST")
@@ -37,16 +37,16 @@ Rel(vacancies, redis, "Caches")
 Rel(researcher_crm, redis, "Caches, sessions")
 Rel(parsing_ai, redis, "Caches AI responses")
 
-Rel(vacancies, rabbitmq, "Publishes events")
-Rel(researcher_crm, rabbitmq, "Publishes events")
-Rel(parsing_ai, rabbitmq, "Publishes events, receives commands")
-Rel(knowledge, rabbitmq, "Publishes events")
+Rel(vacancies, rabbitmq, "Publishes and consumes")
+Rel(researcher_crm, rabbitmq, "Publishes and consumes")
+Rel(parsing_ai, rabbitmq, "Publishes and consumes")
+Rel(knowledge, rabbitmq, "Publishes and consumes")
 
 Rel(vacancies, opensearch, "Indexes")
 Rel(parsing_ai, qdrant, "Indexes and searches")
 
 Rel(parsing_ai, portal, "Parses", "HTTPS")
 Rel(parsing_ai, ai_provider, "Calls", "HTTPS/HTTP")
-Rel(researcher_crm, calendar, "Creates events", "HTTPS")
+Rel(researcher_crm, google_calendar, "Creates events", "HTTPS")
 
 @enduml

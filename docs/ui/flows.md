@@ -1,8 +1,8 @@
 # UI Flows
 
 **Status:** accepted
-**Date:** 2026-09-18
-**Version:** 1.1
+**Date:** 2026-09-27
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [UI Pages](./pages.md) |
@@ -14,7 +14,7 @@ states are defined in the page specifications (for example
 [vacancies-market.md](./vacancies-market.md) §5) and are not repeated here.
 Audience: frontend engineers, QA and analytics.
 
-## 1. Start And Auto-Selection
+## 1. Start and auto-selection
 
 - **1.1 Trigger:** opening [Vacancies Market](./vacancies-market.md).
 - **1.2 Flow:**
@@ -47,7 +47,7 @@ flowchart TD
     Unset --> Load
 ```
 
-## 3. Switching The Desired Job
+## 3. Switching the desired job
 
 - **3.1** Switching resets filters, pagination and selection, then auto-selects
   the newest vacancy (6.6).
@@ -60,7 +60,7 @@ flowchart TD
     Load --> Select[Auto-select newest vacancy]
 ```
 
-## 4. Infinite Scroll
+## 4. Infinite scroll
 
 - **4.1 Flow:**
 
@@ -72,7 +72,7 @@ flowchart TD
     More -- no --> Stop[Stop silently]
 ```
 
-## 5. Errors And Session
+## 5. Errors and session
 
 - **5.1** Error copy and the Retry action are defined in 6.5 of the page
   specification.
@@ -87,10 +87,3 @@ flowchart TD
     Code -- 429 --> Limit[Too many requests + Retry]
     Code -- 5xx/network --> Fail[Load error + Retry]
 ```
-
-## 6. Related Documents
-
-- [UI Pages](./pages.md)
-- [Vacancies Market page](./vacancies-market.md)
-- [ADR-019 Frontend Architecture](../adr/adr-019-frontend-architecture.md)
-- [Glossary](../glossary.md)

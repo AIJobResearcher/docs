@@ -1,24 +1,27 @@
-openapi: 3.0.3
+openapi: 3.2.1
 info:
   title: KnowledgeCenter API
+  summary: Learning tracks, progress and development recommendations for a job seeker
   description: Manage learning tracks, progress, development recommendations.
-  version: 1.0.0
+  version: 1.0.4
 servers:
   - url: https://api.aijobresearcher.com/api/v1
+    name: Production
     description: Production server
 paths:
   /knowledge/plan:
     get:
+      operationId: getLearningPlan
       summary: Get learning plan (track) for a job seeker
       security:
         - BearerAuth: []
       parameters:
-        - name: userId
+        - name: researcher_id
           in: query
           required: true
           schema:
             type: string
-          description: Job seeker ID (must match authenticated user)
+          description: Job seeker ID (must match the `researcher_id` JWT claim)
       responses:
         '200':
           description: Learning plan
@@ -30,6 +33,7 @@ paths:
           description: Access to another user's plan is forbidden
   /knowledge/tracks/{track_id}/items/{item_id}/complete:
     post:
+      operationId: completeTrackItem
       summary: Mark a track item as completed
       security:
         - BearerAuth: []
@@ -51,11 +55,12 @@ paths:
           description: Cannot mark (previous item not completed)
   /knowledge/recommendations/development:
     get:
+      operationId: listDevelopmentRecommendations
       summary: Get development recommendations
       security:
         - BearerAuth: []
       parameters:
-        - name: userId
+        - name: researcher_id
           in: query
           required: true
           schema:
@@ -71,6 +76,7 @@ paths:
                   $ref: '#/components/schemas/DevelopmentRecommendation'
   /knowledge/conspect:
     get:
+      operationId: getAiConspect
       summary: Request an AI summary on a topic
       security:
         - BearerAuth: []
@@ -112,6 +118,7 @@ components:
   schemas:
     LearningTrack:
       type: object
+      required: [id]
       properties:
         id:
           type: string
@@ -130,6 +137,7 @@ components:
             $ref: '#/components/schemas/TrackItem'
     TrackItem:
       type: object
+      required: [id]
       properties:
         id:
           type: string
@@ -149,6 +157,7 @@ components:
           enum: [not_started, in_progress, done]
     DevelopmentRecommendation:
       type: object
+      required: [id]
       properties:
         id:
           type: string

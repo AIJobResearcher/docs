@@ -1,22 +1,18 @@
-# Event Storming: Vacancy Market
+# Event Storming: Vacancy Management
 
-## Aggregates and entities
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.1
 
-- `Employer` – root aggregate
-- `Vacancy` – aggregate for catalogue and search, part of `Employer`
-- `Job` – reference entity (job catalogue)
-- `Requirement` – reference entity (shared dictionary)
-- `Portal` – reference entity (external portals)
-- `Location` – reference entity (country / region / city)
-- `Interviewer` – entity of `Employer`
-- `Source` – source provenance, part of `Vacancy`
-- `Content` – source content, part of `Source`
+> **Related documentation:** [Glossary](../glossary.md) |
+> [Context Map](../context-map.md) |
+> [Architecture Overview](../architecture-overview.md) |
+> [AsyncAPI](../asyncapi/events.yaml) | [README](../README.md)
 
-## Business rules (invariants)
+The command/event flow of this context is not designed yet. Aggregates, entities
+and business rules are canonical in the bounded context file
+[Vacancy Management](../domain/bounded-contexts/vacancies-market.md) §4-§5;
+context relationships are fixed in the [Context Map](../context-map.md).
 
-- A vacancy cannot exist without an employer.
-- A public API cannot manually create or update a vacancy; only a valid
-  `CatalogueChangeRequested` command can change the catalogue.
-- Duplicate resolution, source closure policy and merge selection are owned by
-  `Parsing&AIConnector`; this context applies the approved result only.
-- When a vacancy changes, a new aggregate version preserves its history.
+When the flow is designed, this file documents it: `Commands`, `Domain events`,
+`Integration messages` (in/out), `Aggregates` and `Business rules`.

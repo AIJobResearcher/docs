@@ -1,8 +1,8 @@
 # Bounded Context: Vacancy Management (Vacancies Market Service)
 
 **Status:** accepted
-**Date:** 2026-09-25
-**Version:** 1.65
+**Date:** 2026-09-27
+**Version:** 1.67
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -84,7 +84,7 @@
 
 - **4.7.1** All Requirements live in a shared dictionary; Job and Vacancy
   reference them by ID, not by string value.
-- **4.7.3** A Requirement cannot be deleted if it is referenced by any active
+- **4.7.2** A Requirement cannot be deleted if it is referenced by any active
   Job or Vacancy.
 
 ### 4.8 Portal
@@ -110,7 +110,7 @@
   `updated_at` (timestamp).
 - **5.1.2 Relationships:** referenced by `Job` and by `Vacancy`
   (many-to-many).
-- **5.1.3 Behavior:** `createRequirement()`, `updateRequirement()`,
+- **5.1.3 Behaviour:** `createRequirement()`, `updateRequirement()`,
   `deleteRequirement()`.
 
 ### 5.2 Job (reference entity)
@@ -122,7 +122,7 @@
   (timestamp, nullable).
 - **5.2.2 Relationships:** has many `Requirement`; is assigned to `Vacancy`
   (many-to-many); self-references a parent `Job`.
-- **5.2.3 Behavior:** `createJob()`, `updateJob()`, `deleteJob()` (soft delete
+- **5.2.3 Behaviour:** `createJob()`, `updateJob()`, `deleteJob()` (soft delete
   — sets `deleted_at`), `assignRequirement()`, `unassignRequirement()`.
 
 ### 5.3 Employer (root aggregate)
@@ -137,7 +137,7 @@
   default 1).
 - **5.3.2 Relationships:** has many `Vacancy`; has many `Interviewer` as child
   entities; references `Location`.
-- **5.3.3 Behavior:** `addVacancy()`, `removeVacancy()`, `addInterviewer()`,
+- **5.3.3 Behaviour:** `addVacancy()`, `removeVacancy()`, `addInterviewer()`,
   `removeInterviewer()`.
 
 ### 5.4 Vacancy (aggregate, part of Employer)
@@ -154,7 +154,7 @@
 - **5.4.2 Relationships:** belongs to `Employer`; has many `Source`;
   has many `Requirement` (many-to-many); is assigned to at least one `Job`
   (many-to-many); references `Location`.
-- **5.4.3 Behavior:** `updateVacancy()`, `closeVacancy()`, `reopenVacancy()`,
+- **5.4.3 Behaviour:** `updateVacancy()`, `closeVacancy()`, `reopenVacancy()`,
   `assignToJob()`, `unassignFromJob()`, `assignRequirement()`,
   `unassignRequirement()`, `addSource()`, `updateSource()`, `removeSource()`.
 
@@ -167,7 +167,7 @@
   path now, S3 later), `created_at` (timestamp), `updated_at` (timestamp),
   `version` (integer, default 1), `deleted_at` (timestamp, nullable).
 - **5.5.2 Relationships:** child entity of `Employer`.
-- **5.5.3 Behavior:** `updateInterviewer()`.
+- **5.5.3 Behaviour:** `updateInterviewer()`.
 
 ### 5.6 Portal (reference entity)
 
@@ -176,7 +176,7 @@
   nullable), `created_at` (timestamp), `updated_at` (timestamp).
 - **5.6.2 Relationships:** a `Source` references a `Portal`; a Vacancy's
   origin is tracked per source.
-- **5.6.3 Behavior:** `createPortal()`, `updatePortal()`, `deletePortal()`.
+- **5.6.3 Behaviour:** `createPortal()`, `updatePortal()`, `deletePortal()`.
 
 ### 5.7 Source (entity, part of Vacancy)
 
@@ -186,7 +186,7 @@
   (timestamp), `updated_at` (timestamp).
 - **5.7.2 Relationships:** part of `Vacancy`; references `Portal`; has many
   `Content`.
-- **5.7.3 Behavior:** `addContent()`, `updateContent()`, `removeContent()`.
+- **5.7.3 Behaviour:** `addContent()`, `updateContent()`, `removeContent()`.
 
 ### 5.8 Location (reference entity)
 
@@ -196,7 +196,7 @@
   `updated_at` (timestamp).
 - **5.8.2 Relationships:** self-references a parent `Location`; referenced by
   `Employer` and `Vacancy`.
-- **5.8.3 Behavior:** `createLocation()`, `updateLocation()`,
+- **5.8.3 Behaviour:** `createLocation()`, `updateLocation()`,
   `deleteLocation()`.
 
 ### 5.9 Content (entity, part of Source)
@@ -204,12 +204,9 @@
 - **5.9.1 Fields:** `id` (UUID), `source_id` (UUID), `type` (enum: description),
   `value` (text).
 - **5.9.2 Relationships:** part of `Source`.
-- **5.9.3 Behavior:** none — content is updated through `Source`.
+- **5.9.3 Behaviour:** none — content is updated through `Source`.
 
 ## 6. Interaction with other contexts
 
-| Context | Relationship | Protocol | Responsibility at this boundary |
-| --- | --- | --- | --- |
-| Parsing&AIConnector | Upstream, Customer-Supplier | RabbitMQ | Supplies approved catalogue-change commands. |
-| ResearcherCrm | Downstream, Publisher-Subscriber | RabbitMQ | Receives committed vacancy and merge changes for replies and meetings. |
-| Frontend | Downstream, REST consumer | REST | Searches and reads public catalogue data. |
+All inbound and outbound relationships (types, protocols, messages, purposes):
+[Context Map](../../context-map.md) §2.

@@ -1,5 +1,8 @@
 # ADR-004: Using Go for the KnowledgeCenter Service
 
+**Status:** accepted
+**Date:** 2026-09-28
+
 ## Context
 
 The KnowledgeCenter service manages long-term learning plans, tracks, and
@@ -8,7 +11,9 @@ calculations, low memory consumption, and easy horizontal scaling.
 
 ## Decision
 
-We chose **Go 1.22** with the Gin framework (REST API) and a RabbitMQ client.
+We chose **Go** with the Gin framework (REST API) and a RabbitMQ client. The
+supported Go version is pinned in [Architecture Overview §1](../architecture-overview.md),
+not in this record.
 Data is stored in PostgreSQL.
 
 ## Why this decision
@@ -34,4 +39,5 @@ Data is stored in PostgreSQL.
 ## Related artifacts
 
 - ADR-009 (Capacity Planning) – minimal resources (1 vCPU / 1 GB).
-- Section "Platform architecture" in `architecture-overview.md`.
+- Section "Platform architecture (services, stacks, implementation order)" in
+  `docs/architecture-overview.md`.

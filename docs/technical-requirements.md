@@ -1,82 +1,75 @@
 # Technical Requirements for AIJobResearcher
 
-- **Version:** 1.6
-- **Target load:** 50,000 concurrent active users
-- **Application version:** v1.0
-
----
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.13
+**Target load:** 50,000 concurrent active users
+**Application version:** v1.0
 
 > **Related documentation:** [Glossary](glossary.md) |
-> [Architecture Overview](architecture-overview.md) | [README](./README.md)
+> [Architecture Overview](architecture-overview.md) |
+> [Context Map](context-map.md) | [README](./README.md)
 
 ## 1. Non‑Functional Requirements (NFR)
 
 ### 1.1 Performance and scalability
 
-- **Concurrent users:** 50,000 sessions.
-- **Average RPS (total):** ~10,000 requests per second.
-- **Peak RPS:** up to 20,000 (9:00–11:00 UTC+3, duration 2–3 hours).
-- **Horizontal scaling:** all services – at least 10 replicas.
-- **Autoscaling (K8s HPA):**
-  - CPU utilization 70% – for all services.
-  - Additionally: Researcher CRM – by p99 latency (Prometheus adapter).
-  - Parsing&AIConnector – by RabbitMQ queue depth.
-- **Buffer:** minimum replicas for average load, maximum – double average
-  RPS + 30%.
+- **Concurrent users:** 50,000 sessions; **average RPS** ~10,000, **peak** up to
+  20,000 (9:00–11:00 UTC+3, 2–3 hours).
+- **Autoscaling (K8s HPA):** CPU 70% for all services; additionally
+  ResearcherCrm by p99 latency (Prometheus adapter), Parsing&AIConnector by
+  RabbitMQ queue depth.
+- **Buffer:** minimum replicas cover the average load with a 30% buffer
+  ([ADR-009](./adr/adr-009-capacity-planning.md)); resources per replica and
+  minimum replica counts – §2.1.
 
 ### 1.2 Service Level Objectives – latency (p95 / p99)
 
-| Service             | Operation                                  | p95     | p99     | Note                                                                                            |
-|---------------------|--------------------------------------------|---------|---------|-------------------------------------------------------------------------------------------------|
-| Vacancies Market    | `GET /api/vacancies` (search with filters) | 300 ms  | 600 ms  | Redis caching                                                                                   |
-| Researcher CRM      | `POST /api/interviews/schedule`            | 400 ms  | 800 ms  | includes interviewer availability check, aggregate save, event publish; Google Calendar – async |
-| Parsing&AIConnector | `POST /api/ai/recommendations`             | 2000 ms | 4000 ms | external AI providers; alert on exceed                                                          |
-| KnowledgeCenter     | `GET /api/knowledge/plan?userId={id}`      | 500 ms  | 1000 ms | learning plan based on aggregated data                                                          |
+Paths are relative to the API base URL
+(`https://api.aijobresearcher.com/api/v1`).
 
-- **Metrics:** Prometheus histograms with buckets covering the stated thresholds.
-- **Alerting:** when p99 exceeds target by 50% for 5 minutes – warning;
-  by 100% – critical.
-- **Frontend (Core Web Vitals, field data):** LCP p75 ≤ 2.5 s, INP p75 ≤
-  200 ms, CLS p75 ≤ 0.1; TTFB p95 ≤ 500 ms.
+| Service             | Operation                   | p95     | p99     | Note                                                                                   |
+|---------------------|-----------------------------|---------|---------|----------------------------------------------------------------------------------------|
+| Vacancies Market    | `QUERY /vacancies`          | 300 ms  | 600 ms  | full‑text search with filters; Redis caching                                           |
+| ResearcherCrm       | `POST /interviews/schedule` | 400 ms  | 800 ms  | interviewer availability check, aggregate save, event publish; Google Calendar – async |
+| Parsing&AIConnector | `POST /ai/recommendations`  | 2000 ms | 4000 ms | external AI providers                                                                  |
+| KnowledgeCenter     | `GET /knowledge/plan`       | 500 ms  | 1000 ms | learning plan based on aggregated data                                                 |
+
+- **Alerting:** p99 above target by 50% for 5 minutes – warning, by 100% –
+  critical; Prometheus histograms with buckets covering these thresholds.
+- **Frontend (Core Web Vitals, field data):** LCP p75 ≤ 2.5 s, INP p75 ≤ 200 ms,
+  CLS p75 ≤ 0.1, TTFB p95 ≤ 500 ms.
 
 ### 1.3 Availability and reliability
 
 | Component                            | SLA   |
 |--------------------------------------|-------|
-| Vacancies, Researcher CRM            | 99.9% |
+| Vacancies Market, ResearcherCrm      | 99.9% |
 | Parsing&AIConnector, KnowledgeCenter | 99.5% |
 | RabbitMQ (infrastructure)            | 99.9% |
 
-#### RTO / RPO
-
-- Vacancies, Researcher CRM: RTO = 1 hour, RPO = 0 (synchronous PostgreSQL
-  replication, auto‑failover).
-- Parsing&AIConnector, KnowledgeCenter: RTO = 4 hours, RPO = 24 hours (restore
-  from backup).
-- RabbitMQ: RTO = 1 hour, RPO = 0 (mirrored queues, persistent messages).
-
-**Error budget:** monitor error budget consumption. 2% per hour → warning, 5% per
-hour → critical.
-
-**Geo‑distribution:** single region; stateless architecture ready for future
-multi‑region.
+- **RTO / RPO:** Vacancies Market and ResearcherCrm – RTO 1 h, RPO 0
+  (synchronous PostgreSQL replication, auto‑failover); Parsing&AIConnector and
+  KnowledgeCenter – RTO 4 h, RPO 24 h (restore from backup); RabbitMQ – RTO 1 h,
+  RPO 0 (mirrored queues, persistent messages).
+- **Error budget:** 2% per hour – warning, 5% per hour – critical.
+- **Failure tolerance:** peak of 20,000 RPS with no more than 2 nodes of each
+  service failing.
+- **Geo‑distribution:** single region; services are stateless, so multi‑region
+  stays possible.
 
 ### 1.4 Consistency
 
-- **Eventual consistency:** allowed delay between services – p95 ≤ 2 sec,
-  p99 ≤ 5 sec, max window (alert) – 30 sec. Example: `ReplyCreated`
-  event from publication to display in Researcher CRM analytics.
-- **Strong consistency** – inside a single service via local transactions (Clean
-  Architecture).
+- **Between services – eventual consistency:** p95 ≤ 2 s, p99 ≤ 5 s, alert at
+  30 s (measured from publication to display in another service).
+- **Inside a service – strong consistency:** local transactions only.
 
 ### 1.5 Accessibility and localisation
 
-- **Accessibility:** WCAG 2.1 AA for user-facing pages (keyboard access, visible
-  focus, contrast 4.5:1, labels/ARIA, `alt` for images).
-- **Localisation:** English UI now; user-facing strings kept as keys so other
-  locales can be added later.
-
----
+- **Accessibility:** WCAG 2.1 AA for all user-facing pages; criteria and
+  component rules – `.ai-agent/standards/react-standards.md` §8.2.
+- **Localisation:** English UI for now; user-facing strings stay keys so more
+  locales can be added – the same standard, §8.3.
 
 ## 2. Capacity Planning
 
@@ -84,11 +77,11 @@ multi‑region.
 
 | Service / Component            | CPU (cores) per replica | RAM (GB) | Min replicas            |
 |--------------------------------|-------------------------|----------|-------------------------|
-| Vacancies Market (PHP/Laravel) | 2                       | 2        | 6                       |
-| ResearcherCrm (PHP/Symfony)    | 2                       | 2        | 6                       |
-| Parsing&AIConnector (Python)   | 4                       | 8        | 4 + Celery workers      |
-| KnowledgeCenter (Go)           | 1                       | 1        | 3                       |
-| Frontend (Next.js 16.3)        | 1                       | 2        | 3                       |
+| Vacancies Market               | 2                       | 2        | 6                       |
+| ResearcherCrm                  | 2                       | 2        | 6                       |
+| Parsing&AIConnector            | 4                       | 8        | 4 + Celery workers      |
+| KnowledgeCenter                | 1                       | 1        | 3                       |
+| Frontend                       | 1                       | 2        | 3                       |
 | PostgreSQL VacanciesMarket     | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL ResearcherCrm       | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL KnowledgeCenter     | 2                       | 8        | 1 master + 1 replica    |
@@ -96,8 +89,8 @@ multi‑region.
 | RabbitMQ                       | 2                       | 4        | 3 nodes                 |
 | OpenSearch / Elasticsearch     | 4                       | 16       | 3 nodes (data + master) |
 
-*Celery workers: 4 workers with 4 vCPU / 8 GB RAM each.
-*Demo environment: reduce resources by 2–3 times.*
+*Celery workers: 4 workers × 4 vCPU / 8 GB RAM.
+*Demo environment: resources reduced 2–3 times.*
 
 ### 2.2 Data storage
 
@@ -112,176 +105,122 @@ multi‑region.
 
 ### 2.3 Network resources
 
-- Average traffic between services: ~500 Mbit/s (peak up to 1 Gbit/s).
+- Inter‑service traffic: ~500 Mbit/s average, up to 1 Gbit/s peak.
 - External traffic (Frontend ↔ users): up to 200 Mbit/s.
-- Latency inside data center: ≤ 1 ms (p99).
-
-### 2.4 Buffer and monitoring
-
-- 30% buffer above calculated peak load.
-- HPA triggers at 70% CPU.
-- Peak of 20,000 RPS must be handled with no more than 2 nodes of each service
-  failing.
-
----
+- Latency inside the data centre: ≤ 1 ms (p99).
 
 ## 3. Security, authentication and audit
 
 ### 3.1 Authentication and authorization
 
-- **Protocol:** OAuth2, JWT (RS256).
-- **Access token:** 15 min; **Refresh token:** 7 days (httpOnly cookie).
-- **SSO:** Google OAuth2 (future: LinkedIn).
-- **Roles:** Seeker, Interviewer, Employer, Admin (in claims).
-- **Inter‑service call:** user JWT or system account token.
+- **Protocol:** OAuth2, JWT (RS256); access token 15 min, refresh token 7 days
+  (httpOnly cookie).
+- **SSO:** Google OAuth2.
+- **Roles:** `Seeker` (in claims).
+- **Inter‑service calls:** user JWT or system account token.
 
 ### 3.2 Encryption and personal data storage
 
-- **Encryption:** AES‑256 at database level, TLS 1.3 in transit.
-- **Keys:** demo – env, production – HashiCorp Vault / cloud KMS.
-- **GDPR:** endpoints `DELETE /api/users/{id}` (right to be forgotten),
-  `GET /api/users/{id}/export`.
+- **Encryption:** AES‑256 at rest, TLS 1.3 in transit; keys from environment
+  variables (demo) or HashiCorp Vault / cloud KMS (production).
+- **GDPR:** `GET /researchers/{id}/export` (export) and
+  `DELETE /researchers/{id}` (right to be forgotten) – see the
+  [ResearcherCrm OpenAPI](./api/researcher-crm/openapi.yaml).
 - **Pseudonymisation** for analytics and AI.
-- **Retention period:** 3 years from last activity, then automatic
+- **Retention:** 3 years from the last activity, then automatic
   archival/deletion.
 
 ### 3.3 Action audit
 
-- Audit via domain events → RabbitMQ → append‑only storage.
-- Record: timestamp, user_id, action type, target object, context (IP,
+- Domain events → RabbitMQ → append‑only storage.
+- Record: timestamp, `researcher_id`, action type, target object, context (IP,
   User‑Agent, session).
-- Access only for Admin role.
-
----
+- Audit records are not exposed through the public API.
 
 ## 4. API Requirements
 
-- **Specification:** OpenAPI 3.2.1 (target; the specs are on 3.1.0 and 3.0.3).
-- **Versioning:** `/api/v1/...`.
-- **Pagination:** `limit` (max 100), `offset` / `page+per_page`. Sorting
-  `sort=field:asc`.
-- **Response codes:** 200, 201, 400, 401, 403, 404, 429, 500.
-- **Async operations:** 202 Accepted + `Location: /tasks/{id}`.
-- **Correlation‑ID:** mandatory in headers, forwarded to all calls and events.
-- **Rate limiting:** 100 requests/min (authenticated).
-
----
+- **Specification:** OpenAPI 3.2.1 for every service; the specs are the single
+  source of truth for their contracts (`docs/api/<service>/openapi.yaml`).
+- **Conventions** (versioning, pagination, response codes, asynchronous
+  operations, correlation ID, rate limiting):
+  `.ai-agent/standards/yml-files-standards.md` §2.
 
 ## 5. Observability
 
 ### 5.1 Distributed tracing
 
-- **OpenTelemetry SDK** → **Jaeger** (can be replaced by Grafana Tempo).
+- **OpenTelemetry SDK** → **Jaeger** (replaceable by Grafana Tempo).
 - Traced: HTTP, RabbitMQ, DB, Redis, external APIs.
 
 ### 5.2 Logging
 
-- **Format:** structured JSON to stdout.
-- **Collection:** Prom-tail → **Grafana Loki**.
-- **Storage:** operational – 7 days (demo) / 30 days (production); audit – 30
-  days / 1 year.
-- **Correlation:** `trace_id` in logs.
+- **Format:** structured JSON to stdout, collected by **Promtail** →
+  **Grafana Loki**; `trace_id` in every record.
+- **Retention:** operational logs 7 days (demo) / 30 days (production); audit
+  records 30 days / 1 year.
 
 ### 5.3 Metrics and alerts (Prometheus + Alert manager)
 
-**Metrics:**
-
-- `http_requests_total`, `http_request_duration_seconds`
-- `rabbitmq_queue_messages`, `reply_event_processing_duration_seconds`
-- `parsing_success_rate`, `parsing_validation_errors`,
-  `ai_recommendations_generated`
+**Metrics:** `http_requests_total`, `http_request_duration_seconds`,
+`rabbitmq_queue_messages`, `reply_event_processing_duration_seconds`,
+`parsing_success_rate`, `parsing_validation_errors`,
+`ai_recommendations_generated`, `rag_search_latency_seconds`,
+`rag_chunks_retrieved`, `rag_context_length_tokens`,
+`ai_provider_requests_total`, `ai_provider_errors_total`.
 
 **Alerts:**
 
-- High p95 latency > SLO threshold (warning)
 - RabbitMQ queue `ai_requests` > 10k messages (critical)
 - Parsing errors > 20% for 5 minutes (warning)
-- Error budget consumption >2% per hour (warning), >5% per hour (critical)
-
----
+- `ai_provider_errors_total` > 5% for 5 minutes (critical)
+- Average chunks retrieved < 2 for 10 minutes (vectorisation problem)
+- Latency and error‑budget alerts – §1.2 and §1.3
 
 ## 6. Performance Testing Plan
 
-- **Scenarios:**
-  - Read‑heavy: search vacancies (90% traffic)
-  - Write‑heavy: create replies and meetings
-  - Mixed with AI requests
-- **Environment:** staging (same replicas, smaller DB).
-- **Goal:** 50k concurrent users, p95 latency as in SLO.
-- **Stress test:** 30% overload → graceful degradation, not crash.
-- **Automation:** nightly run with 10% of target load, results in
+- **Scenarios:** read‑heavy (vacancy search – 90% of traffic), write‑heavy
+  (replies and meetings), mixed with AI requests.
+- **Environment:** staging with production replica counts and a smaller
+  database.
+- **Goal:** 50,000 concurrent users at SLO latency; 30% overload degrades
+  gracefully instead of crashing.
+- **Automation:** nightly run at 10% of the target load, results in
   Prometheus/Grafana.
-
----
 
 ## 7. Known Risks & Mitigations
 
-| Risk                                       | Mitigation                                                                     |
-|--------------------------------------------|--------------------------------------------------------------------------------|
-| External job portal outage                 | Cache last successful data, alert, switch to backup source.                    |
-| AI model error (timeout, invalid response) | Retry with exponential backoff, fallback – keyword search.                     |
-| Eventual consistency issues                | UI shows async message; SLO delay <5 s.                                        |
-| High memory usage in Python parsing        | Limit parallel workers, monitor, rotate IP via proxy.                          |
-| HTML structure change on portal            | Configuration as code, broken structure detector, alert, manual update via PR. |
-| OpenAI budget exceeded                     | Monthly token limit, automatic switch to local Ollama.                         |
-
----
+| Risk                                       | Mitigation                                                            |
+|--------------------------------------------|-----------------------------------------------------------------------|
+| External job portal outage                 | Cache last successful data, alert, switch to backup source.           |
+| AI model error (timeout, invalid response) | Retry with exponential backoff, fallback to keyword search – ADR-006. |
+| Eventual consistency issues                | UI shows an asynchronous message; consistency SLO – §1.4.             |
+| High memory usage in Python parsing        | Limit parallel workers, monitor, rotate IP via proxy.                 |
+| HTML structure change on portal            | Configuration as code, broken structure detector – ADR-007.           |
+| OpenAI budget exceeded                     | Monthly token limit, automatic switch to local Ollama – ADR-006.      |
 
 ## 8. Multi‑Tenancy (Logical data isolation for jobseekers)
 
-The application is cloud‑based and serves only individual jobseekers (B2C).
-Classical multi‑tenancy (separation between organizations) is not required.
-However, strict data isolation between different users is necessary: each
-jobseeker can access only their own profile, replies, meetings, messages and
-learning plans.
+The application serves individual jobseekers (B2C) in one shared region;
+classical multi‑tenancy (separation between organizations) is not required, but
+strict isolation between users is: a jobseeker reaches only their own profile,
+replies, meetings, messages and learning plans.
 
-### 8.1 Architectural solution
+### 8.1 Requirements
 
-Use logical isolation through `tenant_id = researcher_id` in all tables
-containing personal data. All queries to such data are automatically filtered by
-the ID of the currently authenticated jobseeker. Direct access to other users'
-data is not allowed via API or events.
+- Isolation is logical, by `researcher_id`; public catalogue data (vacancies,
+  jobs, employers, interviewers, locations) is not user‑scoped.
+- Every API request and event carrying personal data is checked against the
+  `researcher_id` claim of the authenticated jobseeker; on mismatch the service
+  returns `403 Forbidden`.
+- The check lives in the Application Layer; the infrastructure layer cannot
+  bypass it.
+- Tests must prove that jobseeker A can neither read nor modify jobseeker B's
+  data.
+- Access attempts to another jobseeker's data are logged as
+  `unauthorized_access_attempt`.
+- Database indexes and cache keys are scoped by `researcher_id` (composite
+  indexes; keys such as `recommendations:{researcher_id}:vacancy:{vacancy_id}`).
+- Corporate multi‑tenancy is out of scope: a B2B model would need a separate
+  architectural solution, likely a dedicated instance.
 
-### 8.2 Implementation
-
-- In the `ResearcherCrm` service, each record (Researcher, Reply, Meet, Message)
-  contains a `researcher_id` field. This field is a foreign key to the
-  Researcher table and serves as the natural `tenant_id`.
-- In the `KnowledgeCenter` service, tables (LearningTrack, Progress) also contain
-  `researcher_id`.
-- In the `Vacancies` service, vacancy records are not tied to a specific
-  jobseeker (public data). Therefore, the `researcher_id` field is absent – it is
-  public information.
-- All API endpoints that return personal data check that the `researcher_id` in
-  the request path or body matches the JWT claim `researcher_id`. On mismatch,
-  return 403 Forbidden.
-- RabbitMQ events containing personal data include the `researcher_id` field.
-  Consumers (e.g., KnowledgeCenter) use this field for access checking (if the
-  event is user‑initiated) or for routing.
-
-### 8.3 Security and audit
-
-- Logical isolation is checked at the domain model level (Application Layer).
-  The infrastructure layer cannot bypass the check.
-- Tests must ensure that jobseeker A cannot read or modify jobseeker B's data.
-- All attempts to access other users' data are logged in the audit log as a
-  suspicious action (type `unauthorized_access_attempt`).
-
-### 8.4 Scalability and performance
-
-- Database indexes are built with filtering by `researcher_id` (composite
-  indexes).
-- For Redis cache, keys include `researcher_id` (e.g.,
-  `recommendations:{researcher_id}:vacancy:{vacancy_id}`).
-- Horizontal scaling requires no changes – each service works with its own DB,
-  where `researcher_id` is used for sharding if needed in the future.
-
-### 8.5 Absence of corporate multi‑tenancy
-
-The system does not support separation by organizations (companies, HR agencies).
-All jobseekers are equal and work in one shared space of vacancies. If B2B
-model is needed in the future (e.g., for companies internal search), it will
-require a separate architectural solution (likely a dedicated instance).
-
-Logical isolation implementation is documented in
-[ADR-016](./adr/adr-016-multitenancy.md).
+Logical isolation implementation – [ADR-016](./adr/adr-016-multitenancy.md).

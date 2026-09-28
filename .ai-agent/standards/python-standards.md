@@ -51,3 +51,5 @@ linter, and type checker configured in `pyproject.toml`.
 
 - **7.1** If tests are requested, follow existing `tests/` patterns (`test_*`,
   pytest) — introduce no new framework.
+- **7.2** Test levels and priority (Domain → Application → Integration →
+  Acceptance) — `testing-standards.md`.

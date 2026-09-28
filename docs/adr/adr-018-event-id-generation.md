@@ -1,5 +1,8 @@
 # ADR-018: Domain Event ID (`event_id`) Auto-Generation
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 Domain events were emitted with `event_id == aggregate_id`: the event reused the
@@ -57,12 +60,13 @@ existence check and/or `expected_version` validation), **not** through
   multiple events per aggregate.
 - Idempotent consumers deduplicate by `event_id`; aggregate-creation idempotency
   relies on command receipt (`expected_version` / existence check).
-- Documentation and AsyncAPI schemas state this invariant on the `event_id` /
-  `aggregate_id` envelope fields.
+- The envelope fields `event_id` and `aggregate_id` are defined by this ADR and
+  referred to from `architecture-overview.md` §2.3; the AsyncAPI event catalogue
+  itself is still pending.
 
 ## Related artifacts
 
 - `app/Domain/Events/DomainEvent.php` (auto-generation of `event_id`).
 - `docs/adr/adr-011-outbox-pattern.md`, `docs/adr/adr-013-idempotency.md`.
-- `docs/asyncapi/events.yaml`, `docs/architecture-overview.md`,
-  `docs/glossary.md`, `docs/domain/bounded-contexts/vacancies-market.md`.
+- `docs/architecture-overview.md` §2.3 (event versioning policy).
+- `docs/asyncapi/events.yaml` (event catalogue; design pending).

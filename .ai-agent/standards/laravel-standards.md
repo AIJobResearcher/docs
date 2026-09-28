@@ -84,3 +84,5 @@ Apply with the project `AGENTS.md`, `md-files-standards.md`, and
 
 - **9.1** If tests are requested, follow existing `tests/` patterns
   (`*Test.php`, PHPUnit, Feature/Unit) — introduce no new framework.
+- **9.2** Test levels and priority (Domain → Application → Integration →
+  Acceptance) — `testing-standards.md`.

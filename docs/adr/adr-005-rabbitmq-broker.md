@@ -1,15 +1,19 @@
 # ADR-005: Choosing RabbitMQ as the Message Broker
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
-Microservices of AIJobResearcher exchange asynchronous events (VacancyImported,
-ReplyCreated, etc.). We need a message broker that guarantees delivery,
-scalability, and supports all used technologies (PHP, Python, Go).
+Microservices of AIJobResearcher exchange asynchronous events. We need a message
+broker that guarantees delivery, scalability, and supports all used technologies
+(PHP, Python, Go).
 
 ## Decision
 
 We use **RabbitMQ** with mirrored queues and persistent messages. Events are
-published to `topic` or `direct` exchanges. Each service has queues with delivery
+published to `topic` or `direct` exchanges. Each service has queues with
+delivery
 confirmation and dead‑letter configuration.
 
 ## Why this decision
@@ -24,7 +28,8 @@ confirmation and dead‑letter configuration.
 
 - **Apache Kafka** – higher performance, but more complex to set up and requires
   ZooKeeper/KRaft; overkill for current load.
-- **Redis Pub/Sub** – does not support persistence or dead letter, less reliable.
+- **Redis Pub/Sub** – does not support persistence or dead letter, less
+  reliable.
 - **AWS SQS** – vendor lock‑in, not suitable for an enterprise demo.
 
 ## Consequences
@@ -32,10 +37,11 @@ confirmation and dead‑letter configuration.
 - Need to monitor queue depth and processing delays (metric
   `rabbitmq_queue_messages`).
 - If load grows, we may switch to Kafka (architecture remains event‑driven).
-- Messages that cannot be processed after several retries go to DLQ with an alert.
+- Messages that cannot be processed after several retries go to DLQ with an
+  alert.
 
 ## Related artifacts
 
 - ADR-011 (Outbox Pattern).
-- Section "Service communication" in `architecture-overview.md`.
+- Section "Interactions between contexts" in `docs/context-map.md`.
 - Kubernetes manifests for RabbitMQ in `deploy/k8s/`.

@@ -1,5 +1,8 @@
 # ADR-006: AI Model Integration Strategy
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 The Parsing&AIConnector service generates recommendations for vacancies,
@@ -18,7 +21,7 @@ We created the `AIProviderInterface` with two implementations:
 
 Responses are cached in Redis (24 hours for recommendations, 7 days for learning
 plans). When the OpenAI token limit is exceeded, the system automatically
-switches to Ollama (logging the `AITokenBudgetExceeded` event).
+switches to Ollama and logs the switch.
 
 ## Why this decision
 
@@ -38,11 +41,11 @@ switches to Ollama (logging the `AITokenBudgetExceeded` event).
 - Need to run Ollama in the infrastructure (added to Docker Compose
   configuration).
 - Need to monitor OpenAI token usage and remaining budget.
-- Cache is invalidated by the `VacancyUpdated` event (so recommendations consider
-  new vacancies).
+- Cache is invalidated when the vacancy catalogue changes (so recommendations
+  consider new vacancies).
 
 ## Related artifacts
 
 - ADR-010 (Qdrant and RAG).
 - ADR-007 (portal parsing).
-- Section "AI-RAG-Pipeline.md".
+- Section "RAG Pipeline" in `docs/domain/ai-rag-pipeline.md`.

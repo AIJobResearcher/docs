@@ -1,5 +1,8 @@
 # ADR-013: Idempotency Strategy for Event and Request Processing
 
+**Status:** accepted
+**Date:** 2026-09-27
+
 ## Context
 
 In a distributed system, messages can be delivered more than once (network
@@ -15,14 +18,16 @@ We use a combination of three mechanisms:
 2. **Deduplication by `event_id`** (asynchronous consumers) – each event has a
    unique `event_id`, the consumer checks whether it has already been processed.
 3. **`processed_events` table** (primary key `event_id`) – before processing an
-   event, we insert; if duplicate, ignore. The table is cleaned daily (TTL 7 days).
+   event, we insert; if duplicate, ignore. The table is cleaned daily
+   (TTL 7 days).
 
 Business invariants (e.g., "one application per vacancy") serve as a second line
 of defence.
 
 `event_id` is generated anew (UUIDv4) for every event instance and is not reused
 as `aggregate_id`. Multiple events of one aggregate therefore have distinct
-`event_id` values; otherwise the `processed_events` PK and the outbox UNIQUE index
+`event_id` values; otherwise the `processed_events` PK and the outbox UNIQUE
+index
 could not distinguish them and deduplication by `event_id` would collapse them.
 
 ## Why this decision
@@ -45,5 +50,5 @@ could not distinguish them and deduplication by `event_id` would collapse them.
 
 ## Related artifacts
 
-- Section "Idempotency Strategy" in `architecture-overview.md`.
+- Section "Idempotency" in `docs/architecture-overview.md`.
 - ADR-011 (Outbox Pattern).

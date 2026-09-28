@@ -1,7 +1,7 @@
 # ADR-020: Frontend Stack Selection
 
 **Status:** accepted
-**Date:** 2026-09-18
+**Date:** 2026-09-28
 
 ## Context
 
@@ -25,11 +25,11 @@ acceptable.
 
 ## Decision
 
-- **Language:** TypeScript 7.
-- **UI library:** React 19.2.
-- **Meta-framework:** Next.js 16.3 with the App Router (RSC + SSR/SSG/ISR).
+- **Language:** TypeScript.
+- **UI library:** React.
+- **Meta-framework:** Next.js with the App Router (RSC + SSR/SSG/ISR).
 
-Next.js 16.3 is the stack for every Frontend page; the architecture on top of it
+Next.js is the stack for every Frontend page; the architecture on top of it
 is defined in [ADR-019](adr-019-frontend-architecture.md).
 
 ## Why this decision
@@ -42,7 +42,7 @@ is defined in [ADR-019](adr-019-frontend-architecture.md).
 - It is mature: regular releases, LTS backports and the largest ecosystem of
   integrations and ready components.
 - Migration from the stack documented so far (Next.js 14) is incremental — an
-  upgrade to 16.3 — unlike a switch to another meta-framework.
+  upgrade to the current Next.js release — unlike a switch to another meta-framework.
 
 ## Alternatives
 
@@ -65,7 +65,7 @@ is defined in [ADR-019](adr-019-frontend-architecture.md).
 
 ## Consequences
 
-- Every Frontend page is built on Next.js 16.3 App Router; the rendering, state
+- Every Frontend page is built on Next.js App Router; the rendering, state
   and data-fetching rules follow [ADR-019](adr-019-frontend-architecture.md).
 - Public pages are server-rendered (SSR/SSG/ISR); authenticated app pages fetch
   their data on the client.
@@ -75,9 +75,9 @@ is defined in [ADR-019](adr-019-frontend-architecture.md).
   history (CVE-2025-55182), and Next.js is closely tied to Vercel; both are
   mitigated by using server rendering only where it is needed and by keeping
   React Router v7 as the fallback.
-- `docs/architecture-overview.md`, the C4 diagrams and
-  `docs/technical-requirements.md` name React 19.2, Next.js 16.3 and
-  TypeScript 7.
+- Concrete versions are pinned in
+  [`docs/architecture-overview.md` §1](../architecture-overview.md); the C4
+  diagrams reference that section instead of repeating versions.
 
 ## Related artifacts
 
@@ -86,4 +86,4 @@ is defined in [ADR-019](adr-019-frontend-architecture.md).
 - `docs/technical-requirements.md` (1.5 Accessibility and localisation, 2.1
   Capacity).
 - `docs/c4/containers.puml`, `docs/c4/components-frontend.puml`.
-- `docs/architecture-overview.md` (3).
+- `docs/architecture-overview.md` §1 (services and stacks).

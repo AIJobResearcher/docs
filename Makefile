@@ -39,14 +39,13 @@ test-yaml:
 	@echo "Running YAML linting on the repository..."
 	@yamllint -c .yamllint.yaml . && echo "✅ All YAML files passed validation"
 
-# Only the OpenAPI 3.2.1 spec is linted; the three 3.0.3 specs are excluded
-# until they are migrated. Once migrated, use "docs/api/*/openapi.yaml".
+# Lint every OpenAPI spec (all four services are on OpenAPI 3.2.1).
 test-openapi:
 	@echo "Linting OpenAPI specifications with Redocly..."
-	@npx --yes @redocly/cli lint --extends=minimal docs/api/vacancies-market/openapi.yaml && echo "✅ OpenAPI spec passed validation"
+	@npx --yes @redocly/cli lint --extends=minimal docs/api/*/openapi.yaml && echo "✅ OpenAPI specs passed validation"
 
 test-links:
-	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest \
+	docker run --rm -v "$(CURR_DIR):/input" lycheeverse/lychee:latest --format compact \
     		--config /input/lychee.toml \
     		/input/docs /input/*.md
 

@@ -1,17 +1,24 @@
 # ADR-003: Using Python for the Parsing & AI Service
 
+**Status:** accepted
+**Date:** 2026-09-28
+
 ## Context
 
 The Parsing&AIConnector service is responsible for parsing external portals,
-integrating with AI models (OpenAI, Ollama), and building the RAG pipeline. We need
+integrating with AI models (OpenAI, Ollama), and building the RAG pipeline. We
+need
 a language with a rich ecosystem for these tasks.
 
 ## Decision
 
-We chose **Python 3.12** with FastAPI (synchronous endpoints) and Celery
+We chose **Python** with FastAPI (synchronous endpoints) and Celery
 (asynchronous tasks). Key libraries: BeautifulSoup, tika‑python (parsing),
 sentence‑transformers (embeddings), Qdrant‑client (vector DB), openai (OpenAI
 client).
+
+Supported versions are pinned in
+[Architecture Overview §1](../architecture-overview.md).
 
 ## Why this decision
 
@@ -37,4 +44,4 @@ client).
 - ADR-006 (AI models).
 - ADR-007 (parsing).
 - ADR-010 (Qdrant and RAG).
-- Section "AI-RAG-Pipeline.md".
+- Section "RAG Pipeline" in `docs/domain/ai-rag-pipeline.md`.

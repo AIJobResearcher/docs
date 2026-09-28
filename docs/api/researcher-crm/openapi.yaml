@@ -1,15 +1,19 @@
-openapi: 3.0.3
+openapi: 3.2.1
 info:
   title: Researcher CRM API
+  summary: Job seeker profile, desired jobs, replies, meetings and messages
   description: Manage job seeker profile, applications, meetings, messages.
-  version: 1.1.0
+  version: 1.1.3
 servers:
   - url: https://api.aijobresearcher.com/api/v1
+    name: Production
     description: Production server
 paths:
   /researchers:
     post:
+      operationId: registerResearcher
       summary: Register a job seeker
+      security: []
       requestBody:
         required: true
         content:
@@ -25,6 +29,7 @@ paths:
                 $ref: '#/components/schemas/Researcher'
   /researchers/{id}:
     get:
+      operationId: getResearcher
       summary: Get job seeker profile
       security:
         - BearerAuth: []
@@ -44,6 +49,7 @@ paths:
         '403':
           description: Access forbidden (other user's profile)
     delete:
+      operationId: deleteResearcher
       summary: Delete account (GDPR)
       security:
         - BearerAuth: []
@@ -60,6 +66,7 @@ paths:
           description: Cannot delete another user's account
   /researchers/{id}/export:
     get:
+      operationId: exportResearcherData
       summary: Export data (GDPR)
       security:
         - BearerAuth: []
@@ -74,6 +81,7 @@ paths:
           description: JSON with all job seeker data
   /jobs:
     post:
+      operationId: addDesiredJob
       summary: Add a desired job to the researcher's list
       security:
         - BearerAuth: []
@@ -92,6 +100,7 @@ paths:
                 $ref: '#/components/schemas/DesiredJob'
   /replies:
     post:
+      operationId: createReply
       summary: Apply to a vacancy
       security:
         - BearerAuth: []
@@ -114,6 +123,7 @@ paths:
           description: Validation failed
   /replies/{reply_id}:
     delete:
+      operationId: withdrawReply
       summary: Withdraw an application
       security:
         - BearerAuth: []
@@ -128,6 +138,7 @@ paths:
           description: Withdrawn
   /interviews/schedule:
     post:
+      operationId: scheduleMeet
       summary: Schedule a meeting
       security:
         - BearerAuth: []
@@ -156,6 +167,7 @@ paths:
           description: Error (application not approved or interviewer unavailable)
   /meets/{meet_id}:
     delete:
+      operationId: cancelMeet
       summary: Cancel a meeting
       security:
         - BearerAuth: []
@@ -170,6 +182,7 @@ paths:
           description: Cancelled
   /messages:
     post:
+      operationId: sendMessage
       summary: Send a message
       security:
         - BearerAuth: []
@@ -188,6 +201,7 @@ paths:
           description: Message sent
   /analytics/replies:
     get:
+      operationId: getReplyAnalytics
       summary: Reply analytics for the job seeker
       security:
         - BearerAuth: []
@@ -197,7 +211,7 @@ paths:
           schema:
             type: string
             enum: [week, month, year]
-          default: month
+            default: month
       responses:
         '200':
           description: Statistics
@@ -239,6 +253,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/ResearcherInput'
         - type: object
+          required: [id]
           properties:
             id:
               type: string
@@ -265,6 +280,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/DesiredJobInput'
         - type: object
+          required: [id]
           properties:
             id:
               type: string
@@ -273,6 +289,7 @@ components:
               enum: [active, filled, archived]
     Reply:
       type: object
+      required: [id]
       properties:
         id:
           type: string

@@ -75,3 +75,12 @@ service at `docs/api/<service>/openapi.yaml` and the AsyncAPI catalog at
   Redocly `tag-description`.
 - **2.14** Delete every component no operation references — Redocly
   `no-unused-components`.
+- **2.15** Version the public API in the server URL path (`/api/v1`).
+- **2.16** Paginate collections with `limit` (max 100) plus `offset` or
+  `page`/`per_page`; sort with `sort=field:asc|desc`.
+- **2.17** Response codes: 200, 201, 400, 401, 403, 404, 429, 500; a
+  long‑running operation returns `202 Accepted` with `Location: /tasks/{id}`.
+- **2.18** Every request carries a correlation ID header, forwarded to all
+  downstream calls and events.
+- **2.19** Rate‑limit authenticated clients at 100 requests/min and document the
+  `429` response.

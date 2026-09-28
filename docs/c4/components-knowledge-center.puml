@@ -1,25 +1,25 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-title Компоненты сервиса Knowledge Center
+title KnowledgeCenter Service Components\n(runtime versions: docs/architecture-overview.md §1)
 
-Container(knowledge, "Knowledge Center", "Go/Gin")
+Container(knowledge, "KnowledgeCenter", "Go, Gin")
 
-Boundary(knowledge_boundary, "Knowledge Center") {
+Boundary(knowledge_boundary, "Learning Management") {
     Component(presentation, "Presentation Layer", "Gin handlers", "REST API")
-    Component(application, "Application Layer", "Use cases", "Создание треков, прогресс")
-    Component(domain, "Domain Layer", "Entities", "LearningTrack, TrackItem, Progress, Skill")
+    Component(application, "Application Layer", "Use cases", "Tracks, progress, development recommendations")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "LearningTrack (root), TrackItem, Progress, Skill")
     Component(infrastructure, "Infrastructure Layer", "Repositories, Event publisher", "PostgreSQL, RabbitMQ")
 
-    Rel(presentation, application, "Вызывает")
-    Rel(application, domain, "Использует")
-    Rel(application, infrastructure, "Сохраняет/публикует")
+    Rel(presentation, application, "Calls")
+    Rel(application, domain, "Uses")
+    Rel(application, infrastructure, "Saves / publishes")
 }
 
 ContainerDb(postgres, "PostgreSQL", "Knowledge DB")
-Container(rabbitmq, "RabbitMQ", "События")
+Container(rabbitmq, "RabbitMQ", "Messages")
 
-Rel(knowledge, postgres, "Читает/пишет")
-Rel(knowledge, rabbitmq, "Публикует")
+Rel(knowledge, postgres, "Reads / writes")
+Rel(knowledge, rabbitmq, "Publishes and consumes")
 
 @enduml

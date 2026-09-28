@@ -1,6 +1,7 @@
 # React Code Standards
 
-React 19.2, Next.js 16.3 App Router, TypeScript 7 (ADR-020).
+React, Next.js App Router, TypeScript (ADR-020); versions are pinned in
+[Architecture Overview §1](../../docs/architecture-overview.md).
 
 ## 1. Types
 
@@ -79,7 +80,8 @@ React 19.2, Next.js 16.3 App Router, TypeScript 7 (ADR-020).
 - **8.3** Strings as i18n keys; `Intl` formatting; no fixed-width text
   containers.
 - **8.4** Test behavior by role and label in the existing framework; mock the
-  network, not modules; a regression test per fix.
+  network, not modules; a regression test per fix. Test levels and priority –
+  `testing-standards.md`.
 - **8.5** Feature-sliced `app/` → `features/` → `entities/` → `shared/`,
   downward imports only; `PascalCase`/`camelCase`/`UPPER_SNAKE_CASE`/
   `kebab-case`; zero-warning lint and type-check in CI.

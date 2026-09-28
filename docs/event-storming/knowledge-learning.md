@@ -1,33 +1,18 @@
-# Event Storming: Knowledge & Learning
+# Event Storming: Learning Management
 
-## Commands (triggers)
+**Status:** accepted
+**Date:** 2026-09-27
+**Version:** 1.1
 
-- **CreateLearningTrack** – create track (automatically or manually)
-- **AddTrackItem** – add item to track
-- **MarkItemComplete** – mark item completed
-- **SkipOptionalItem** – skip optional item
-- **RequestAIConspect** – request AI summary (to AI & Parsing)
+> **Related documentation:** [Glossary](../glossary.md) |
+> [Context Map](../context-map.md) |
+> [Architecture Overview](../architecture-overview.md) |
+> [AsyncAPI](../asyncapi/events.yaml) | [README](../README.md)
 
-## Domain events
+The command/event flow of this context is not designed yet. Aggregates, entities
+and business rules are canonical in the bounded context file
+[Learning Management](../domain/bounded-contexts/knowledge-center.md) §4-§5;
+context relationships are fixed in the [Context Map](../context-map.md).
 
-| Event | Published by | Description |
-| --- | --- | --- |
-| `LearningTrackCreated` | KnowledgeCenter | Track created |
-| `LearningTrackCompleted` | KnowledgeCenter | Track completed |
-| `ProgressUpdated` | KnowledgeCenter | Progress updated for an item |
-| `DevelopmentRecommendationGenerated` | KnowledgeCenter | Development recommendation generated |
-| `AIConspectGenerated` | Parsing&AIConnector | AI summary generated (returned to KnowledgeCenter) |
-
-## Aggregates
-
-- `LearningTrack` – root
-- `TrackItem` – track item
-- `Progress` – progress on item
-- `Skill` – skill lookup
-
-## Business rules (invariants)
-
-- Track linked to a specific desired job (Job).
-- Track items are linear (previous must be completed).
-- Track progress = completed / total items.
-- Skipping only for `is_optional` items.
+When the flow is designed, this file documents it: `Commands`, `Domain events`,
+`Integration messages` (in/out), `Aggregates` and `Business rules`.
