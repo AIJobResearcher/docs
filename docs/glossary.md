@@ -1,8 +1,8 @@
 # Glossary (Ubiquitous Language)
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.0
+**Date:** 2026-09-30
+**Version:** 1.2
 
 Domain terms of the AIJobResearcher project, used in code, API and
 documentation. Technical and infrastructure terms live in their owner documents
@@ -28,6 +28,7 @@ documentation. Technical and infrastructure terms live in their owner documents
 | **Domain Vision** | Document describing strategic goals, domains, competitive advantages, success metrics and non-goals. |
 | **Employer** | Company that owns vacancies and interviewers. Root aggregate in Vacancy Management. |
 | **Entity** | Domain object with identity that is not a root aggregate; lives inside an aggregate (`Reply`, `Meet`, `Source`). |
+| **EntityMapping** | Link between a catalogue entity (`Source`, `Employer` or `Interviewer`) and its record on an external portal. Entity of Vacancy Management. |
 | **Event Storming** | Method for modelling a domain: aggregates, entities and business rules. |
 | **Eventual Consistency** | Consistency model between contexts with an allowed delay (p95 ≤ 2 s, p99 ≤ 5 s). |
 | **Interviewer** | Representative of an employer. Child entity of `Employer`. |
@@ -40,7 +41,8 @@ documentation. Technical and infrastructure terms live in their owner documents
 | **Multi‑tenancy** | Logical data isolation between jobseekers by `researcher_id`; B2C only, separation by organizations is out of scope. |
 | **Parsing&AIConnector** | Service of the AI & Parsing context (Python): portal parsing, AI recommendations, RAG. |
 | **ParsingTask** | External portal parsing task. Aggregate in Parsing&AIConnector. |
-| **Portal** | External job portal (LinkedIn, Djinni). Reference entity of Vacancy Management, referenced by `Source`. |
+| **Portal** | External job portal (LinkedIn, Djinni). Lookup entity of Parsing&AIConnector, referenced by `PortalConnection` and by `Source` of Vacancy Management by id. |
+| **PortalCandidate** | Normalized portal record awaiting a catalogue decision (create/update/merge/close). Aggregate in Vacancy Management. |
 | **Progress** | Completion state of a track item. Entity of `LearningTrack`. |
 | **Reference entity (lookup)** | Entity that serves as a dictionary for other aggregates (`Job`, `Requirement`, `Portal`, `Location`, `Skill`). |
 | **Reply** | Job seeker's application to a vacancy. Entity of `Researcher` in ResearcherCrm. |
@@ -53,4 +55,3 @@ documentation. Technical and infrastructure terms live in their owner documents
 | **Ubiquitous Language** | Single language of the domain, used in code, events, API and documentation. |
 | **Vacancies Market** | Service of the Vacancy Management context (PHP/Laravel) that owns the vacancy catalogue. |
 | **Vacancy** | Public vacancy of the catalogue; aggregate inside `Employer`. |
-| **VacancyCandidate** | Internal entity of Parsing&AIConnector: normalized source record, duplicate candidates and the selected catalogue mutation. |

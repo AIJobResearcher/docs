@@ -1,8 +1,8 @@
 # Architecture Overview for AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-28
-**Version:** 1.12
+**Date:** 2026-09-30
+**Version:** 1.13
 
 > **Related documentation:** [Glossary](glossary.md) |
 > [Context Map](context-map.md) | [Domain Vision](domain/domain-vision.md) |
@@ -43,8 +43,11 @@ layer is isolated from frameworks.
 ### 2.2 Event‑Driven Architecture
 
 Services integrate asynchronously through events (RabbitMQ): scalability, loose
-coupling, fault tolerance. Synchronous REST is used only where a caller needs an
-immediate answer – relationships in [Context Map](context-map.md) §2; external
+coupling, fault tolerance. Synchronous REST is used for queries of another
+context's data and for commands whose result the caller needs in the same
+request; long-running or failure-prone commands are asynchronous and answer with
+a result event – [ADR-021](./adr/adr-021-context-communication.md).
+Interactions per context pair – [Context Map](context-map.md) §2; external
 integrations and ACL – [ADR-015](./adr/adr-015-acl.md).
 
 ### 2.3 Event Versioning

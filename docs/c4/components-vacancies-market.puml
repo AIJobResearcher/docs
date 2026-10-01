@@ -8,7 +8,7 @@ Container(vacancies, "Vacancies Market", "PHP, Laravel")
 Boundary(vacancies_boundary, "Vacancy Management") {
     Component(presentation, "Presentation Layer", "Controllers", "Handles HTTP requests")
     Component(application, "Application Layer", "Commands/Queries", "Orchestrates use cases")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "Employer (root), Vacancy, Interviewer, Job, Requirement, Portal, Location, Source, Content")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Employer (root), Vacancy, Interviewer, Job, Requirement, Location, Source, Content, PortalCandidate, EntityMapping")
     Component(infrastructure, "Infrastructure Layer", "Repositories, Event publishers", "PostgreSQL, Redis, RabbitMQ, OpenSearch")
 
     Rel(presentation, application, "Calls")

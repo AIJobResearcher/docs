@@ -1,8 +1,8 @@
 # Bounded Context: Job Search & CRM (ResearcherCrm Service)
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.4
+**Date:** 2026-09-30
+**Version:** 1.5
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -17,7 +17,8 @@
 > [ADR‑011: Outbox Pattern](../../adr/adr-011-outbox-pattern.md) |
 > [ADR‑013: Idempotency](../../adr/adr-013-idempotency.md) |
 > [ADR‑016: Logical data isolation for
-> jobseekers](../../adr/adr-016-multitenancy.md)
+> jobseekers](../../adr/adr-016-multitenancy.md) |
+> [ADR‑021: Context Communication](../../adr/adr-021-context-communication.md)
 
 ## 1. Responsibility
 

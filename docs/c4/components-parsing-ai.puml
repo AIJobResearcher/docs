@@ -8,7 +8,7 @@ Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery")
 Boundary(parsing_ai_boundary, "AI & Parsing") {
     Component(presentation, "Presentation Layer", "FastAPI routes", "Accepts commands and requests")
     Component(application, "Application Layer", "Use cases", "Parsing runs, AI generation, RAG")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "ParsingTask, AIRecommendationTask, VacancyCandidate, AIModel")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Portal, PortalConnection, PortalWatch, ParsingTask, PortalSnapshot, PortalUpdateTask, AIRecommendationTask, AIModel")
     Component(acl_parsing, "Parsing ACL", "Adapter for portals", "Parses HTML/JSON")
     Component(acl_ai, "AI Provider Interface", "Port; Ollama / OpenAI adapters", "Generates AI responses")
     Component(rag, "RAG Pipeline", "Chunking, embeddings, retrieval", "Uses Qdrant")
