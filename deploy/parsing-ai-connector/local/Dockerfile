@@ -1,5 +1,10 @@
 # syntax=docker/dockerfile:1
 
+# Base image of the worker-browser stage. Declared before the first FROM so the
+# value is visible to the FROM instruction; override with
+# --build-arg PLAYWRIGHT_IMAGE=...
+ARG PLAYWRIGHT_IMAGE=mcr.microsoft.com/playwright/python:v1.49.0-jammy
+
 # ============================================
 # Stage 1: builder — installs dependencies from pyproject.toml
 # ============================================
@@ -58,7 +63,6 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 # Stage 3: browser — worker-browser with Playwright
 # ============================================
 
-ARG PLAYWRIGHT_IMAGE=mcr.microsoft.com/playwright/python:v1.49.0-jammy
 FROM ${PLAYWRIGHT_IMAGE} AS browser
 
 ARG UID=1000
