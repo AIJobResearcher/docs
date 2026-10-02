@@ -79,12 +79,12 @@ COPY app ./app
 
 RUN pip install --upgrade pip \
     && pip install . \
-    && groupadd --gid "${GID}" app \
-    && useradd --uid "${UID}" --gid "${GID}" --create-home app \
+    && (getent group "${GID}" >/dev/null 2>&1 || groupadd --gid "${GID}" app) \
+    && (getent passwd "${UID}" >/dev/null 2>&1 || useradd --uid "${UID}" --gid "${GID}" --create-home app) \
     && chown -R "${UID}:${GID}" /app
 
 COPY --chown=${UID}:${GID} . .
 
-USER app
+USER ${UID}:${GID}
 
 CMD ["celery", "-A", "app.worker", "worker", "-Q", "browser", "--concurrency=2"]
