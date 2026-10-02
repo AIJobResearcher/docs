@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-30
-**Version:** 1.13
+**Version:** 1.14
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -22,7 +22,8 @@
 > [ADR‑010: Choosing Qdrant and the RAG
 > Strategy](../../adr/adr-010-qdrant-rag.md) |
 > [ADR‑015: Anti‑Corruption Layer](../../adr/adr-015-acl.md) |
-> [ADR‑021: Context Communication](../../adr/adr-021-context-communication.md)
+> [ADR‑021: Context Communication](../../adr/adr-021-context-communication.md) |
+> [ADR‑022: Parsing & AI Stack](../../adr/adr-022-parsing-ai-stack.md)
 
 ## 1. Responsibility
 
@@ -50,9 +51,10 @@
   records.
 - **2.9** Monitor portal updates: the parser requests the three monitoring URLs
   of each enabled portal (vacancies, employers, interviewers) at the configured
-  interval, stores the fetched records and publishes an event per new or
-  changed record to Vacancy Management, which owns matching and the catalogue
-  decision.
+  interval, prefers RSS/API endpoints over HTML, and shares one per-host rate
+  limit across all workers; it stores the fetched records and publishes an event
+  per new or changed record to Vacancy Management, which owns matching and the
+  catalogue decision.
 
 ## 3. User stories
 
@@ -69,11 +71,12 @@
 - **3.5 Summaries for learning:** KnowledgeCenter requests a short summary on a
   specific topic to include in the learning plan.
 - **3.6 Parse portals:** the system parses external job portals on a schedule,
-  respecting `robots.txt` and frequency limits, and suspends parsing for a set
-  interval when the success rate drops below the threshold.
+  preferring RSS/API endpoints over HTML and respecting `robots.txt` and the
+  shared per-host rate limit, and suspends parsing for a set interval when the
+  success rate drops below the threshold.
 - **3.7 Monitor portal updates:** the system monitors Portals for new and
-  changed Employers, Vacancies and Interviewers and sends that data to the
-  Vacancies Market Service.
+  changed Employers, Vacancies and Interviewers, preferring RSS/API endpoints,
+  and sends that data to the Vacancies Market Service.
 - **3.8 Update portal data:** upon request, the system updates Employers,
   Vacancies and Interviewers on Portals.
 
@@ -83,9 +86,10 @@
 
 - **4.1.1** All AI requests are cached in Redis for 24 hours (recommendations)
   and 7 days (learning plans) for the same prompt.
-- **4.1.2** If an external AI provider is unavailable or its budget is exceeded,
-  the system returns “AI temporarily unavailable, please try later” and logs the
-  error.
+- **4.1.2** AI generation runs on the DeepSeek API through the provider port; if
+  the provider is unavailable or its budget is exceeded, the system uses the
+  fallback provider or returns “AI temporarily unavailable, please try later”
+  and logs the error.
 
 ### 4.2 Parsing
 
@@ -124,7 +128,8 @@
 
 - **5.3.1 Fields:** `id`, `portal_id`, `monitoring_urls` (`list<string>`,
   exactly three — vacancies, employers, interviewers), `cursor`,
-  `last_polled_at`, `status` (active/paused), `suspended_until`.
+  `last_polled_at`, `next_run_at`, `poll_interval_s`, `backoff_until`,
+  `status` (active/paused), `suspended_until`.
 - **5.3.2 Relationships:** references a `Portal` and its `PortalConnection`;
   one watch runs one `ParsingTask` per interval.
 - **5.3.3 Behaviour:** `poll()` starts a run when the interval elapses and no
@@ -146,7 +151,8 @@
 
 - **5.5.1 Fields:** `id`, `parsing_task_id`, `portal_id`, `entity_type`
   (source/employer/interviewer), `external_id`, `external_url`, `fetched_at`,
-  `raw_payload`, `content_hash`, `changed`.
+  `raw_payload` (S3/MinIO object key), `content_hash`, `changed`; the row keeps
+  the hash and metadata only, and the table is partitioned by time.
 - **5.5.2 Relationships:** one record returned by a monitoring URL; carries the
   portal identity (`portal_id`, `external_id`) that Vacancy Management matches
   against the catalogue.
@@ -176,8 +182,9 @@
 
 ### 5.8 AIModel (lookup)
 
-- **5.8.1 Fields:** `id`, `name`, `version`, `endpoint`, `input_schema`,
-  `output_schema`, `prompt_preconditions`, `is_default`.
+- **5.8.1 Fields:** `id`, `name`, `version`, `provider` (`deepseek`),
+  `model_id`, `api_base`, `input_schema`, `output_schema`,
+  `prompt_preconditions`, `is_default`.
 - **5.8.2 Relationships:** lookup entity of this context; AI tasks resolve the
   model through it.
 - **5.8.3 Behaviour:** none — lookup entity.

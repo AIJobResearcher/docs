@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-30
-**Version:** 1.1
+**Version:** 1.2
 
 Architecture Decision Records capture the platform's architectural choices
 and their rationale — one file per decision.
@@ -30,11 +30,12 @@ and their rationale — one file per decision.
 | 019 | Frontend Architecture | [adr-019-frontend-architecture.md](./adr-019-frontend-architecture.md) |
 | 020 | Frontend Stack Selection | [adr-020-frontend-stack-selection.md](./adr-020-frontend-stack-selection.md) |
 | 021 | Communication between Contexts: Queries, Commands and Events | [adr-021-context-communication.md](./adr-021-context-communication.md) |
+| 022 | Parsing&AIConnector Stack | [adr-022-parsing-ai-stack.md](./adr-022-parsing-ai-stack.md) |
 
 ## 1. How to add an ADR
 
-1. Take the next free number (currently `022`).
-2. Create `adr-022-<short-slug>.md` with sections in the fixed order from
+1. Take the next free number (currently `023`).
+2. Create `adr-023-<short-slug>.md` with sections in the fixed order from
    the standards file: Context, Decision, Why this decision, Alternatives,
    Consequences, Related artifacts.
 3. Add a row to the table above.

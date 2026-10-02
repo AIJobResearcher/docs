@@ -1,51 +1,66 @@
 # ADR-006: AI Model Integration Strategy
 
 **Status:** accepted
-**Date:** 2026-09-27
+**Date:** 2026-09-30
 
 ## Context
 
 The Parsing&AIConnector service generates recommendations for vacancies,
-resumes, and interview preparation. We need a flexible integration with AI
-models that works for free (for the demo) and with commercial APIs, while
-controlling the budget.
+resumes, interview preparation and learning summaries. The service needs one
+integration point for commercial AI APIs, predictable cost, and a documented
+behaviour when the provider is unavailable or the budget is exhausted.
 
 ## Decision
 
-We created the `AIProviderInterface` with two implementations:
-
-- **OllamaAIProvider** – local `llama3.2` model (runs in a container). Used by
-  default, no cost.
-- **OpenAIProvider** – `gpt-3.5-turbo`. Activated via environment variable
-  `AI_PROVIDER=openai` and an API key.
-
-Responses are cached in Redis (24 hours for recommendations, 7 days for learning
-plans). When the OpenAI token limit is exceeded, the system automatically
-switches to Ollama and logs the switch.
+- **Provider:** the DeepSeek API — `deepseek-chat` for recommendations and
+  `deepseek-reasoner` where reasoning quality matters.
+- **Port:** all generation goes through `AIProviderInterface`; the LiteLLM
+  gateway maps the port to DeepSeek, so a fallback provider is a configuration
+  change, not a code change.
+- **Fallback:** when DeepSeek is unavailable or the monthly budget is exceeded,
+  the service uses the fallback provider (TBD) or returns a degraded
+  "AI temporarily unavailable" answer, and logs the switch.
+- **Caching:** responses are cached in Redis for 24 hours (recommendations) and
+  7 days (learning plans) for the same prompt.
+- **Removed:** the local Ollama model and `gpt-3.5-turbo` are out of the stack.
+- Provider and credentials come from environment variables
+  (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`).
 
 ## Why this decision
 
-- Keeps the demo environment working when the OpenAI budget runs out.
-- Allows developers to test AI features without extra cost (local model).
-- A single interface makes it easy to add new providers (e.g., Google Gemini in
-  the future).
+- DeepSeek gives usable quality without running a local GPU model or a
+  container per environment.
+- One port plus a gateway keeps provider details out of the domain layer and
+  turns the fallback provider into a deployment decision.
+- Caching keeps a repeated prompt from spending budget twice.
+- A single external provider makes the DPA, zero-retention and
+  pseudonymisation requirements auditable in one place.
 
 ## Alternatives
 
-- Use only OpenAI – expensive for the demo, no offline capability.
-- Use only a local model – lower recommendation quality, insufficient for an
-  enterprise demo.
+- **Keep Ollama as the default** – rejected: local quality and container cost,
+  while the port already allows a local provider later.
+- **`gpt-3.5-turbo`** – rejected: superseded, and it duplicates what the
+  DeepSeek API already covers.
+- **Direct provider SDK calls in the domain** – rejected: no fallback and no
+  substitution point for tests.
+- **Several providers wired directly** – rejected: the gateway already covers
+  routing and retries.
 
 ## Consequences
 
-- Need to run Ollama in the infrastructure (added to Docker Compose
-  configuration).
-- Need to monitor OpenAI token usage and remaining budget.
-- Cache is invalidated when the vacancy catalogue changes (so recommendations
-  consider new vacancies).
+- A paid external dependency with a monthly budget to monitor; alerts cover
+  provider errors and budget.
+- Every prompt is pseudonymised before sending; provider allow-list and DPA are
+  prerequisites, not options.
+- Cache invalidation when the vacancy catalogue changes stays as before.
+- The fallback provider is still TBD: until it is chosen, a DeepSeek outage
+  degrades to the "AI temporarily unavailable" answer.
 
 ## Related artifacts
 
-- ADR-010 (Qdrant and RAG).
+- ADR-003 (Python and libraries).
 - ADR-007 (portal parsing).
+- ADR-010 (Qdrant and RAG).
+- ADR-022 (Parsing&AIConnector stack).
 - Section "RAG Pipeline" in `docs/domain/ai-rag-pipeline.md`.

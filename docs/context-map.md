@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-30
-**Version:** 1.15
+**Version:** 1.16
 
 > **Related documentation:** [Architecture Overview](architecture-overview.md) |
 > [Domain Model](domain/domain-model.md) |
@@ -24,9 +24,9 @@ ownership per context – [Domain Model](domain/domain-model.md) §1.
 
 ## 2. Interactions between contexts
 
-ACL instances (portals, AI providers, Google Calendar, Google OAuth2) –
-[ADR-015](adr/adr-015-acl.md). The kind and transport of every interaction
-below follow [ADR-021](adr/adr-021-context-communication.md): query
+ACL instances (portals, AI and embedding providers, Google Calendar, Google
+OAuth2) – [ADR-015](adr/adr-015-acl.md). The kind and transport of every
+interaction below follow [ADR-021](adr/adr-021-context-communication.md): query
 (synchronous read API), command (asynchronous, with a result event) or event
 (asynchronous fact).
 

@@ -1,8 +1,8 @@
 # Technical Requirements for AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.13
+**Date:** 2026-09-30
+**Version:** 1.14
 **Target load:** 50,000 concurrent active users
 **Application version:** v1.0
 
@@ -17,8 +17,9 @@
 - **Concurrent users:** 50,000 sessions; **average RPS** ~10,000, **peak** up to
   20,000 (9:00–11:00 UTC+3, 2–3 hours).
 - **Autoscaling (K8s HPA):** CPU 70% for all services; additionally
-  ResearcherCrm by p99 latency (Prometheus adapter), Parsing&AIConnector by
-  RabbitMQ queue depth.
+  ResearcherCrm by p99 latency (Prometheus adapter), and Parsing&AIConnector by
+  RabbitMQ queue depth — plain workers by the default queue, browser workers by
+  the `browser` queue.
 - **Buffer:** minimum replicas cover the average load with a 30% buffer
   ([ADR-009](./adr/adr-009-capacity-planning.md)); resources per replica and
   minimum replica counts – §2.1.
@@ -85,23 +86,29 @@ Paths are relative to the API base URL
 | PostgreSQL VacanciesMarket     | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL ResearcherCrm       | 4                       | 16       | 1 master + 2 replicas   |
 | PostgreSQL KnowledgeCenter     | 2                       | 8        | 1 master + 1 replica    |
+| PostgreSQL Parsing&AIConnector | TBD                     | TBD      | 1 master + 1 replica    |
+| Qdrant                         | TBD                     | TBD      | 3 nodes                 |
 | Redis (cache)                  | 2                       | 8        | 3 nodes (cluster)       |
 | RabbitMQ                       | 2                       | 4        | 3 nodes                 |
 | OpenSearch / Elasticsearch     | 4                       | 16       | 3 nodes (data + master) |
 
-*Celery workers: 4 workers × 4 vCPU / 8 GB RAM.
+*Celery workers: 4 workers × 4 vCPU / 8 GB RAM.*
+*Browser workers (`browser` queue) run as a separate pool from the plain
+Celery workers.*
 *Demo environment: resources reduced 2–3 times.*
 
 ### 2.2 Data storage
 
-| Database                     | Yearly growth     | Disk type | Min size       |
-|------------------------------|-------------------|-----------|----------------|
-| PostgreSQL Vacancies Market  | 50 GB             | SSD       | 200 GB         |
-| PostgreSQL ResearcherCrm     | 100 GB            | SSD       | 300 GB         |
-| PostgreSQL KnowledgeCenter   | 10 GB             | SSD       | 50 GB          |
-| RabbitMQ (persistent queues) | 50 GB             | SSD       | 100 GB         |
-| OpenSearch indexes           | 100 GB            | SSD       | 300 GB         |
-| Redis (cache)                | 20 GB (in‑memory) | –         | limited by RAM |
+| Database                       | Yearly growth     | Disk type | Min size       |
+|--------------------------------|-------------------|-----------|----------------|
+| PostgreSQL Vacancies Market    | 50 GB             | SSD       | 200 GB         |
+| PostgreSQL ResearcherCrm       | 100 GB            | SSD       | 300 GB         |
+| PostgreSQL KnowledgeCenter     | 10 GB             | SSD       | 50 GB          |
+| PostgreSQL Parsing&AIConnector | TBD               | SSD       | TBD            |
+| Qdrant (quantized vectors)     | TBD               | SSD       | TBD            |
+| RabbitMQ (persistent queues)   | 50 GB             | SSD       | 100 GB         |
+| OpenSearch indexes             | 100 GB            | SSD       | 300 GB         |
+| Redis (cache)                  | 20 GB (in‑memory) | –         | limited by RAM |
 
 ### 2.3 Network resources
 
@@ -127,6 +134,9 @@ Paths are relative to the API base URL
   `DELETE /researchers/{id}` (right to be forgotten) – see the
   [ResearcherCrm OpenAPI](./api/researcher-crm/openapi.yaml).
 - **Pseudonymisation** for analytics and AI.
+- **External AI and embeddings providers:** signed DPA, zero-retention and
+  no-training terms, pseudonymisation before sending, and an allow-list of
+  providers; generation runs on DeepSeek, the embeddings provider is TBD.
 - **Retention:** 3 years from the last activity, then automatic
   archival/deletion.
 
@@ -164,15 +174,21 @@ Paths are relative to the API base URL
 **Metrics:** `http_requests_total`, `http_request_duration_seconds`,
 `rabbitmq_queue_messages`, `reply_event_processing_duration_seconds`,
 `parsing_success_rate`, `parsing_validation_errors`,
+`parser_rate_limit_throttled_total`, `parsing_records_total{portal}`,
+`parsing_errors_total{portal}`, `parsing_queue_depth{portal}`,
 `ai_recommendations_generated`, `rag_search_latency_seconds`,
 `rag_chunks_retrieved`, `rag_context_length_tokens`,
-`ai_provider_requests_total`, `ai_provider_errors_total`.
+`ai_provider_requests_total`, `ai_provider_errors_total`,
+`embedding_provider_requests_total`, `embedding_provider_errors_total`.
 
 **Alerts:**
 
 - RabbitMQ queue `ai_requests` > 10k messages (critical)
 - Parsing errors > 20% for 5 minutes (warning)
 - `ai_provider_errors_total` > 5% for 5 minutes (critical)
+- `embedding_provider_errors_total` > 5% for 5 minutes (critical)
+- Portal answering 403/429 or a ban signature (critical)
+- `parsing_queue_depth{portal}` growing for 10 minutes (warning)
 - Average chunks retrieved < 2 for 10 minutes (vectorisation problem)
 - Latency and error‑budget alerts – §1.2 and §1.3
 
@@ -189,14 +205,18 @@ Paths are relative to the API base URL
 
 ## 7. Known Risks & Mitigations
 
-| Risk                                       | Mitigation                                                            |
-|--------------------------------------------|-----------------------------------------------------------------------|
-| External job portal outage                 | Cache last successful data, alert, switch to backup source.           |
-| AI model error (timeout, invalid response) | Retry with exponential backoff, fallback to keyword search – ADR-006. |
-| Eventual consistency issues                | UI shows an asynchronous message; consistency SLO – §1.4.             |
-| High memory usage in Python parsing        | Limit parallel workers, monitor, rotate IP via proxy.                 |
-| HTML structure change on portal            | Configuration as code, broken structure detector – ADR-007.           |
-| OpenAI budget exceeded                     | Monthly token limit, automatic switch to local Ollama – ADR-006.      |
+| Risk                                              | Mitigation                                                                         |
+|---------------------------------------------------|------------------------------------------------------------------------------------|
+| External job portal outage                        | Cache last successful data, alert, switch to backup source.                        |
+| AI model error (timeout, invalid response)        | Retry with exponential backoff, fallback to keyword search – ADR-006.              |
+| Eventual consistency issues                       | UI shows an asynchronous message; consistency SLO – §1.4.                          |
+| High memory usage in Python parsing               | Limit parallel workers, monitor, rotate IP via proxy.                              |
+| HTML structure change on portal                   | Configuration as code, broken structure detector – ADR-007.                        |
+| AI provider budget exceeded                       | Monthly token limit, switch to the fallback provider or a degraded mode – ADR-006. |
+| LinkedIn ToS change or account ban                | RSS/API-first sources, per-portal backoff and pause – ADR-007.                     |
+| Rate-limit breach across parsing workers          | One shared Redis limiter per host – ADR-007.                                       |
+| DeepSeek outage without a fallback                | Provider port with LiteLLM, fallback provider or degraded mode – ADR-006.          |
+| Re-embedding cost after an embedding model change | Quantized Qdrant vectors, cached query embeddings, staged re-index – ADR-010.      |
 
 ## 8. Multi‑Tenancy (Logical data isolation for jobseekers)
 

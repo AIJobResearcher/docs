@@ -9,8 +9,8 @@ System(ai_job_researcher, "AIJobResearcher", "Job search, AI recommendations and
 
 System_Ext(linkedin, "LinkedIn", "External job portal")
 System_Ext(djinni, "Djinni", "External job portal")
-System_Ext(openai, "OpenAI API", "Commercial AI provider")
-System_Ext(ollama, "Ollama", "Local AI model")
+System_Ext(deepseek, "DeepSeek API", "Commercial AI provider")
+System_Ext(embeddings_api, "Embeddings API", "External embeddings provider (TBD)")
 System_Ext(google_auth, "Google OAuth2", "Identity provider for SSO")
 System_Ext(google_calendar, "Google Calendar", "Calendar for invitations")
 
@@ -18,8 +18,8 @@ Rel(seeker, ai_job_researcher, "Views vacancies, applies, schedules meetings, ge
 Rel(ai_job_researcher, google_auth, "Authenticates users (SSO)", "OAuth2")
 Rel(ai_job_researcher, linkedin, "Imports vacancies (parsing)", "HTTPS")
 Rel(ai_job_researcher, djinni, "Imports vacancies (parsing)", "HTTPS")
-Rel(ai_job_researcher, openai, "Generates recommendations (optional)", "HTTPS")
-Rel(ai_job_researcher, ollama, "Generates recommendations (local)", "HTTP")
+Rel(ai_job_researcher, deepseek, "Generates recommendations", "HTTPS")
+Rel(ai_job_researcher, embeddings_api, "Builds embeddings", "HTTPS")
 Rel(ai_job_researcher, google_calendar, "Creates invitation events", "HTTPS")
 
 @enduml

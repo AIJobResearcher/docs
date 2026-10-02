@@ -2,7 +2,7 @@
 
 **Status:** accepted
 **Date:** 2026-09-30
-**Version:** 1.13
+**Version:** 1.14
 
 > **Related documentation:** [Glossary](glossary.md) |
 > [Context Map](context-map.md) | [Domain Vision](domain/domain-vision.md) |
@@ -16,19 +16,21 @@ principles and the delivery pipeline of the platform. Requirements and capacity:
 
 ## 1. Platform architecture (services, stacks, implementation order)
 
-| # | Service             | Stack                                                    |
-|---|---------------------|----------------------------------------------------------|
-| 1 | Deploy & Docs       | Docker Compose, Kubernetes, GitHub Actions               |
-| 2 | Vacancies Market    | PHP 8.5, Laravel 13, PostgreSQL 18, Redis                |
-| 3 | ResearcherCrm       | PHP 8.5, Symfony 8.1, Doctrine ORM, PostgreSQL 18, Redis |
-| 4 | Parsing&AIConnector | Python 3.14, FastAPI, Celery, RabbitMQ                   |
-| 5 | Frontend            | React 19.3, Next.js 16.3 (App Router), TypeScript 7      |
-| 6 | KnowledgeCenter     | Go 1.27, Gin, PostgreSQL 18, RabbitMQ                    |
+| # | Service             | Stack                                                                |
+|---|---------------------|----------------------------------------------------------------------|
+| 1 | Deploy & Docs       | Docker Compose, Kubernetes, GitHub Actions                           |
+| 2 | Vacancies Market    | PHP 8.5, Laravel 13, PostgreSQL 18, Redis                            |
+| 3 | ResearcherCrm       | PHP 8.5, Symfony 8.1, Doctrine ORM, PostgreSQL 18, Redis             |
+| 4 | Parsing&AIConnector | Python 3.14, FastAPI, Celery, PostgreSQL 18, Redis, RabbitMQ, Qdrant |
+| 5 | Frontend            | React 19.3, Next.js 16.3 (App Router), TypeScript 7                  |
+| 6 | KnowledgeCenter     | Go 1.27, Gin, PostgreSQL 18, RabbitMQ                                |
 
 **Runtime versions** are declared in this table only: C4 diagrams, ADRs and
 other documents reference this section instead of repeating version numbers.
 Only releases still supported upstream are listed — Symfony 8.1 (supported
 until 2027-01-31) and Go 1.27 (the two newest Go majors are supported).
+AI generation and embeddings are external HTTPS APIs (DeepSeek now, the
+embeddings provider is TBD), so they add no row to this table.
 
 Service responsibilities – in the bounded context files; context ↔ service
 mapping – [Context Map](context-map.md) §1.
@@ -48,7 +50,8 @@ context's data and for commands whose result the caller needs in the same
 request; long-running or failure-prone commands are asynchronous and answer with
 a result event – [ADR-021](./adr/adr-021-context-communication.md).
 Interactions per context pair – [Context Map](context-map.md) §2; external
-integrations and ACL – [ADR-015](./adr/adr-015-acl.md).
+integrations and ACL – [ADR-015](./adr/adr-015-acl.md). External AI calls go
+through the `AIProviderInterface` ACL port, never from the domain layer.
 
 ### 2.3 Event Versioning
 

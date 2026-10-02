@@ -1,14 +1,15 @@
 # AI & RAG Pipeline for AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.1
+**Date:** 2026-09-30
+**Version:** 1.2
 
 > **Related documentation:** [Glossary](../glossary.md) |
 > [Parsing&AIConnector](./bounded-contexts/parsing-ai-connector.md) |
 > [ADR‑006](../adr/adr-006-ai-integration.md) |
 > [ADR‑007](../adr/adr-007-parsing-strategy.md) |
 > [ADR‑010](../adr/adr-010-qdrant-rag.md) |
+> [ADR‑022](../adr/adr-022-parsing-ai-stack.md) |
 > [Technical Requirements](../technical-requirements.md) |
 > [Architecture Overview](../architecture-overview.md) | [README](../README.md)
 
@@ -26,6 +27,7 @@ are not repeated here:
   ADR‑007.
 - Vector database, embedding models, chunk sizes, search parameters and context
   limits – ADR‑010.
+- Service stack, parsing libraries and scheduling – ADR‑022.
 - Metrics, alerts and SLO – Technical Requirements §5.3.
 
 ## 2. RAG Pipeline
@@ -35,27 +37,32 @@ are not repeated here:
 Source documents (vacancies, job seeker profiles, articles, interview logs)
 undergo:
 
-- Text extraction from HTML/PDF/JSON (BeautifulSoup, tika‑python).
+- Text extraction: `httpx` + `selectolax` for HTML/JSON, `tika` for PDF.
 - Cleaning, whitespace normalisation.
 - Optional case folding.
 - Stop word filtering.
 
 ### 2.2 Chunking
 
-- Strategy: by paragraphs, with sentence boundaries (NLTK/spaCy).
+- Strategy: by paragraphs, with sentence boundaries from a lightweight
+  sentence splitter.
 - Short documents form a single chunk.
 - Chunk size and overlap – ADR‑010.
 
 ### 2.3 Embeddings
 
-- Generated asynchronously when a document is added or updated.
-- Models for development and production – ADR‑010.
+- Generated asynchronously through the external embeddings API when a document
+  is added or updated; the provider is TBD.
+- One model serves both indexing and queries; query embeddings are cached in
+  Redis.
+- Model and dimension – ADR‑010.
 
 ### 2.4 Vector database
 
-- **Qdrant (self‑hosted)** – rationale and deployment – ADR‑010.
+- **Qdrant (self‑hosted)**, with vector quantization – rationale and
+  deployment – ADR‑010.
 - Each chunk is stored with its vector and metadata: `document_id`, `type`,
-  `vacancy_id`, `researcher_id`.
+  `vacancy_id`, `researcher_id`, `embedding_model`, `dim`.
 
 ### 2.5 Retrieval
 
@@ -87,5 +94,5 @@ should be structured: a list of concrete actions.
 ### 2.7 Context assembly
 
 - Chunks are sorted by score; the least relevant chunks are dropped when the
-  context limit is exceeded (limit – ADR‑010).
+  context limit is exceeded (limit for DeepSeek – ADR‑010 and ADR‑022).
 - `timestamp` and `session_id` are added for debugging.

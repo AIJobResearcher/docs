@@ -1,7 +1,7 @@
 # ADR-009: Capacity Planning
 
 **Status:** accepted
-**Date:** 2026-09-27
+**Date:** 2026-09-30
 
 ## Context
 
@@ -19,8 +19,8 @@ Planning" section of `technical-requirements.md`). Main parameters:
   calculated average load.
 - Resources per replica (CPU / RAM) based on prototype testing and expert
   assessment.
-- Storage capacity (PostgreSQL, RabbitMQ, OpenSearch, Redis) for 1 year of
-  growth.
+- Storage capacity (PostgreSQL — including the Parsing&AIConnector database —
+  RabbitMQ, OpenSearch, Redis, Qdrant) for 1 year of growth.
 - Network requirements (throughput, latency ≤ 1 ms inside the data centre).
 
 ## Why this decision
@@ -34,6 +34,9 @@ Planning" section of `technical-requirements.md`). Main parameters:
 - Python service is given more resources (4 vCPU / 8 GB) because of heavy AI
   tasks
   and parsing.
+- The parsing service also owns stateful components: its PostgreSQL database
+  keeps aggregates and the watch schedule, and Qdrant keeps quantized vectors —
+  both are sized in the capacity review.
 - Databases get dedicated instances with SSDs and replicas for fault tolerance.
 - 30% buffer allows handling sudden spikes without immediate scaling.
 
@@ -57,4 +60,5 @@ Planning" section of `technical-requirements.md`). Main parameters:
 
 - Section "Capacity Planning" in `docs/technical-requirements.md`.
 - ADR-005 (scaling via HPA).
+- ADR-022 (Parsing&AIConnector stateful components).
 - Load testing results (section "Performance Testing Plan").
