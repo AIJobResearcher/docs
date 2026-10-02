@@ -15,14 +15,16 @@ System_Boundary(platform, "AIJobResearcher") {
     ContainerDb(postgres_v, "PostgreSQL", "Vacancies DB")
     ContainerDb(postgres_r, "PostgreSQL", "Researcher DB")
     ContainerDb(postgres_k, "PostgreSQL", "Knowledge DB")
+    ContainerDb(postgres_p, "PostgreSQL", "Parser DB: watches, snapshots, tasks")
     ContainerDb(redis, "Redis", "Cache, sessions, rate limiting")
     Container(rabbitmq, "RabbitMQ", "Message broker")
     Container(opensearch, "OpenSearch", "Search engine")
-    Container(qdrant, "Qdrant", "Vector DB for RAG")
+    Container(qdrant, "Qdrant", "Vector DB for RAG (quantized)")
 }
 
 System_Ext(portal, "External portals (LinkedIn, Djinni)")
-System_Ext(ai_provider, "AI providers (OpenAI, Ollama)")
+System_Ext(ai_provider, "AI provider (DeepSeek API)")
+System_Ext(embeddings_api, "Embeddings API (provider TBD)")
 System_Ext(google_calendar, "Google Calendar")
 
 Rel(seeker, frontend, "Uses", "REST")
@@ -32,6 +34,7 @@ Rel(frontend, researcher_crm, "Requests", "REST")
 Rel(vacancies, postgres_v, "Reads/writes", "SQL")
 Rel(researcher_crm, postgres_r, "Reads/writes", "SQL")
 Rel(knowledge, postgres_k, "Reads/writes", "SQL")
+Rel(parsing_ai, postgres_p, "Reads/writes", "SQL")
 
 Rel(vacancies, redis, "Caches")
 Rel(researcher_crm, redis, "Caches, sessions")
@@ -46,7 +49,8 @@ Rel(vacancies, opensearch, "Indexes")
 Rel(parsing_ai, qdrant, "Indexes and searches")
 
 Rel(parsing_ai, portal, "Parses", "HTTPS")
-Rel(parsing_ai, ai_provider, "Calls", "HTTPS/HTTP")
+Rel(parsing_ai, ai_provider, "Generates through", "HTTPS")
+Rel(parsing_ai, embeddings_api, "Embeds through", "HTTPS")
 Rel(researcher_crm, google_calendar, "Creates events", "HTTPS")
 
 @enduml

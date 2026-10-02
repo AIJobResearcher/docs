@@ -1,20 +1,21 @@
 # ADR-015: Using an Anti‑Corruption Layer (ACL) for External Systems
 
 **Status:** accepted
-**Date:** 2026-09-27
+**Date:** 2026-09-30
 
 ## Context
 
-The platform integrates with external portals (LinkedIn, Djinni), AI providers
-(OpenAI, Ollama), and Google Calendar. Their data models, protocols, and change
-frequency must not pollute the domain model.
+The platform integrates with external portals (LinkedIn, Djinni), AI and
+embedding providers (DeepSeek, the embeddings API), and Google Calendar. Their
+data models, protocols, and change frequency must not pollute the domain model.
 
 ## Decision
 
 For each external system we create an ACL – a component inside the corresponding
 service:
 
-- **Parsing&AIConnector** – for portals and AI providers.
+- **Parsing&AIConnector** – for portals, the AI provider and the embeddings
+  API.
 - **ResearcherCrm** – for Google Calendar.
 - **Authentication module** – for Google OAuth2.
 

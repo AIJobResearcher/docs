@@ -8,9 +8,9 @@ Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery")
 Boundary(parsing_ai_boundary, "AI & Parsing") {
     Component(presentation, "Presentation Layer", "FastAPI routes", "Accepts commands and requests")
     Component(application, "Application Layer", "Use cases", "Parsing runs, AI generation, RAG")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "ParsingTask, AIRecommendationTask, VacancyCandidate, AIModel")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Portal, PortalConnection, PortalWatch, ParsingTask, PortalSnapshot, PortalUpdateTask, AIRecommendationTask, AIModel")
     Component(acl_parsing, "Parsing ACL", "Adapter for portals", "Parses HTML/JSON")
-    Component(acl_ai, "AI Provider Interface", "Port; Ollama / OpenAI adapters", "Generates AI responses")
+    Component(acl_ai, "AI Provider Interface", "Port; DeepSeek / fallback adapters", "Generates AI responses and embeddings")
     Component(rag, "RAG Pipeline", "Chunking, embeddings, retrieval", "Uses Qdrant")
     Component(celery_worker, "Celery Worker", "Async tasks", "Parsing, AI generation")
 
@@ -22,18 +22,22 @@ Boundary(parsing_ai_boundary, "AI & Parsing") {
     Rel(celery_worker, application, "Triggers")
 }
 
-ContainerDb(qdrant, "Qdrant", "Vector DB")
+ContainerDb(qdrant, "Qdrant", "Vector DB (quantized)")
+ContainerDb(postgres_p, "PostgreSQL", "Parser DB: watches, snapshots, tasks")
 Container(rabbitmq, "RabbitMQ", "Task queues and messages")
-Container(redis, "Redis", "AI response cache")
+Container(redis, "Redis", "AI cache, locks, rate limiting, RedBeat")
 
 System_Ext(portal, "External portals (LinkedIn, Djinni)")
-System_Ext(ai_provider, "AI providers (OpenAI, Ollama)")
+System_Ext(ai_provider, "AI provider (DeepSeek API)")
+System_Ext(embeddings_api, "Embeddings API (provider TBD)")
 
 Rel(parsing_ai, qdrant, "Indexes and searches")
+Rel(parsing_ai, postgres_p, "Reads / writes", "SQL")
 Rel(parsing_ai, rabbitmq, "Publishes and consumes")
-Rel(parsing_ai, redis, "Caches")
+Rel(parsing_ai, redis, "Caches, locks, schedules")
 
 Rel(acl_parsing, portal, "Parses", "HTTPS")
-Rel(acl_ai, ai_provider, "Calls", "HTTPS/HTTP")
+Rel(acl_ai, ai_provider, "Calls", "HTTPS")
+Rel(acl_ai, embeddings_api, "Embeds", "HTTPS")
 
 @enduml

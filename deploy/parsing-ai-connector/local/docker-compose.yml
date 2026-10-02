@@ -1,0 +1,198 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: runtime
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: parsing-ai-app
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment: &app-environment
+      - APP_ENV=${APP_ENV:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - POSTGRES_DB=${POSTGRES_DB:-parsing_ai}
+      - POSTGRES_USER=${POSTGRES_USER:-parsing_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-parsing_user}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-parsing_ai}
+      - RABBITMQ_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+      - CELERY_BROKER_URL=amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND:-redis://redis:6379/1}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/2}
+      - QDRANT_URL=${QDRANT_URL:-http://qdrant:6333}
+      - AI_PROVIDER=${AI_PROVIDER:-deepseek}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek-chat}
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parsing-ai-network
+    volumes:
+      - .:/app
+
+  worker:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: runtime
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: parsing-ai-worker
+    restart: unless-stopped
+    command: celery -A app.worker worker -Q default
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parsing-ai-network
+    volumes:
+      - .:/app
+
+  worker-browser:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: browser
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: parsing-ai-worker-browser
+    restart: unless-stopped
+    command: celery -A app.worker worker -Q browser --concurrency=2
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parsing-ai-network
+    volumes:
+      - .:/app
+
+  beat:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+      target: runtime
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    container_name: parsing-ai-beat
+    restart: unless-stopped
+    command: celery -A app.worker beat
+    environment: *app-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - parsing-ai-network
+    volumes:
+      - .:/app
+
+  postgres:
+    image: postgres:18
+    container_name: parsing-ai-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-parsing_ai}
+      - POSTGRES_USER=${POSTGRES_USER:-parsing_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - parsing-ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-parsing_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: parsing-ai-rabbitmq
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
+    ports:
+      - "${RABBITMQ_PORT:-5674}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15674}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - parsing-ai-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: parsing-ai-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6381}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - parsing-ai-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: parsing-ai-qdrant
+    restart: unless-stopped
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - parsing-ai-network
+
+networks:
+  parsing-ai-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
+  qdrant_data:

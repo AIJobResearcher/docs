@@ -1,8 +1,8 @@
 # Bounded Context: Vacancy Management (Vacancies Market Service)
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.67
+**Date:** 2026-09-30
+**Version:** 1.70
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -17,25 +17,33 @@
 > strategy](../../adr/adr-007-parsing-strategy.md) |
 > [ADR‑011: Outbox Pattern](../../adr/adr-011-outbox-pattern.md) |
 > [ADR‑013: Idempotency](../../adr/adr-013-idempotency.md) |
-> [ADR‑014: OpenSearch](../../adr/adr-014-opensearch.md)
+> [ADR‑014: OpenSearch](../../adr/adr-014-opensearch.md) |
+> [ADR‑021: Context Communication](../../adr/adr-021-context-communication.md)
 
 ## 1. Responsibility
 
 - **1.1** Own the canonical, read-optimized catalogue of jobs, vacancies,
-  employers, interviewers, requirements, portals and locations.
+  employers, interviewers, requirements and locations.
 - **1.2** Provide read access to the catalogue and publish committed changes
   for other contexts and search indexes.
+- **1.3** Ingest parsed portal records: normalize them, match duplicates and
+  decide the catalogue creates, updates, merges and closures.
 
 ## 2. Business processes and context boundary
 
 - **2.1** Expose catalogue data through the read API and keep its search read
   model current.
+- **2.2** Apply portal updates: consume the new and changed record events of
+  AI & Parsing, match each record against the catalogue and apply the resulting
+  mutation to a `Source`, `Employer` or `Interviewer`.
 
 ## 3. User stories
 
 - **3.1 View vacancies:** a jobseeker browses current vacancies matching their
   desired jobs, filtering by job, employer, location, salary, workplace,
   employment type, status and posting dates.
+- **3.2 Apply portal updates:** the catalogue turns parsed portal records into
+  creates, updates, merges and closures of sources, employers and interviewers.
 
 ## 4. Business invariants
 
@@ -43,9 +51,6 @@
 
 - **4.1.1** An approved update or reopen creates a new aggregate version,
   preserving history.
-- **4.1.2** Applying an update requires the command's `expected_version` to
-  match the current aggregate version. A conflict is rejected as retryable,
-  preventing lost updates.
 
 ### 4.2 Vacancy
 
@@ -87,9 +92,10 @@
 - **4.7.2** A Requirement cannot be deleted if it is referenced by any active
   Job or Vacancy.
 
-### 4.8 Portal
+### 4.8 Portal reference
 
-- **4.8.1** A Portal cannot be deleted while any `Source` references it.
+- **4.8.1** `Source` references a `Portal` of AI & Parsing by id; the portal
+  registry and its lifecycle are owned there.
 
 ### 4.9 Source
 
@@ -99,6 +105,15 @@
 
 - **4.10.1** A Location cannot be deleted while referenced by any `Employer`
   or `Vacancy`.
+
+### 4.11 PortalCandidate
+
+- **4.11.1** A candidate changes the catalogue only through its selected
+  `decision`; an undecided candidate never mutates a `Source`, `Employer` or
+  `Interviewer`.
+- **4.11.2** A record already present in `EntityMapping` for its
+  (`portal_id`, `external_id`) resolves to the mapped entity without an AI
+  similarity comparison.
 
 ## 5. Aggregates and entities
 
@@ -169,42 +184,60 @@
 - **5.5.2 Relationships:** child entity of `Employer`.
 - **5.5.3 Behaviour:** `updateInterviewer()`.
 
-### 5.6 Portal (reference entity)
+### 5.6 Source (entity, part of Vacancy)
 
-- **5.6.1 Fields:** `id` (UUID), `code` (string, unique — portal key such as
-  `linkedin`, `djinni`), `name` (string), `base_url` (string,
-  nullable), `created_at` (timestamp), `updated_at` (timestamp).
-- **5.6.2 Relationships:** a `Source` references a `Portal`; a Vacancy's
-  origin is tracked per source.
-- **5.6.3 Behaviour:** `createPortal()`, `updatePortal()`, `deletePortal()`.
+- **5.6.1 Fields:** `id` (UUID), `vacancy_id` (UUID), `portal_id` (UUID,
+  references `Portal` of AI & Parsing), `external_vacancy_id` (string, null),
+  `external_url` (string), `title` (string), `posted_at` (timestamp),
+  `created_at` (timestamp), `updated_at` (timestamp).
+- **5.6.2 Relationships:** part of `Vacancy`; references a `Portal` of AI &
+  Parsing by id; has many `Content`.
+- **5.6.3 Behaviour:** `addContent()`, `updateContent()`, `removeContent()`.
 
-### 5.7 Source (entity, part of Vacancy)
+### 5.7 Location (reference entity)
 
-- **5.7.1 Fields:** `id` (UUID), `vacancy_id` (UUID), `portal_id` (UUID,
-  references `Portal`), `external_vacancy_id` (string, null), `external_url`
-  (string), `title` (string), `posted_at` (timestamp), `created_at`
-  (timestamp), `updated_at` (timestamp).
-- **5.7.2 Relationships:** part of `Vacancy`; references `Portal`; has many
-  `Content`.
-- **5.7.3 Behaviour:** `addContent()`, `updateContent()`, `removeContent()`.
-
-### 5.8 Location (reference entity)
-
-- **5.8.1 Fields:** `id` (int), `name` (string(255)), `iso_name` (string(5),
+- **5.7.1 Fields:** `id` (int), `name` (string(255)), `iso_name` (string(5),
   nullable), `parent_id` (int, nullable — self-reference), `type` (enum:
   country/city/unification-of-countries/region), `created_at` (timestamp),
   `updated_at` (timestamp).
-- **5.8.2 Relationships:** self-references a parent `Location`; referenced by
+- **5.7.2 Relationships:** self-references a parent `Location`; referenced by
   `Employer` and `Vacancy`.
-- **5.8.3 Behaviour:** `createLocation()`, `updateLocation()`,
+- **5.7.3 Behaviour:** `createLocation()`, `updateLocation()`,
   `deleteLocation()`.
 
-### 5.9 Content (entity, part of Source)
+### 5.8 Content (entity, part of Source)
 
-- **5.9.1 Fields:** `id` (UUID), `source_id` (UUID), `type` (enum: description),
+- **5.8.1 Fields:** `id` (UUID), `source_id` (UUID), `type` (enum: description),
   `value` (text).
-- **5.9.2 Relationships:** part of `Source`.
-- **5.9.3 Behaviour:** none — content is updated through `Source`.
+- **5.8.2 Relationships:** part of `Source`.
+- **5.8.3 Behaviour:** none — content is updated through `Source`.
+
+### 5.9 PortalCandidate (aggregate)
+
+- **5.9.1 Fields:** `id` (UUID), `entity_type`
+  (source/employer/interviewer), `portal_id` (UUID), `external_id` (string),
+  `raw_payload` (JSON), `normalized_payload` (JSON), `candidate_entity_ids`
+  (JSON), `similarity_scores` (JSON), `decision` (create/update/merge/close),
+  `decision_rationale` (text), `status`, `created_at`, `decided_at`.
+- **5.9.2 Relationships:** consumes the portal records published by AI &
+  Parsing; resolves the target through `EntityMapping`; the applied mutation
+  touches a `Source`, `Employer` or `Interviewer` — never a `Job`. AI
+  similarity for unmatched records is requested from Parsing&AIConnector
+  ([AI & RAG Pipeline](../ai-rag-pipeline.md)).
+- **5.9.3 Behaviour:** `normalize()`, `findDuplicateCandidates()`,
+  `selectMutation()`, `applyMutation()`.
+
+### 5.10 EntityMapping (entity)
+
+- **5.10.1 Fields:** `id` (UUID), `entity_type`
+  (source/employer/interviewer), `catalogue_entity_id` (UUID), `portal_id`
+  (UUID), `external_id` (string), `external_url` (string), `content_hash`
+  (string), `last_seen_at` (timestamp).
+- **5.10.2 Relationships:** links one `Source`, `Employer` or `Interviewer` to
+  its portal record; referenced by `PortalCandidate` and by the outbound update
+  requests of AI & Parsing.
+- **5.10.3 Behaviour:** `resolve(portal_id, external_id)` and
+  `refresh(external_url, content_hash)`.
 
 ## 6. Interaction with other contexts
 

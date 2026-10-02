@@ -1,8 +1,8 @@
 # Bounded Context: Learning Management (KnowledgeCenter Service)
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.3
+**Date:** 2026-09-30
+**Version:** 1.4
 
 > **Related documentation:** [Glossary](../../glossary.md) |
 > [Architecture Overview](../../architecture-overview.md) |
@@ -17,7 +17,8 @@
 > [ADR‑006: AI Model Integration
 > Strategy](../../adr/adr-006-ai-integration.md) |
 > [ADR‑011: Outbox Pattern](../../adr/adr-011-outbox-pattern.md) |
-> [ADR‑013: Idempotency](../../adr/adr-013-idempotency.md)
+> [ADR‑013: Idempotency](../../adr/adr-013-idempotency.md) |
+> [ADR‑021: Context Communication](../../adr/adr-021-context-communication.md)
 
 ## 1. Responsibility
 
