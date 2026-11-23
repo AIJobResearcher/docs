@@ -1,48 +1,35 @@
 openapi: 3.2.1
 info:
   title: Parsing & AI Connector API
-  summary: Portal parsing, AI generation and task status for the platform
-  description: Portal parsing, AI recommendation generation, task management.
-  version: 1.0.4
+  summary: Portal registry API for the platform
+  description: >-
+    Read access to the Portal registry owned by Parsing&AIConnector and
+    consumed by Vacancies Market.
+  version: 1.0.6
 servers:
   - url: https://api.aijobresearcher.com/api/v1
     name: Production
     description: Production server
 paths:
-  /ai/recommendations:
-    post:
-      operationId: requestAiRecommendation
-      summary: Request an AI recommendation
+  /portals:
+    get:
+      operationId: listPortals
+      summary: List portals
       security:
         - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              properties:
-                type:
-                  type: string
-                  enum: [vacancy, resume, strategy, preparation]
-                context:
-                  type: string
-                target_id:
-                  type: string
-                  description: ID of vacancy or resume (optional)
       responses:
-        '202':
-          description: Request accepted, result available via polling or WebSocket
-          headers:
-            Location:
+        '200':
+          description: Portals
+          content:
+            application/json:
               schema:
-                type: string
-              description: Task URL (/tasks/{id})
-        '422':
-          description: Validation failed
-  /tasks/{id}:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Portal'
+  /portals/{id}:
     get:
-      operationId: getAiTask
-      summary: Get status and result of an AI task
+      operationId: getPortal
+      summary: Get a portal by id
       security:
         - BearerAuth: []
       parameters:
@@ -53,44 +40,28 @@ paths:
             type: string
       responses:
         '200':
-          description: Task completed
+          description: Portal
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    enum: [pending, processing, completed, failed]
-                  result:
-                    type: object
-        '202':
-          description: Task is still running
-  /parsing/run:
-    post:
-      operationId: runParsing
-      summary: Trigger portal parsing
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: portal
-          in: query
-          required: true
-          schema:
-            type: string
-            enum: [linkedin, djinni]
-        - name: mode
-          in: query
-          schema:
-            type: string
-            enum: [full, incremental]
-            default: incremental
-      responses:
-        '202':
-          description: Parsing started asynchronously
+                $ref: '#/components/schemas/Portal'
+        '404':
+          description: Portal not found
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Portal:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        base_url:
+          type: string
+          nullable: true

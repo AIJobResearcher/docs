@@ -35,8 +35,8 @@ Planning" section of `technical-requirements.md`). Main parameters:
   tasks
   and parsing.
 - The parsing service also owns stateful components: its PostgreSQL database
-  keeps aggregates and the watch schedule, and Qdrant keeps quantized vectors —
-  both are sized in the capacity review.
+  keeps aggregates and the parsing schedule, and Qdrant keeps quantized
+  vectors — both are sized in the capacity review.
 - Databases get dedicated instances with SSDs and replicas for fault tolerance.
 - 30% buffer allows handling sudden spikes without immediate scaling.
 

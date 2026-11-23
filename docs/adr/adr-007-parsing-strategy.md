@@ -11,8 +11,10 @@ Vacancies, employers, and interviewers are imported from external portals
 
 ## Decision
 
-- **Modes:** incremental runs on the per-portal watch interval (minute tick for
-  the hottest portals); full scans once a day.
+- **Modes:** incremental runs on the scenario interval, which adapts between
+  the scenario bounds (15 min floor, 60 min ceiling): a run that finds changes
+  halves it, three empty runs double it; full scans run daily where a scenario
+  needs them.
 - **Sources (phase 1):** LinkedIn, Djinni, rabota.ua, work.ua, dou.ua;
   RSS/API endpoints are used before any HTML scraping.
 - **Ethics:** read `robots.txt`, respect `Crawl‑delay`, User‑Agent
@@ -20,7 +22,8 @@ Vacancies, employers, and interviewers are imported from external portals
 - **Rate limiting:** one shared Redis limiter per host across all workers and
   proxies; limit 2 connections per host.
 - **Anti‑blocking:** proxy rotation on 403/429, exponential backoff (1s, 2s, 4s,
-  max 60s); a detected ban pauses that portal watch and raises an alert.
+  max 60s); a detected ban suspends the scenario's `ParsingSchedule` and raises
+  an alert.
 - **JavaScript pages:** Playwright only where the page needs JavaScript;
   Crawlee for Python (or Scrapy) for full crawls.
 - **Demo mode:** `ParsingMockClient` with fixtures (switch via

@@ -22,7 +22,7 @@ integration messages, data ownership) are fixed in the
 | --- | --- | --- |
 | [Vacancy Management](./bounded-contexts/vacancies-market.md) | Employer (root) → Vacancy → Source → Content; Interviewer, PortalCandidate, EntityMapping | Requirement, Job, Location |
 | [Job Search & CRM](./bounded-contexts/researcher-crm.md) | Researcher (root) → Reply, Meet, Message, AIRecommendation | Desired Job (reference to a Job of Vacancy Management) |
-| [AI & Parsing](./bounded-contexts/parsing-ai-connector.md) | PortalWatch, ParsingTask → PortalSnapshot, PortalUpdateTask, AIRecommendationTask | Portal, AIModel, PortalConnection |
+| [AI & Parsing](./bounded-contexts/parsing-ai-connector.md) | ParsingSchedule, ParsingTask, PortalRecord → PortalUpdateTask, AIRecommendationTask | Portal, AIModel, PortalConnection |
 | [Learning Management](./bounded-contexts/knowledge-center.md) | LearningTrack (root) → TrackItem, Progress | Skill |
 
 Fields, behaviour and invariants of every aggregate are described in the file of

@@ -15,7 +15,7 @@ System_Boundary(platform, "AIJobResearcher") {
     ContainerDb(postgres_v, "PostgreSQL", "Vacancies DB")
     ContainerDb(postgres_r, "PostgreSQL", "Researcher DB")
     ContainerDb(postgres_k, "PostgreSQL", "Knowledge DB")
-    ContainerDb(postgres_p, "PostgreSQL", "Parser DB: watches, snapshots, tasks")
+    ContainerDb(postgres_p, "PostgreSQL", "Parser DB: schedules, scenarios, snapshots, tasks")
     ContainerDb(redis, "Redis", "Cache, sessions, rate limiting")
     Container(rabbitmq, "RabbitMQ", "Message broker")
     Container(opensearch, "OpenSearch", "Search engine")

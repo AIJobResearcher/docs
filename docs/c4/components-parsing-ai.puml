@@ -8,7 +8,7 @@ Container(parsing_ai, "Parsing&AIConnector", "Python, FastAPI, Celery")
 Boundary(parsing_ai_boundary, "AI & Parsing") {
     Component(presentation, "Presentation Layer", "FastAPI routes", "Accepts commands and requests")
     Component(application, "Application Layer", "Use cases", "Parsing runs, AI generation, RAG")
-    Component(domain, "Domain Layer", "Entities, Aggregates", "Portal, PortalConnection, PortalWatch, ParsingTask, PortalSnapshot, PortalUpdateTask, AIRecommendationTask, AIModel")
+    Component(domain, "Domain Layer", "Entities, Aggregates", "Portal, PortalConnection, ParsingScenario, ParsingSchedule, ParsingTask, PortalRecord, PortalUpdateTask, AIRecommendationTask, AIModel")
     Component(acl_parsing, "Parsing ACL", "Adapter for portals", "Parses HTML/JSON")
     Component(acl_ai, "AI Provider Interface", "Port; DeepSeek / fallback adapters", "Generates AI responses and embeddings")
     Component(rag, "RAG Pipeline", "Chunking, embeddings, retrieval", "Uses Qdrant")
@@ -23,7 +23,7 @@ Boundary(parsing_ai_boundary, "AI & Parsing") {
 }
 
 ContainerDb(qdrant, "Qdrant", "Vector DB (quantized)")
-ContainerDb(postgres_p, "PostgreSQL", "Parser DB: watches, snapshots, tasks")
+ContainerDb(postgres_p, "PostgreSQL", "Parser DB: schedules, scenarios, snapshots, tasks")
 Container(rabbitmq, "RabbitMQ", "Task queues and messages")
 Container(redis, "Redis", "AI cache, locks, rate limiting, RedBeat")
 

@@ -5,9 +5,9 @@
 
 ## Context
 
-The Parsing&AIConnector service parses external portals, schedules per-portal
-watches, generates AI recommendations and runs the RAG pipeline. Earlier ADRs
-described a stateless stack with a local Ollama model, BeautifulSoup,
+The Parsing&AIConnector service parses external portals, plans per-portal
+parsing runs, generates AI recommendations and runs the RAG pipeline. Earlier
+ADRs described a stateless stack with a local Ollama model, BeautifulSoup,
 sentence-transformers and a full-crawl-once-a-day schedule; the service now owns
 durable state, an adaptive polling schedule and a commercial AI provider.
 
@@ -17,9 +17,9 @@ durable state, an adaptive polling schedule and a commercial AI provider.
   service stores its aggregates and the parsing schedule itself, not only task
   results.
 - **Scheduling:** Celery with Celery Beat (RedBeat, backed by Redis). A
-  minute tick selects the due `PortalWatch` rows from PostgreSQL with
+  minute tick selects the due `ParsingSchedule` rows from PostgreSQL with
   `FOR UPDATE SKIP LOCKED`, so several beats or workers never run the same
-  watch twice.
+  schedule twice.
 - **Generation:** the DeepSeek API (`deepseek-chat`, `deepseek-reasoner`)
   behind the `AIProviderInterface` port, with LiteLLM as the gateway so a
   fallback provider can be added without touching the domain; Ollama is
@@ -32,7 +32,8 @@ durable state, an adaptive polling schedule and a commercial AI provider.
   proxy service.
 - **Sources (phase 1):** LinkedIn, Djinni, rabota.ua, work.ua, dou.ua, taking
   RSS/API endpoints before HTML.
-- **Load:** hundreds of watched URLs, 15+ of them polled every minute.
+- **Load:** hundreds of watched URLs, the hottest scenarios polled every 15
+  minutes.
 - **Redis:** AI response cache (24 h / 7 d), locks, rate limiting, Celery
   result backend and RedBeat.
 - **External providers** need a DPA, zero-retention and no-training terms, and
@@ -40,7 +41,7 @@ durable state, an adaptive polling schedule and a commercial AI provider.
 
 ## Why this decision
 
-- Watches, cursors and backoff are state, not requests: a database makes the
+- Schedules, cursors and backoff are state, not requests: a database makes the
   minute schedule correct after a restart and lets workers claim work safely.
 - A provider port with a gateway keeps model choice and fallback out of the
   domain layer, and DeepSeek removes local GPU operations from the demo and
@@ -53,7 +54,7 @@ durable state, an adaptive polling schedule and a commercial AI provider.
 ## Alternatives
 
 - **Stateless service, schedule in Redis or cron** – rejected: no atomic claim
-  of a watch, harder recovery and no durable run history.
+  of a schedule, harder recovery and no durable run history.
 - **Keep Ollama as the default provider** – rejected: local model quality and
   container cost, and the provider port already allows local models without
   making them the default.
