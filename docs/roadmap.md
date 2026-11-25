@@ -1,17 +1,19 @@
 # Roadmap: AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.2
+**Date:** 2026-11-23
+**Version:** 1.3
 
 > **Related documentation:** [Glossary](./glossary.md) |
 > [Domain Vision](./domain/domain-vision.md) |
+> [Capabilities](./capabilities.md) |
 > [Architecture Overview](./architecture-overview.md) |
 > [README](./README.md)
 
 Capability stages of the platform; every stage is delivered together with AI.
 Service-level order and stacks are fixed in
-[Architecture Overview](./architecture-overview.md) §1.
+[Architecture Overview](./architecture-overview.md) §1. The capabilities behind
+each stage: [Product Capabilities](./capabilities.md).
 
 ## 1. Stages
 

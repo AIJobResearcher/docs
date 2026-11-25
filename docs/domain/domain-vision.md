@@ -1,10 +1,11 @@
 # Domain Vision: AIJobResearcher
 
 **Status:** accepted
-**Date:** 2026-09-27
-**Version:** 1.6
+**Date:** 2026-11-23
+**Version:** 1.7
 
 > **Related documentation:** [Glossary](../glossary.md) |
+> [Capabilities](../capabilities.md) |
 > [Context Map](../context-map.md) | [Roadmap](../roadmap.md) |
 > [Domain Model](./domain-model.md) | [README](../README.md)
 
@@ -29,7 +30,8 @@ analytics. Responsibilities and user stories:
 
 **Vacancy Management**, **AI & Parsing** and **Learning Management** support the
 core domain: they supply the vacancy catalogue, AI capabilities and learning
-tracks. Boundaries, responsibilities and data ownership:
+tracks. The full capability map: [Product Capabilities](../capabilities.md).
+Boundaries, responsibilities and data ownership:
 [Context Map](../context-map.md); aggregates of each context:
 [Domain Model](./domain-model.md).
 

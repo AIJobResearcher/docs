@@ -1,12 +1,12 @@
 # AIJobResearcher – Documentation Home
 
 **Status:** accepted
-**Date:** 2026-09-27
+**Date:** 2026-11-23
 
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 **Target load:** 50,000 concurrent active users
-**Version:** 1.16
+**Version:** 1.17
 
 ## What is this?
 
@@ -34,6 +34,7 @@ OpenTelemetry + Jaeger + Prometheus + Loki.
 | [Architecture Overview](./architecture-overview.md) | Services, stacks and implementation order, Clean Architecture, EDA, versioning, idempotency, outbox, CI |
 | [Domain Model](./domain/domain-model.md) | Map of aggregates and entities per bounded context (data ownership), links to the detailed files |
 | [Domain Vision](./domain/domain-vision.md) | Strategic goals, core and supporting domains, competitive advantages, success metrics, scope and non-goals |
+| [Product Capabilities](./capabilities.md) | Capability map grouped by the job-search value stream and mapped to bounded contexts |
 | [Roadmap](./roadmap.md) | Capability stages of the platform, from automatic vacancy updates to the learning centre |
 | [Glossary](./glossary.md) | Glossary of terms (Ubiquitous Language) |
 | [Context Map](./context-map.md) | Interaction map of bounded contexts (upstream/downstream), published language |
